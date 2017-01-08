@@ -43,18 +43,6 @@ interface LevelProvider{
 	public static function getProviderName() : string;
 
 	/**
-	 * Gets the build height limit of this world
-	 *
-	 * @return int
-	 */
-	public function getWorldHeight() : int;
-
-	/**
-	 * @return string
-	 */
-	public function getPath() : string;
-
-	/**
 	 * Tells if the path is a valid level.
 	 * This must tell if the current format supports opening the files in the directory
 	 *
@@ -74,6 +62,18 @@ interface LevelProvider{
 	 * @param array[]    $options
 	 */
 	public static function generate(string $path, string $name, $seed, string $generator, array $options = []);
+
+	/**
+	 * Gets the build height limit of this world
+	 *
+	 * @return int
+	 */
+	public function getWorldHeight() : int;
+
+	/**
+	 * @return string
+	 */
+	public function getPath() : string;
 
 	/**
 	 * Returns the generator name

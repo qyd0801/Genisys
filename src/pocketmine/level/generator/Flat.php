@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Flat extends Generator{
+
 	/** @var ChunkManager */
 	private $level;
 	/** @var Chunk */
@@ -47,14 +48,6 @@ class Flat extends Generator{
 	/** @var Populator[] */
 	private $populators = [];
 	private $structure, $chunks, $options, $floorLevel, $preset;
-
-	public function getSettings(){
-		return $this->options;
-	}
-
-	public function getName() : string{
-		return "flat";
-	}
 
 	public function __construct(array $options = []){
 		$this->preset = "2;7,2x3,2;1;";
@@ -78,60 +71,12 @@ class Flat extends Generator{
 
 	}
 
-	protected function parsePreset($preset, $chunkX, $chunkZ){
-		$this->preset = $preset;
-		$preset = explode(";", $preset);
-		$version = (int) $preset[0];
-		$blocks = $preset[1] ?? "";
-		$biome = $preset[2] ?? 1;
-		$options = $preset[3] ?? "";
-		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $blocks), $matches);
-		$y = 0;
-		$this->structure = [];
-		$this->chunks = [];
-		foreach($matches[3] as $i => $b){
-			$b = Item::fromString($b . $matches[4][$i]);
-			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
-			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$this->structure[$cY] = [$b->getId(), $b->getDamage()];
-			}
-		}
+	public function getSettings(){
+		return $this->options;
+	}
 
-		$this->floorLevel = $y;
-
-		for(; $y < 0xFF; ++$y){
-			$this->structure[$y] = [0, 0];
-		}
-
-
-		$this->chunk = clone $this->level->getChunk($chunkX, $chunkZ);
-		$this->chunk->setGenerated();
-
-		for($Z = 0; $Z < 16; ++$Z){
-			for($X = 0; $X < 16; ++$X){
-				$this->chunk->setBiomeId($X, $Z, $biome);
-				for($y = 0; $y < 128; ++$y){
-					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
-				}
-			}
-		}
-
-
-		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
-		foreach($matches[2] as $i => $option){
-			$params = true;
-			if($matches[3][$i] !== ""){
-				$params = [];
-				$p = explode(" ", $matches[3][$i]);
-				foreach($p as $k){
-					$k = explode("=", $k);
-					if(isset($k[1])){
-						$params[$k[0]] = $k[1];
-					}
-				}
-			}
-			$this->options[$option] = $params;
-		}
+	public function getName() : string{
+		return "flat";
 	}
 
 	public function init(ChunkManager $level, Random $random){
@@ -172,5 +117,59 @@ class Flat extends Generator{
 
 	public function getSpawn(){
 		return new Vector3(128, $this->floorLevel, 128);
+	}
+
+	protected function parsePreset($preset, $chunkX, $chunkZ){
+		$this->preset = $preset;
+		$preset = explode(";", $preset);
+		$version = (int) $preset[0];
+		$blocks = $preset[1] ?? "";
+		$biome = $preset[2] ?? 1;
+		$options = $preset[3] ?? "";
+		preg_match_all('#^(([0-9]*x|)([0-9]{1,3})(|:[0-9]{0,2}))$#m', str_replace(",", "\n", $blocks), $matches);
+		$y = 0;
+		$this->structure = [];
+		$this->chunks = [];
+		foreach($matches[3] as $i => $b){
+			$b = Item::fromString($b . $matches[4][$i]);
+			$cnt = $matches[2][$i] === "" ? 1 : intval($matches[2][$i]);
+			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
+				$this->structure[$cY] = [$b->getId(), $b->getDamage()];
+			}
+		}
+
+		$this->floorLevel = $y;
+
+		for(; $y < 0xFF; ++$y){
+			$this->structure[$y] = [0, 0];
+		}
+
+		$this->chunk = clone $this->level->getChunk($chunkX, $chunkZ);
+		$this->chunk->setGenerated();
+
+		for($Z = 0; $Z < 16; ++$Z){
+			for($X = 0; $X < 16; ++$X){
+				$this->chunk->setBiomeId($X, $Z, $biome);
+				for($y = 0; $y < 128; ++$y){
+					$this->chunk->setBlock($X, $y, $Z, ...$this->structure[$y]);
+				}
+			}
+		}
+
+		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
+		foreach($matches[2] as $i => $option){
+			$params = true;
+			if($matches[3][$i] !== ""){
+				$params = [];
+				$p = explode(" ", $matches[3][$i]);
+				foreach($p as $k){
+					$k = explode("=", $k);
+					if(isset($k[1])){
+						$params[$k[0]] = $k[1];
+					}
+				}
+			}
+			$this->options[$option] = $params;
+		}
 	}
 }

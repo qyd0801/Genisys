@@ -26,6 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class NetherLava extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;
@@ -168,12 +169,7 @@ class NetherLava extends Populator{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
-			if(
-				($j === 0 and $previousDirection === 1) or
-				($j === 1 and $previousDirection === 0) or
-				($j === 2 and $previousDirection === 3) or
-				($j === 3 and $previousDirection === 2)
-			){
+			if(($j === 0 and $previousDirection === 1) or ($j === 1 and $previousDirection === 0) or ($j === 2 and $previousDirection === 3) or ($j === 3 and $previousDirection === 2)){
 				$x = $xx;
 				$y = $yy;
 				$z = $zz;
@@ -270,7 +266,6 @@ class NetherLava extends Populator{
 
 		return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
 	}
-
 
 	private function canNetherLavaStay($x, $y, $z){
 		$b = $this->level->getBlockIdAt($x, $y, $z);

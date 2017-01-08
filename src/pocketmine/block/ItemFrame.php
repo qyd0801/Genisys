@@ -31,6 +31,7 @@ use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;
 
 class ItemFrame extends Flowable{
+
 	protected $id = Block::ITEM_FRAME_BLOCK;
 
 	public function __construct($meta = 0){
@@ -53,7 +54,7 @@ class ItemFrame extends Flowable{
 				new IntTag("y", $this->y),
 				new IntTag("z", $this->z),
 				new FloatTag("ItemDropChance", 1.0),
-				new ByteTag("ItemRotation", 0)
+				new ByteTag("ItemRotation", 0),
 			]);
 			$tile = Tile::createTile(Tile::ITEM_FRAME, $this->level->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 		}
@@ -91,7 +92,7 @@ class ItemFrame extends Flowable{
 				0 => 4,
 				1 => 5,
 				2 => 2,
-				3 => 3
+				3 => 3,
 			];
 			if(!$this->getSide($sides[$this->meta])->isSolid()){
 				$this->level->useBreakOn($this);
@@ -110,7 +111,7 @@ class ItemFrame extends Flowable{
 			2 => 3,
 			3 => 2,
 			4 => 1,
-			5 => 0
+			5 => 0,
 		];
 
 		$this->meta = $faces[$face];
@@ -122,7 +123,7 @@ class ItemFrame extends Flowable{
 			new IntTag("y", $block->y),
 			new IntTag("z", $block->z),
 			new FloatTag("ItemDropChance", 1.0),
-			new ByteTag("ItemRotation", 0)
+			new ByteTag("ItemRotation", 0),
 		]);
 
 		if($item->hasCustomBlockData()){
@@ -139,7 +140,7 @@ class ItemFrame extends Flowable{
 
 	public function getDrops(Item $item) : array{
 		return [
-			[Item::ITEM_FRAME, 0, 1]
+			[Item::ITEM_FRAME, 0, 1],
 		];
 	}
 

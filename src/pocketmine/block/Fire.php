@@ -87,7 +87,7 @@ class Fire extends Flowable{
 		}
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [];
 	}
 
@@ -107,14 +107,7 @@ class Fire extends Flowable{
 					$this->getLevel()->setBlock($this, new Air(), true);
 				}
 
-				if(!$forever and $this->getLevel()->getWeather()->isRainy() and
-					($this->getLevel()->canBlockSeeSky($this) or
-						$this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_EAST)) or
-						$this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_WEST)) or
-						$this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_SOUTH)) or
-						$this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_NORTH))
-					)
-				){
+				if(!$forever and $this->getLevel()->getWeather()->isRainy() and ($this->getLevel()->canBlockSeeSky($this) or $this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_EAST)) or $this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_WEST)) or $this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_SOUTH)) or $this->getLevel()->canBlockSeeSky($this->getSide(Vector3::SIDE_NORTH)))){
 					$this->getLevel()->setBlock($this, new Air(), true);
 				}else{
 					$meta = $this->meta;
@@ -146,7 +139,7 @@ class Fire extends Flowable{
 
 						for($x = ($this->x - 1); $x <= ($this->x + 1); ++$x){
 							for($z = ($this->z - 1); $z <= ($this->z + 1); ++$z){
-								for($y = ($this->y -1); $y <= ($this->y + 4); ++$y){
+								for($y = ($this->y - 1); $y <= ($this->y + 4); ++$y){
 									$k = 100;
 
 									if($y > $this->y + 1){
@@ -216,7 +209,7 @@ class Fire extends Flowable{
 					$this->getLevel()->scheduleUpdate($block, $fire->getTickRate());
 				}
 			}else{
-					$this->getLevel()->setBlock($this, new Air(), true);
+				$this->getLevel()->setBlock($this, new Air(), true);
 			}
 
 			if($block instanceof TNT){

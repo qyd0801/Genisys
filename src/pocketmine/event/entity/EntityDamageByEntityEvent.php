@@ -45,36 +45,38 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		$this->addAttackerModifiers($damager);
 	}
 
-	protected function addAttackerModifiers(Entity $damager){
-		if($damager->hasEffect(Effect::STRENGTH)){
-			$this->setRateDamage(1 + 0.3 * ($damager->getEffect(Effect::STRENGTH)->getAmplifier() + 1), self::MODIFIER_STRENGTH);
-		}
-
-		if($damager->hasEffect(Effect::WEAKNESS)){
-			$eff_level = 1 -  0.2 * ($damager->getEffect(Effect::WEAKNESS)->getAmplifier() + 1);
-			if($eff_level < 0){
-				$eff_level = 0;
-			}
-			$this->setRateDamage($eff_level, self::MODIFIER_WEAKNESS);
-		}
-	}
-
 	/**
 	 * @return Entity
 	 */
 	public function getDamager(){
 		return $this->damager;
 	}
+
 	/**
 	 * @return float
 	 */
 	public function getKnockBack(){
 		return $this->knockBack;
 	}
+
 	/**
 	 * @param float $knockBack
 	 */
 	public function setKnockBack($knockBack){
 		$this->knockBack = $knockBack;
+	}
+
+	protected function addAttackerModifiers(Entity $damager){
+		if($damager->hasEffect(Effect::STRENGTH)){
+			$this->setRateDamage(1 + 0.3 * ($damager->getEffect(Effect::STRENGTH)->getAmplifier() + 1), self::MODIFIER_STRENGTH);
+		}
+
+		if($damager->hasEffect(Effect::WEAKNESS)){
+			$eff_level = 1 - 0.2 * ($damager->getEffect(Effect::WEAKNESS)->getAmplifier() + 1);
+			if($eff_level < 0){
+				$eff_level = 0;
+			}
+			$this->setRateDamage($eff_level, self::MODIFIER_WEAKNESS);
+		}
 	}
 }

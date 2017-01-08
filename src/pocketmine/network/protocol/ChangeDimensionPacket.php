@@ -24,6 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 class ChangeDimensionPacket extends DataPacket{
+
 	const NETWORK_ID = Info::CHANGE_DIMENSION_PACKET;
 
 	const DIMENSION_NORMAL = 0;

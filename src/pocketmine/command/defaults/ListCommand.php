@@ -25,15 +25,10 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
-
 class ListCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.list.description",
-			"%command.players.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.list.description", "%command.players.usage");
 		$this->setPermission("pocketmine.command.list");
 	}
 
@@ -52,7 +47,10 @@ class ListCommand extends VanillaCommand{
 			}
 		}
 
-		$sender->sendMessage(new TranslationContainer("commands.players.list", [$onlineCount, $sender->getServer()->getMaxPlayers()]));
+		$sender->sendMessage(new TranslationContainer("commands.players.list", [
+			$onlineCount,
+			$sender->getServer()->getMaxPlayers(),
+		]));
 		$sender->sendMessage(substr($online, 0, -2));
 
 		return true;

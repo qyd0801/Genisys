@@ -31,11 +31,7 @@ use pocketmine\utils\TextFormat;
 class XpCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.xp.description",
-			"%commands.xp.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.xp.description", "%commands.xp.usage");
 		$this->setPermission("pocketmine.command.xp");
 	}
 
@@ -68,7 +64,10 @@ class XpCommand extends VanillaCommand{
 					return true;
 				}elseif($level < 0){
 					$player->takeXpLevel((int) -$level);
-					$sender->sendMessage(new TranslationContainer("%commands.xp.success.negative.levels", [-$level, $name]));
+					$sender->sendMessage(new TranslationContainer("%commands.xp.success.negative.levels", [
+						-$level,
+						$name,
+					]));
 					return true;
 				}
 			}else{

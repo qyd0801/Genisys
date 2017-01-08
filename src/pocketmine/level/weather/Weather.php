@@ -28,6 +28,7 @@ use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class Weather{
+
 	const CLEAR = 0;
 	const SUNNY = 0;
 	const RAIN = 1;
@@ -57,6 +58,32 @@ class Weather{
 		$this->temporalVector = new Vector3(0, 0, 0);
 	}
 
+	public static function getWeatherFromString($weather){
+		if(is_int($weather)){
+			if($weather <= 3){
+				return $weather;
+			}
+			return self::SUNNY;
+		}
+		switch(strtolower($weather)){
+			case "clear":
+			case "sunny":
+			case "fine":
+				return self::SUNNY;
+			case "rain":
+			case "rainy":
+				return self::RAINY;
+			case "thunder":
+				return self::THUNDER;
+			case "rain_thunder":
+			case "rainy_thunder":
+			case "storm":
+				return self::RAINY_THUNDER;
+			default:
+				return self::SUNNY;
+		}
+	}
+
 	public function canCalculate() : bool{
 		return $this->canCalculate;
 	}
@@ -69,13 +96,11 @@ class Weather{
 		if($this->canCalculate()){
 			$tickDiff = $currentTick - $this->lastUpdate;
 			$this->duration -= $tickDiff;
-			
-			if($this->duration <= 0){
-				$duration = mt_rand(
-						min($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax), 
-						max($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax));
 
-				if($this->weatherNow === self::SUNNY){ 
+			if($this->duration <= 0){
+				$duration = mt_rand(min($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax), max($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax));
+
+				if($this->weatherNow === self::SUNNY){
 					$weather = $this->randomWeatherData[array_rand($this->randomWeatherData)];
 					$this->setWeather($weather, $duration);
 				}else{
@@ -120,32 +145,6 @@ class Weather{
 		return $this->weatherNow;
 	}
 
-	public static function getWeatherFromString($weather){
-		if(is_int($weather)){
-			if($weather <= 3){
-				return $weather;
-			}
-			return self::SUNNY;
-		}
-		switch(strtolower($weather)){
-			case "clear":
-			case "sunny":
-			case "fine":
-				return self::SUNNY;
-			case "rain":
-			case "rainy":
-				return self::RAINY;
-			case "thunder":
-				return self::THUNDER;
-			case "rain_thunder":
-			case "rainy_thunder":
-			case "storm":
-				return self::RAINY_THUNDER;
-			default:
-				return self::SUNNY;
-		}
-	}
-
 	/**
 	 * @return bool
 	 */
@@ -181,15 +180,15 @@ class Weather{
 	public function sendWeather(Player $p){
 		$pks = [
 			new LevelEventPacket(),
-			new LevelEventPacket()
+			new LevelEventPacket(),
 		];
-		
+
 		//Set defaults. These will be sent if the case statement defaults.
 		$pks[0]->evid = LevelEventPacket::EVENT_STOP_RAIN;
-		$pks[0]->data = $this->strength1;	
+		$pks[0]->data = $this->strength1;
 		$pks[1]->evid = LevelEventPacket::EVENT_STOP_THUNDER;
 		$pks[1]->data = $this->strength2;
-		
+
 		switch($this->weatherNow){
 			//If the weather is not clear, overwrite the packet values with these
 			case self::RAIN:
@@ -206,9 +205,10 @@ class Weather{
 				$pks[1]->evid = LevelEventPacket::EVENT_START_THUNDER;
 				$pks[1]->data = $this->strength2;
 				break;
-			default: break;
+			default:
+				break;
 		}
-		
+
 		foreach($pks as $pk){
 			$p->dataPacket($pk);
 		}

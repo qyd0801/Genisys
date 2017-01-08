@@ -28,11 +28,7 @@ use pocketmine\event\TranslationContainer;
 class BanCidCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.bancid.description",
-			"%commands.bancid.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.bancid.description", "%commands.bancid.usage");
 		$this->setPermission("pocketmine.command.bancid");
 	}
 
@@ -55,7 +51,7 @@ class BanCidCommand extends VanillaCommand{
 		$player = null;
 
 		foreach($sender->getServer()->getOnlinePlayers() as $p){
-			if($p->getClientId() == $cid) {
+			if($p->getClientId() == $cid){
 				$p->kick($reason !== "" ? "Banned by admin. Reason:" . $reason : "Banned by admin.");
 				$player = $p;
 				break;

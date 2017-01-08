@@ -62,12 +62,32 @@ abstract class Tile extends Position{
 	public $metadata;
 	public $closed = false;
 	public $namedtag;
+	/** @var \pocketmine\event\TimingsHandler */
+	public $tickTimer;
 	protected $lastUpdate;
 	protected $server;
 	protected $timings;
 
-	/** @var \pocketmine\event\TimingsHandler */
-	public $tickTimer;
+	public function __construct(Chunk $chunk, CompoundTag $nbt){
+		assert($chunk !== null and $chunk->getProvider() !== null);
+
+		$this->timings = Timings::getTileEntityTimings($this);
+
+		$this->server = $chunk->getProvider()->getLevel()->getServer();
+		$this->chunk = $chunk;
+		$this->setLevel($chunk->getProvider()->getLevel());
+		$this->namedtag = $nbt;
+		$this->name = "";
+		$this->lastUpdate = microtime(true);
+		$this->id = Tile::$tileCount++;
+		$this->x = (int) $this->namedtag["x"];
+		$this->y = (int) $this->namedtag["y"];
+		$this->z = (int) $this->namedtag["z"];
+
+		$this->chunk->addTile($this);
+		$this->getLevel()->addTile($this);
+		$this->tickTimer = Timings::getTileEntityTimings($this);
+	}
 
 	public static function init(){
 		self::registerTile(BrewingStand::class);
@@ -90,7 +110,7 @@ abstract class Tile extends Position{
 	 * @param string      $type
 	 * @param Chunk       $chunk
 	 * @param CompoundTag $nbt
-	 * @param array ...$args
+	 * @param array       ...$args
 	 *
 	 * @return null
 	 */
@@ -126,27 +146,6 @@ abstract class Tile extends Position{
 	 */
 	public function getSaveId(){
 		return self::$shortNames[static::class];
-	}
-
-	public function __construct(Chunk $chunk, CompoundTag $nbt){
-		assert($chunk !== null and $chunk->getProvider() !== null);
-
-		$this->timings = Timings::getTileEntityTimings($this);
-
-		$this->server = $chunk->getProvider()->getLevel()->getServer();
-		$this->chunk = $chunk;
-		$this->setLevel($chunk->getProvider()->getLevel());
-		$this->namedtag = $nbt;
-		$this->name = "";
-		$this->lastUpdate = microtime(true);
-		$this->id = Tile::$tileCount++;
-		$this->x = (int) $this->namedtag["x"];
-		$this->y = (int) $this->namedtag["y"];
-		$this->z = (int) $this->namedtag["z"];
-
-		$this->chunk->addTile($this);
-		$this->getLevel()->addTile($this);
-		$this->tickTimer = Timings::getTileEntityTimings($this);
 	}
 
 	public function getId(){

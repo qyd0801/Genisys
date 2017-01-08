@@ -21,10 +21,11 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\Player;
 use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\Player;
 
 class ZombieVillager extends Zombie{
+
 	const NETWORK_ID = 44;
 
 	public $width = 1.031;

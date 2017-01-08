@@ -22,11 +22,12 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector2;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
-use pocketmine\math\Vector2;
 
 class ShapedRecipeFromJson extends ShapedRecipe{
+
 	/** @var Item */
 	private $output;
 
@@ -41,9 +42,9 @@ class ShapedRecipeFromJson extends ShapedRecipe{
 	private $shapeItems = [];
 
 	/**
-	 * @param Item     $result
-	 * @param int      $height
-	 * @param int      $width
+	 * @param Item $result
+	 * @param int  $height
+	 * @param int  $width
 	 *
 	 * @throws \Exception
 	 */
@@ -104,12 +105,6 @@ class ShapedRecipeFromJson extends ShapedRecipe{
 		return $this;
 	}
 
-	protected function fixRecipe($key, $item){
-		foreach($this->shapeItems[$key] as $entry){
-			$this->ingredients[$entry->y][$entry->x] = clone $item;
-		}
-	}
-
 	/**
 	 * @return Item[][]
 	 */
@@ -132,6 +127,7 @@ class ShapedRecipeFromJson extends ShapedRecipe{
 	/**
 	 * @param $x
 	 * @param $y
+	 *
 	 * @return null|Item
 	 */
 	public function getIngredient($x, $y){
@@ -147,5 +143,11 @@ class ShapedRecipeFromJson extends ShapedRecipe{
 
 	public function registerToCraftingManager(){
 		Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
+	}
+
+	protected function fixRecipe($key, $item){
+		foreach($this->shapeItems[$key] as $entry){
+			$this->ingredients[$entry->y][$entry->x] = clone $item;
+		}
 	}
 }

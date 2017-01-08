@@ -23,10 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
-
-
 class SetTimePacket extends DataPacket{
+
 	const NETWORK_ID = Info::SET_TIME_PACKET;
 
 	public $time;

@@ -30,6 +30,21 @@ class SubChunk{
 	protected $blockLight;
 	protected $skyLight;
 
+	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
+		self::assignData($this->ids, $ids, 4096);
+		self::assignData($this->data, $data, 2048);
+		self::assignData($this->skyLight, $skyLight, 2048);
+		self::assignData($this->blockLight, $blockLight, 2048);
+	}
+
+	public static function fastDeserialize(string $data) : SubChunk{
+		return new SubChunk(substr($data, 0, 4096), //ids
+			substr($data, 4096, 2048), //data
+			substr($data, 6144, 2048), //sky light
+			substr($data, 8192, 2048)  //block light
+		);
+	}
+
 	private static function assignData(&$target, $data, $length){
 		if(strlen($data) !== $length){
 			assert($data === "", "Invalid non-zero length given, expected $length, got " . strlen($data));
@@ -37,13 +52,6 @@ class SubChunk{
 		}else{
 			$target = $data;
 		}
-	}
-
-	public function __construct(string $ids = "", string $data = "", string $skyLight = "", string $blockLight = ""){
-		self::assignData($this->ids, $ids, 4096);
-		self::assignData($this->data, $data, 2048);
-		self::assignData($this->skyLight, $skyLight, 2048);
-		self::assignData($this->blockLight, $blockLight, 2048);
 	}
 
 	public function isEmpty() : bool{
@@ -207,19 +215,6 @@ class SubChunk{
 	}
 
 	public function fastSerialize() : string{
-		return
-			$this->ids .
-			$this->data .
-			$this->skyLight .
-			$this->blockLight;
-	}
-
-	public static function fastDeserialize(string $data) : SubChunk{
-		return new SubChunk(
-			substr($data,    0, 4096), //ids
-			substr($data, 4096, 2048), //data
-			substr($data, 6144, 2048), //sky light
-			substr($data, 8192, 2048)  //block light
-		);
+		return $this->ids . $this->data . $this->skyLight . $this->blockLight;
 	}
 }

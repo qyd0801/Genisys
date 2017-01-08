@@ -35,11 +35,12 @@ class BrewingRecipe implements Recipe{
 	/** @var Item */
 	private $ingredient;
 
-	/** @var Item  */
+	/** @var Item */
 	private $potion;
 
 	/**
 	 * BrewingRecipe constructor.
+	 *
 	 * @param Item $result
 	 * @param Item $ingredient
 	 * @param Item $potion

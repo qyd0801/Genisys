@@ -26,6 +26,7 @@ namespace pocketmine\network\protocol;
 use pocketmine\item\Item;
 
 class ContainerSetSlotPacket extends DataPacket{
+
 	const NETWORK_ID = Info::CONTAINER_SET_SLOT_PACKET;
 
 	public $windowid;

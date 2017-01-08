@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class TextPacket extends DataPacket{
+
 	const NETWORK_ID = Info::TEXT_PACKET;
 
 	const TYPE_RAW = 0;
@@ -45,7 +45,7 @@ class TextPacket extends DataPacket{
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
-			/** @noinspection PhpMissingBreakStatementInspection */
+				/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_WHISPER:
 				$this->source = $this->getString();
 			case self::TYPE_RAW:
@@ -69,7 +69,7 @@ class TextPacket extends DataPacket{
 		switch($this->type){
 			case self::TYPE_POPUP:
 			case self::TYPE_CHAT:
-			/** @noinspection PhpMissingBreakStatementInspection */
+				/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_WHISPER:
 				$this->putString($this->source);
 			case self::TYPE_RAW:

@@ -24,6 +24,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 
 class Skull extends Item{
+
 	const SKELETON = 0;
 	const WITHER_SKELETON = 1;
 	const ZOMBIE = 2;
@@ -35,7 +36,7 @@ class Skull extends Item{
 		parent::__construct(self::SKULL, $meta, $count, "Skull");
 	}
 
-	public function getMaxStackSize() : int {
+	public function getMaxStackSize() : int{
 		return 64;
 	}
 

@@ -27,6 +27,7 @@ namespace pocketmine\event\level;
 use pocketmine\level\format\Chunk;
 
 abstract class ChunkEvent extends LevelEvent{
+
 	/** @var Chunk */
 	private $chunk;
 

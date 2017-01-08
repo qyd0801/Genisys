@@ -45,32 +45,26 @@ use pocketmine\Player;
 use pocketmine\utils\UUID;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder{
-	
+
 	const DATA_PLAYER_FLAG_SLEEP = 1;
 	const DATA_PLAYER_FLAG_DEAD = 2; //TODO: CHECK
 
 	const DATA_PLAYER_FLAGS = 27;
 
 	const DATA_PLAYER_BED_POSITION = 29;
-
-	/** @var PlayerInventory */
-	protected $inventory;
-
-	/** @var FloatingInventory */
-	protected $floatingInventory;
-
-	/** @var SimpleTransactionQueue */
-	protected $transactionQueue = null;
-
-	/** @var UUID */
-	protected $uuid;
-	protected $rawUUID;
-
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 1.8;
 	public $eyeHeight = 1.62;
-
+	/** @var PlayerInventory */
+	protected $inventory;
+	/** @var FloatingInventory */
+	protected $floatingInventory;
+	/** @var SimpleTransactionQueue */
+	protected $transactionQueue = null;
+	/** @var UUID */
+	protected $uuid;
+	protected $rawUUID;
 	protected $skinId;
 	protected $skin;
 
@@ -79,6 +73,77 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	protected $totalXp = 0;
 	protected $xpSeed;
 	protected $xpCooldown = 0;
+
+	/**
+	 * Returns the total amount of exp required to reach the specified level.
+	 *
+	 * @param int $level
+	 *
+	 * @return int
+	 */
+	public static function getTotalXpRequirement(int $level) : int{
+		if($level <= 16){
+			return ($level ** 2) + (6 * $level);
+		}elseif($level <= 31){
+			return (2.5 * ($level ** 2)) - (40.5 * $level) + 360;
+		}elseif($level <= 21863){
+			return (4.5 * ($level ** 2)) - (162.5 * $level) + 2220;
+		}
+		return PHP_INT_MAX; //prevent float returns for invalid levels on 32-bit systems
+	}
+
+	/**
+	 * Returns the amount of exp required to complete the specified level.
+	 *
+	 * @param int $level
+	 *
+	 * @return int
+	 */
+	public static function getLevelXpRequirement(int $level) : int{
+		if($level <= 16){
+			return (2 * $level) + 7;
+		}elseif($level <= 31){
+			return (5 * $level) - 38;
+		}elseif($level <= 21863){
+			return (9 * $level) - 158;
+		}
+		return PHP_INT_MAX;
+	}
+
+	/**
+	 * Converts a quantity of exp into a level and a progress percentage
+	 *
+	 * @param int $xp
+	 *
+	 * @return int[]
+	 */
+	public static function getLevelFromXp(int $xp) : array{
+		$xp &= 0x7fffffff;
+
+		/** These values are correct up to and including level 16 */
+		$a = 1;
+		$b = 6;
+		$c = -$xp;
+		if($xp > self::getTotalXpRequirement(16)){
+			/** Modify the coefficients to fit the relevant equation */
+			if($xp <= self::getTotalXpRequirement(31)){
+				/** Levels 16-31 */
+				$a = 2.5;
+				$b = -40.5;
+				$c += 360;
+			}else{
+				/** Level 32+ */
+				$a = 4.5;
+				$b = -162.5;
+				$c += 2220;
+			}
+		}
+
+		$answer = max(Math::solveQuadratic($a, $b, $c)); //Use largest result value
+		$level = floor($answer);
+		$progress = $answer - $level;
+		return [$level, $progress];
+	}
 
 	public function getSkinData(){
 		return $this->skin;
@@ -259,7 +324,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Changes the total exp of a player
 	 *
-	 * @param int $xp
+	 * @param int  $xp
 	 * @param bool $syncLevel This will reset the level to be in sync with the total. Usually you don't want to do this,
 	 *                        because it'll mess up use of xp in anvils and enchanting tables.
 	 *
@@ -340,77 +405,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return microtime(true) - $this->xpCooldown > 0.5;
 	}
 
-	/**
-	 * Returns the total amount of exp required to reach the specified level.
-	 *
-	 * @param int $level
-	 *
-	 * @return int
-	 */
-	public static function getTotalXpRequirement(int $level) : int{
-		if($level <= 16){
-			return ($level ** 2) + (6 * $level);
-		}elseif($level <= 31){
-			return (2.5 * ($level ** 2)) - (40.5 * $level) + 360;
-		}elseif($level <= 21863){
-			return (4.5 * ($level ** 2)) - (162.5 * $level) + 2220;
-		}
-		return PHP_INT_MAX; //prevent float returns for invalid levels on 32-bit systems
-	}
-
-	/**
-	 * Returns the amount of exp required to complete the specified level.
-	 *
-	 * @param int $level
-	 *
-	 * @return int
-	 */
-	public static function getLevelXpRequirement(int $level) : int{
-		if($level <= 16){
-			return (2 * $level) + 7;
-		}elseif($level <= 31){
-			return (5 * $level) - 38;
-		}elseif($level <= 21863){
-			return (9 * $level) - 158;
-		}
-		return PHP_INT_MAX;
-	}
-
-	/**
-	 * Converts a quantity of exp into a level and a progress percentage
-	 *
-	 * @param int $xp
-	 *
-	 * @return int[]
-	 */
-	public static function getLevelFromXp(int $xp) : array{
-		$xp &= 0x7fffffff;
-
-		/** These values are correct up to and including level 16 */
-		$a = 1;
-		$b = 6;
-		$c = -$xp;
-		if($xp > self::getTotalXpRequirement(16)){
-			/** Modify the coefficients to fit the relevant equation */
-			if($xp <= self::getTotalXpRequirement(31)){
-				/** Levels 16-31 */
-				$a = 2.5;
-				$b = -40.5;
-				$c += 360;
-			}else{
-				/** Level 32+ */
-				$a = 4.5;
-				$b = -162.5;
-				$c += 2220;
-			}
-		}
-
-		$answer = max(Math::solveQuadratic($a, $b, $c)); //Use largest result value
-		$level = floor($answer);
-		$progress = $answer - $level;
-		return [$level, $progress];
-	}
-
 	public function getInventory(){
 		return $this->inventory;
 	}
@@ -428,96 +422,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $this->transactionQueue;
 	}
 
-	protected function initEntity(){
-		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
-		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
-
-		$inventoryContents = ($this->namedtag->Inventory ?? null);
-		$this->inventory = new PlayerInventory($this, $inventoryContents);
-
-		//Virtual inventory for desktop GUI crafting and anti-cheat transaction processing
-		$this->floatingInventory = new FloatingInventory($this);
-
-		if($this instanceof Player){
-			$this->addWindow($this->inventory, 0);
-		}else{
-			if(isset($this->namedtag->NameTag)){
-				$this->setNameTag($this->namedtag["NameTag"]);
-			}
-
-			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
-				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
-			}
-
-			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
-		}
-
-		parent::initEntity();
-
-		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
-			$this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
-		}else{
-			$this->setFood($this->namedtag["foodLevel"]);
-		}
-
-		if(!isset($this->namedtag->foodExhaustionLevel) or !($this->namedtag->foodExhaustionLevel instanceof IntTag)){
-			$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
-		}else{
-			$this->setExhaustion($this->namedtag["foodExhaustionLevel"]);
-		}
-
-		if(!isset($this->namedtag->foodSaturationLevel) or !($this->namedtag->foodSaturationLevel instanceof IntTag)){
-			$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
-		}else{
-			$this->setSaturation($this->namedtag["foodSaturationLevel"]);
-		}
-
-		if(!isset($this->namedtag->foodTickTimer) or !($this->namedtag->foodTickTimer instanceof IntTag)){
-			$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
-		}else{
-			$this->foodTickTimer = $this->namedtag["foodTickTimer"];
-		}
-
-		if(!isset($this->namedtag->XpLevel) or !($this->namedtag->XpLevel instanceof IntTag)){
-			$this->namedtag->XpLevel = new IntTag("XpLevel", 0);
-		}
-		$this->setXpLevel($this->namedtag["XpLevel"]);
-
-		if(!isset($this->namedtag->XpP) or !($this->namedtag->XpP instanceof FloatTag)){
-			$this->namedtag->XpP = new FloatTag("XpP", 0);
-		}
-		$this->setXpProgress($this->namedtag["XpP"]);
-
-		if(!isset($this->namedtag->XpTotal) or !($this->namedtag->XpTotal instanceof IntTag)){
-			$this->namedtag->XpTotal = new IntTag("XpTotal", 0);
-		}
-		$this->totalXp = $this->namedtag["XpTotal"];
-
-		if(!isset($this->namedtag->XpSeed) or !($this->namedtag->XpSeed instanceof IntTag)){
-			$this->namedtag->XpSeed = new IntTag("XpSeed", mt_rand(PHP_INT_MIN, PHP_INT_MAX));
-		}
-		$this->xpSeed = $this->namedtag["XpSeed"];
-	}
-
 	public function getAbsorption() : int{
 		return $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
 	}
 
 	public function setAbsorption(int $absorption){
 		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
-	}
-
-	protected function addAttributes(){
-		parent::addAttributes();
-
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HEALTH));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::MOVEMENT_SPEED));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ABSORPTION));
 	}
 
 	public function entityBaseTick($tickDiff = 1, $EnchantL = 0){
@@ -614,7 +524,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if(strlen($this->getSkinData()) > 0){
 			$this->namedtag->Skin = new CompoundTag("Skin", [
 				"Data" => new StringTag("Data", $this->getSkinData()),
-				"Name" => new StringTag("Name", $this->getSkinId())
+				"Name" => new StringTag("Name", $this->getSkinId()),
 			]);
 		}
 
@@ -695,5 +605,89 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 			}
 			parent::close();
 		}
+	}
+
+	protected function initEntity(){
+		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
+		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
+
+		$inventoryContents = ($this->namedtag->Inventory ?? null);
+		$this->inventory = new PlayerInventory($this, $inventoryContents);
+
+		//Virtual inventory for desktop GUI crafting and anti-cheat transaction processing
+		$this->floatingInventory = new FloatingInventory($this);
+
+		if($this instanceof Player){
+			$this->addWindow($this->inventory, 0);
+		}else{
+			if(isset($this->namedtag->NameTag)){
+				$this->setNameTag($this->namedtag["NameTag"]);
+			}
+
+			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
+				$this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
+			}
+
+			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
+		}
+
+		parent::initEntity();
+
+		if(!isset($this->namedtag->foodLevel) or !($this->namedtag->foodLevel instanceof IntTag)){
+			$this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
+		}else{
+			$this->setFood($this->namedtag["foodLevel"]);
+		}
+
+		if(!isset($this->namedtag->foodExhaustionLevel) or !($this->namedtag->foodExhaustionLevel instanceof IntTag)){
+			$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
+		}else{
+			$this->setExhaustion($this->namedtag["foodExhaustionLevel"]);
+		}
+
+		if(!isset($this->namedtag->foodSaturationLevel) or !($this->namedtag->foodSaturationLevel instanceof IntTag)){
+			$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
+		}else{
+			$this->setSaturation($this->namedtag["foodSaturationLevel"]);
+		}
+
+		if(!isset($this->namedtag->foodTickTimer) or !($this->namedtag->foodTickTimer instanceof IntTag)){
+			$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
+		}else{
+			$this->foodTickTimer = $this->namedtag["foodTickTimer"];
+		}
+
+		if(!isset($this->namedtag->XpLevel) or !($this->namedtag->XpLevel instanceof IntTag)){
+			$this->namedtag->XpLevel = new IntTag("XpLevel", 0);
+		}
+		$this->setXpLevel($this->namedtag["XpLevel"]);
+
+		if(!isset($this->namedtag->XpP) or !($this->namedtag->XpP instanceof FloatTag)){
+			$this->namedtag->XpP = new FloatTag("XpP", 0);
+		}
+		$this->setXpProgress($this->namedtag["XpP"]);
+
+		if(!isset($this->namedtag->XpTotal) or !($this->namedtag->XpTotal instanceof IntTag)){
+			$this->namedtag->XpTotal = new IntTag("XpTotal", 0);
+		}
+		$this->totalXp = $this->namedtag["XpTotal"];
+
+		if(!isset($this->namedtag->XpSeed) or !($this->namedtag->XpSeed instanceof IntTag)){
+			$this->namedtag->XpSeed = new IntTag("XpSeed", mt_rand(PHP_INT_MIN, PHP_INT_MAX));
+		}
+		$this->xpSeed = $this->namedtag["XpSeed"];
+	}
+
+	protected function addAttributes(){
+		parent::addAttributes();
+
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HEALTH));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::MOVEMENT_SPEED));
+		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ABSORPTION));
 	}
 }

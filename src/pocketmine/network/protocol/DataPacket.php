@@ -27,10 +27,8 @@ namespace pocketmine\network\protocol;
 
 #endif
 
-
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
-
 
 abstract class DataPacket extends BinaryStream{
 

@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 class Sponge extends Solid{
 
 	protected $id = self::SPONGE;
@@ -30,7 +29,7 @@ class Sponge extends Solid{
 
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.6;
 	}
 

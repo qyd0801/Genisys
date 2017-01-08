@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class AddItemPacket extends DataPacket{
+
 	const NETWORK_ID = Info::ADD_ITEM_PACKET;
 
 	public $item;

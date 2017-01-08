@@ -20,9 +20,9 @@
 */
 
 namespace pocketmine\utils;
+
 use pocketmine\scheduler\FileWriteTask;
 use pocketmine\Server;
-
 
 /**
  * Class Config
@@ -30,6 +30,7 @@ use pocketmine\Server;
  * Config Class for simple config manipulation of multiple formats.
  */
 class Config{
+
 	const DETECT = -1; //Detect by file extension
 	const PROPERTIES = 0; // .properties
 	const CNF = Config::PROPERTIES; // .cnf
@@ -39,19 +40,6 @@ class Config{
 	const SERIALIZED = 4; // .sl
 	const ENUM = 5; // .txt, .list, .enum
 	const ENUMERATION = Config::ENUM;
-
-	/** @var array */
-	private $config = [];
-
-	private $nestedCache = [];
-
-	/** @var string */
-	private $file;
-	/** @var boolean */
-	private $correct = false;
-	/** @var integer */
-	private $type = Config::DETECT;
-
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -69,6 +57,15 @@ class Config{
 		"list" => Config::ENUM,
 		"enum" => Config::ENUM,
 	];
+	/** @var array */
+	private $config = [];
+	private $nestedCache = [];
+	/** @var string */
+	private $file;
+	/** @var boolean */
+	private $correct = false;
+	/** @var integer */
+	private $type = Config::DETECT;
 
 	/**
 	 * @param string $file     Path of the file to be loaded
@@ -82,6 +79,15 @@ class Config{
 	}
 
 	/**
+	 * @param $str
+	 *
+	 * @return mixed
+	 */
+	public static function fixYAMLIndexes($str){
+		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
+	}
+
+	/**
 	 * Removes all the changes in memory and loads the file again
 	 */
 	public function reload(){
@@ -89,15 +95,6 @@ class Config{
 		$this->nestedCache = [];
 		$this->correct = false;
 		$this->load($this->file, $this->type);
-	}
-
-	/**
-	 * @param $str
-	 *
-	 * @return mixed
-	 */
-	public static function fixYAMLIndexes($str){
-		return preg_replace("#^([ ]*)([a-zA-Z_]{1}[ ]*)\\:$#m", "$1\"$2\":", $str);
 	}
 
 	/**
@@ -329,7 +326,7 @@ class Config{
 		foreach($this->nestedCache as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
-  			}
+			}
 		}
 	}
 

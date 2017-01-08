@@ -28,6 +28,7 @@ use pocketmine\Player;
 use pocketmine\tile\ItemFrame;
 
 class ItemFrameDropItemEvent extends BlockEvent implements Cancellable{
+
 	public static $handlerList = null;
 
 	/** @var  Player */

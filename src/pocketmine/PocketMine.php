@@ -20,6 +20,7 @@
 */
 
 namespace {
+
 	function safe_var_dump(){
 		static $cnt = 0;
 		foreach(func_get_args() as $var){
@@ -65,6 +66,7 @@ namespace {
 }
 
 namespace pocketmine {
+
 	use pocketmine\utils\Binary;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\ServerKiller;
@@ -115,7 +117,6 @@ namespace pocketmine {
 	$autoloader->addPath(\pocketmine\PATH . "src" . DIRECTORY_SEPARATOR . "spl");
 	$autoloader->register(true);
 
-
 	set_time_limit(0); //Who set it to 30 seconds?!?!
 
 	gc_enable();
@@ -153,11 +154,7 @@ namespace pocketmine {
 			ini_set("date.timezone", $timezone);
 		}else{
 			//If system timezone detection fails or timezone is an invalid value.
-			if($response = Utils::getURL("http://ip-api.com/json")
-				and $ip_geolocation_data = json_decode($response, true)
-				and $ip_geolocation_data['status'] !== 'fail'
-				and date_default_timezone_set($ip_geolocation_data['timezone'])
-			){
+			if($response = Utils::getURL("http://ip-api.com/json") and $ip_geolocation_data = json_decode($response, true) and $ip_geolocation_data['status'] !== 'fail' and date_default_timezone_set($ip_geolocation_data['timezone'])){
 				//Again, for redundancy.
 				ini_set("date.timezone", $ip_geolocation_data['timezone']);
 			}else{
@@ -176,7 +173,7 @@ namespace pocketmine {
 			$default_timezone = timezone_name_from_abbr($timezone);
 			ini_set("date.timezone", $default_timezone);
 			date_default_timezone_set($default_timezone);
-		} else {
+		}else{
 			date_default_timezone_set($timezone);
 		}
 	}
@@ -324,7 +321,7 @@ namespace pocketmine {
 				if(function_exists("posix_kill")){
 					posix_kill($pid, SIGKILL);
 				}else{
-					exec("kill -9 " . ((int)$pid) . " > /dev/null 2>&1");
+					exec("kill -9 " . ((int) $pid) . " > /dev/null 2>&1");
 				}
 		}
 	}
@@ -378,7 +375,13 @@ namespace pocketmine {
 	}
 
 	function cleanPath($path){
-		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
+		return rtrim(str_replace([
+			"\\",
+			".php",
+			"phar://",
+			rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"),
+			rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/"),
+		], ["/", "", "", "", ""], $path), "/");
 	}
 
 	$errors = 0;
@@ -415,7 +418,7 @@ namespace pocketmine {
 			++$errors;
 		}
 	}
-	
+
 	if(extension_loaded("xdebug")){
 		$logger->warning("
 

@@ -21,12 +21,10 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\level\format\Chunk;
@@ -41,9 +39,8 @@ abstract class Projectile extends Entity{
 
 	/** @var Entity */
 	public $shootingEntity = null;
-	protected $damage = 0;
-
 	public $hadCollision = false;
+	protected $damage = 0;
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null){
 		$this->shootingEntity = $shootingEntity;
@@ -59,17 +56,6 @@ abstract class Projectile extends Entity{
 		}
 	}
 
-	protected function initEntity(){
-		parent::initEntity();
-
-		$this->setMaxHealth(1);
-		$this->setHealth(1);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
-
-	}
-
 	public function canCollideWith(Entity $entity){
 		return $entity instanceof Living and !$this->onGround;
 	}
@@ -83,7 +69,6 @@ abstract class Projectile extends Entity{
 		if($this->closed){
 			return false;
 		}
-
 
 		$tickDiff = $currentTick - $this->lastUpdate;
 		if($tickDiff <= 0 and !$this->justCreated){
@@ -202,6 +187,17 @@ abstract class Projectile extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+
+		$this->setMaxHealth(1);
+		$this->setHealth(1);
+		if(isset($this->namedtag->Age)){
+			$this->age = $this->namedtag["Age"];
+		}
+
 	}
 
 }

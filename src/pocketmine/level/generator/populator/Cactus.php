@@ -26,6 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class Cactus extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;
@@ -63,7 +64,12 @@ class Cactus extends Populator{
 	private function canCactusStay($x, $y, $z){
 		$b = $this->level->getBlockIdAt($x, $y, $z);
 		$below = $this->level->getBlockIdAt($x, $y - 1, $z);
-		foreach(array($this->level->getBlockIdAt($x + 1, $y, $z), $this->level->getBlockIdAt($x - 1, $y, $z), $this->level->getBlockIdAt($x, $y, $z + 1), $this->level->getBlockIdAt($x, $y, $z - 1)) as $adjacent){
+		foreach([
+			        $this->level->getBlockIdAt($x + 1, $y, $z),
+			        $this->level->getBlockIdAt($x - 1, $y, $z),
+			        $this->level->getBlockIdAt($x, $y, $z + 1),
+			        $this->level->getBlockIdAt($x, $y, $z - 1),
+		        ] as $adjacent){
 			if($adjacent !== Block::AIR) return false;
 		}
 		return ($b === Block::AIR) and ($below === Block::SAND or $below === Block::CACTUS);

@@ -25,6 +25,7 @@ use pocketmine\entity\Item;
 use pocketmine\event\Cancellable;
 
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
+
 	public static $handlerList = null;
 
 	/**

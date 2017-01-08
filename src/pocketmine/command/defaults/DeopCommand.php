@@ -30,11 +30,7 @@ use pocketmine\utils\TextFormat;
 class DeopCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.deop.description",
-			"%commands.deop.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.deop.description", "%commands.deop.usage");
 		$this->setPermission("pocketmine.command.op.take");
 	}
 

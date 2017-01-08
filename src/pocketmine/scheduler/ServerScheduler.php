@@ -31,6 +31,7 @@ use pocketmine\utils\PluginException;
 use pocketmine\utils\ReversePriorityQueue;
 
 class ServerScheduler{
+
 	public static $WORKERS = 2;
 	/**
 	 * @var ReversePriorityQueue<Task>
@@ -44,12 +45,10 @@ class ServerScheduler{
 
 	/** @var AsyncPool */
 	protected $asyncPool;
-
-	/** @var int */
-	private $ids = 1;
-
 	/** @var int */
 	protected $currentTick = 0;
+	/** @var int */
+	private $ids = 1;
 
 	public function __construct(){
 		$this->queue = new ReversePriorityQueue();
@@ -176,6 +175,42 @@ class ServerScheduler{
 	}
 
 	/**
+	 * @param int $currentTick
+	 */
+	public function mainThreadHeartbeat($currentTick){
+		$this->currentTick = $currentTick;
+		while($this->isReady($this->currentTick)){
+			/** @var TaskHandler $task */
+			$task = $this->queue->extract();
+			if($task->isCancelled()){
+				unset($this->tasks[$task->getTaskId()]);
+				continue;
+			}else{
+				$task->timings->startTiming();
+				try{
+					$task->run($this->currentTick);
+				}catch(\Throwable $e){
+					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
+					$logger = Server::getInstance()->getLogger();
+					if($logger instanceof MainLogger){
+						$logger->logException($e);
+					}
+				}
+				$task->timings->stopTiming();
+			}
+			if($task->isRepeating()){
+				$task->setNextRun($this->currentTick + $task->getPeriod());
+				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
+			}else{
+				$task->remove();
+				unset($this->tasks[$task->getTaskId()]);
+			}
+		}
+
+		$this->asyncPool->collectTasks();
+	}
+
+	/**
 	 * @param Task $task
 	 * @param      $delay
 	 * @param      $period
@@ -230,42 +265,6 @@ class ServerScheduler{
 		$this->queue->insert($handler, $nextRun);
 
 		return $handler;
-	}
-
-	/**
-	 * @param int $currentTick
-	 */
-	public function mainThreadHeartbeat($currentTick){
-		$this->currentTick = $currentTick;
-		while($this->isReady($this->currentTick)){
-			/** @var TaskHandler $task */
-			$task = $this->queue->extract();
-			if($task->isCancelled()){
-				unset($this->tasks[$task->getTaskId()]);
-				continue;
-			}else{
-				$task->timings->startTiming();
-				try{
-					$task->run($this->currentTick);
-				}catch(\Throwable $e){
-					Server::getInstance()->getLogger()->critical("Could not execute task " . $task->getTaskName() . ": " . $e->getMessage());
-					$logger = Server::getInstance()->getLogger();
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
-				}
-				$task->timings->stopTiming();
-			}
-			if($task->isRepeating()){
-				$task->setNextRun($this->currentTick + $task->getPeriod());
-				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
-			}else{
-				$task->remove();
-				unset($this->tasks[$task->getTaskId()]);
-			}
-		}
-
-		$this->asyncPool->collectTasks();
 	}
 
 	private function isReady($currentTicks){

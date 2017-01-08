@@ -42,6 +42,29 @@ class Vector3{
 		$this->z = $z;
 	}
 
+	public static function getOppositeSide($side){
+		switch((int) $side){
+			case Vector3::SIDE_DOWN:
+				return Vector3::SIDE_UP;
+			case Vector3::SIDE_UP:
+				return Vector3::SIDE_DOWN;
+			case Vector3::SIDE_NORTH:
+				return Vector3::SIDE_SOUTH;
+			case Vector3::SIDE_SOUTH:
+				return Vector3::SIDE_NORTH;
+			case Vector3::SIDE_WEST:
+				return Vector3::SIDE_EAST;
+			case Vector3::SIDE_EAST:
+				return Vector3::SIDE_WEST;
+			default:
+				return -1;
+		}
+	}
+
+	public static function createRandomDirection(Random $random){
+		return VectorMath::getDirection3D($random->nextFloat() * 2 * pi(), $random->nextFloat() * 2 * pi());
+	}
+
 	public function getX(){
 		return $this->x;
 	}
@@ -159,25 +182,6 @@ class Vector3{
 		}
 	}
 
-	public static function getOppositeSide($side){
-		switch((int) $side){
-			case Vector3::SIDE_DOWN:
-				return Vector3::SIDE_UP;
-			case Vector3::SIDE_UP:
-				return Vector3::SIDE_DOWN;
-			case Vector3::SIDE_NORTH:
-				return Vector3::SIDE_SOUTH;
-			case Vector3::SIDE_SOUTH:
-				return Vector3::SIDE_NORTH;
-			case Vector3::SIDE_WEST:
-				return Vector3::SIDE_EAST;
-			case Vector3::SIDE_EAST:
-				return Vector3::SIDE_WEST;
-			default:
-				return -1;
-		}
-	}
-
 	public function distance(Vector3 $pos){
 		return sqrt($this->distanceSquared($pos));
 	}
@@ -221,11 +225,7 @@ class Vector3{
 	}
 
 	public function cross(Vector3 $v){
-		return new Vector3(
-			$this->y * $v->z - $this->z * $v->y,
-			$this->z * $v->x - $this->x * $v->z,
-			$this->x * $v->y - $this->y * $v->x
-		);
+		return new Vector3($this->y * $v->z - $this->z * $v->y, $this->z * $v->x - $this->x * $v->z, $this->x * $v->y - $this->y * $v->x);
 	}
 
 	public function equals(Vector3 $v){
@@ -344,9 +344,5 @@ class Vector3{
 
 	public function __toString(){
 		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
-	}
-
-	public static function createRandomDirection(Random $random){
-		return VectorMath::getDirection3D($random->nextFloat() * 2 * pi(), $random->nextFloat() * 2 * pi());
 	}
 }

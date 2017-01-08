@@ -37,11 +37,7 @@ use pocketmine\utils\TextFormat;
 class CaveCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"Generate a cave",
-			"%pocketmine.commands.cave.usage"
-		);
+		parent::__construct($name, "Generate a cave", "%pocketmine.commands.cave.usage");
 		$this->setPermission("pocketmine.command.cave");
 	}
 
@@ -49,7 +45,7 @@ class CaveCommand extends VanillaCommand{
 		if(!$this->testPermission($sender)){
 			return true;
 		}
-		
+
 		//TODO: Get rid of this and add support for relative coordinaties
 		if($sender instanceof Player and $args[0] == "getmypos"){
 			$sender->sendMessage("Your position: ({$sender->getX()}, {$sender->getY()}, {$sender->getZ()}, {$sender->getLevel()->getFolderName()})");
@@ -64,7 +60,7 @@ class CaveCommand extends VanillaCommand{
 		}
 		$level = $sender->getServer()->getLevelByName($args[7]);
 		if(!$level instanceof Level){
-			$sender->sendMessage(TextFormat::RED ."Wrong LevelName");
+			$sender->sendMessage(TextFormat::RED . "Wrong LevelName");
 			return false;
 		}
 		$pos = new Position($args[4], $args[5], $args[6], $level);
@@ -73,7 +69,12 @@ class CaveCommand extends VanillaCommand{
 		$caves[2] = isset($args[2]) ? $args[2] : mt_rand(1, 6);
 		$caves[4] = isset($args[3]) ? $args[3] : mt_rand(1, 10);
 		$caves[3] = [false, true, true];
-		$sender->sendMessage(new TranslationContainer("pocketmine.commands.cave.info", [$caves[0], $caves[1], $caves[2], $caves[3]]));
+		$sender->sendMessage(new TranslationContainer("pocketmine.commands.cave.info", [
+			$caves[0],
+			$caves[1],
+			$caves[2],
+			$caves[3],
+		]));
 		$sender->sendMessage(new TranslationContainer(TextFormat::YELLOW . "%pocketmine.commands.cave.start"));
 		$sender->sendMessage($pos->x . " " . $pos->y . " " . $pos->z);
 		$this->caves($pos, $caves);
@@ -120,7 +121,7 @@ class CaveCommand extends VanillaCommand{
 		for($u = 0; $u <= $ls; $u += $i){
 			if($pitch > 12) $pitch = -45;
 			$pitch += 5 + mt_rand(0, 5);
-			$pos->getLevel()->getServer()->getLogger()->debug("[Caves] ".TextFormat::YELLOW . "yaw: $yaw  pitch: $pitch");
+			$pos->getLevel()->getServer()->getLogger()->debug("[Caves] " . TextFormat::YELLOW . "yaw: $yaw  pitch: $pitch");
 			if($tt) $pitch = mt_rand(0, 100) * 0.05;
 			//$s2[0] = $s1[0] -\sin($yaw / 180 * M_PI) * \cos($pitch / 180 * M_PI) * $i;
 			//$s2[1] = $s1[1] +\sin($pitch / 180 * M_PI) * $i;
@@ -142,7 +143,13 @@ class CaveCommand extends VanillaCommand{
 				if($cave[3][1] === false) $cv = 0;
 				$lofs += $ls2;
 				$newPos = new Position($s2[0], $s2[1], $s2[2], $level);
-				$this->caves($newPos, [$yaw + 90 * (round(mt_rand(0, 100) / 100) * 2 - 1), $ls - $u, $cv, [false, $cave[3][1], $cave[3][2]], 0], $tt);
+				$this->caves($newPos, [
+					$yaw + 90 * (round(mt_rand(0, 100) / 100) * 2 - 1),
+					$ls - $u,
+					$cv,
+					[false, $cave[3][1], $cave[3][2]],
+					0,
+				], $tt);
 			}
 
 			//$exPos = new Position($s2[0], $s2[1], $s2[2], $level);
@@ -227,7 +234,7 @@ class CaveCommand extends VanillaCommand{
 		$vBlock = new Vector3(0, 0, 0);
 		$stepLen = 0.3;
 		$mRays = \intval($rays - 1);
-		$affectedBlocks = array();
+		$affectedBlocks = [];
 		for($i = 0; $i < $rays; ++$i){
 			for($j = 0; $j < $rays; ++$j){
 				for($k = 0; $k < $rays; ++$k){

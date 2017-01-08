@@ -22,19 +22,16 @@
 /**
  * Various Utilities used around the code
  */
- 
+
 namespace pocketmine\utils;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 
 class Binary{
+
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
-
-	private static function checkLength($str, $expect){
-		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
-	}
 
 	/**
 	 * Reads a 3-byte big-endian number
@@ -442,14 +439,14 @@ class Binary{
 		return strrev(self::writeLong($value));
 	}
 
-	//TODO: proper varlong support
-
 	public static function readVarInt($stream){
 		$shift = PHP_INT_SIZE === 8 ? 63 : 31;
 		$raw = self::readUnsignedVarInt($stream);
 		$temp = ((($raw << $shift) >> $shift) ^ $raw) >> 1;
 		return $temp ^ ($raw & (1 << $shift));
 	}
+
+	//TODO: proper varlong support
 
 	public static function readUnsignedVarInt($stream){
 		$value = 0;
@@ -483,5 +480,9 @@ class Binary{
 		}
 
 		throw new \InvalidArgumentException("Value too large to be encoded as a varint");
+	}
+
+	private static function checkLength($str, $expect){
+		assert(($len = strlen($str)) === $expect, "Expected $expect bytes, got $len");
 	}
 }

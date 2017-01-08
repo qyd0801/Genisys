@@ -26,12 +26,11 @@ use pocketmine\item\Tool;
 use pocketmine\Player;
 
 class Quartz extends Solid{
-	
+
 	const QUARTZ_NORMAL = 0;
 	const QUARTZ_CHISELED = 1;
 	const QUARTZ_PILLAR = 2;
 	const QUARTZ_PILLAR2 = 3;
-
 
 	protected $id = self::QUARTZ_BLOCK;
 
@@ -39,7 +38,7 @@ class Quartz extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.8;
 	}
 
@@ -52,7 +51,7 @@ class Quartz extends Solid{
 		];
 		return $names[$this->meta & 0x03];
 	}
-	
+
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($this->meta === 1 or $this->meta === 2){
 			//Quartz pillar block and chiselled quartz have different orientations
@@ -74,7 +73,7 @@ class Quartz extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[Item::QUARTZ_BLOCK, $this->meta & 0x03, 1],

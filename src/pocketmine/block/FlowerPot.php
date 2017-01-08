@@ -11,40 +11,30 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 use pocketmine\tile\FlowerPot as FlowerPotTile;
+use pocketmine\tile\Tile;
 
 class FlowerPot extends Flowable{
+
 	protected $id = Block::FLOWER_POT_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
 	public function getName() : string{
 		return "Flower Pot Block";
-	}
-
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x + 0.3125,
-			$this->y,
-			$this->z + 0.3125,
-			$this->x + 0.6875,
-			$this->y + 0.375,
-			$this->z + 0.6875
-		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -58,13 +48,13 @@ class FlowerPot extends Flowable{
 				new ShortTag("item", 0),
 				new IntTag("data", 0),
 			]);
-			
+
 			if($item->hasCustomBlockData()){
-			    foreach($item->getCustomBlockData() as $key => $v){
-				    $nbt->{$key} = $v;
-			    }
-		    }
-		    
+				foreach($item->getCustomBlockData() as $key => $v){
+					$nbt->{$key} = $v;
+				}
+			}
+
 			$pot = Tile::createTile("FlowerPot", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
 			return true;
 		}
@@ -122,5 +112,9 @@ class FlowerPot extends Flowable{
 			}
 		}
 		return $items;
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB($this->x + 0.3125, $this->y, $this->z + 0.3125, $this->x + 0.6875, $this->y + 0.375, $this->z + 0.6875);
 	}
 }

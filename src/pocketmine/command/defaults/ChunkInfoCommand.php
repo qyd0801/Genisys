@@ -30,12 +30,9 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
 class ChunkInfoCommand extends VanillaCommand{
+
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"Gets the information of a chunk or regenerate a chunk",
-			"/chunkinfo (x) (y) (z) (levelName) (regenerate)"
-		);
+		parent::__construct($name, "Gets the information of a chunk or regenerate a chunk", "/chunkinfo (x) (y) (z) (levelName) (regenerate)");
 		$this->setPermission("pocketmine.command.chunkinfo");
 	}
 

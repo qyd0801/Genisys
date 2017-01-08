@@ -33,10 +33,13 @@ use pocketmine\Player;
 use pocketmine\utils\ChunkException;
 use pocketmine\utils\MainLogger;
 
-
 class Anvil extends McRegion{
 
 	const REGION_FILE_EXTENSION = "mca";
+
+	public static function getProviderName() : string{
+		return "anvil";
+	}
 
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
@@ -57,11 +60,12 @@ class Anvil extends McRegion{
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
-				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks", Chunk::reorderByteArray($subChunk->getBlockIdArray())), //Generic in-memory chunks are currently always XZY
-				"Data"       => new ByteArrayTag("Data", Chunk::reorderNibbleArray($subChunk->getBlockDataArray())),
-				"SkyLight"   => new ByteArrayTag("SkyLight", Chunk::reorderNibbleArray($subChunk->getSkyLightArray())),
-				"BlockLight" => new ByteArrayTag("BlockLight", Chunk::reorderNibbleArray($subChunk->getBlockLightArray()))
+				"Y" => new ByteTag("Y", $y),
+				"Blocks" => new ByteArrayTag("Blocks", Chunk::reorderByteArray($subChunk->getBlockIdArray())),
+				//Generic in-memory chunks are currently always XZY
+				"Data" => new ByteArrayTag("Data", Chunk::reorderNibbleArray($subChunk->getBlockDataArray())),
+				"SkyLight" => new ByteArrayTag("SkyLight", Chunk::reorderNibbleArray($subChunk->getSkyLightArray())),
+				"BlockLight" => new ByteArrayTag("BlockLight", Chunk::reorderNibbleArray($subChunk->getBlockLightArray())),
 			]);
 		}
 
@@ -115,12 +119,7 @@ class Anvil extends McRegion{
 			if($chunk->Sections instanceof ListTag){
 				foreach($chunk->Sections as $subChunk){
 					if($subChunk instanceof CompoundTag){
-						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
-							Chunk::reorderByteArray($subChunk->Blocks->getValue()),
-							Chunk::reorderNibbleArray($subChunk->Data->getValue()),
-							Chunk::reorderNibbleArray($subChunk->SkyLight->getValue()),
-							Chunk::reorderNibbleArray($subChunk->BlockLight->getValue())
-						);
+						$subChunks[$subChunk->Y->getValue()] = new SubChunk(Chunk::reorderByteArray($subChunk->Blocks->getValue()), Chunk::reorderNibbleArray($subChunk->Data->getValue()), Chunk::reorderNibbleArray($subChunk->SkyLight->getValue()), Chunk::reorderNibbleArray($subChunk->BlockLight->getValue()));
 					}
 				}
 			}
@@ -133,16 +132,7 @@ class Anvil extends McRegion{
 				$biomeIds = "";
 			}
 
-			$result = new Chunk(
-				$this,
-				$chunk["xPos"],
-				$chunk["zPos"],
-				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
-				$biomeIds,
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
-			);
+			$result = new Chunk($this, $chunk["xPos"], $chunk["zPos"], $subChunks, isset($chunk->Entities) ? $chunk->Entities->getValue() : [], isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [], $biomeIds, isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
 			$result->setGenerated(true);
@@ -151,10 +141,6 @@ class Anvil extends McRegion{
 			MainLogger::getLogger()->logException($e);
 			return null;
 		}
-	}
-
-	public static function getProviderName() : string{
-		return "anvil";
 	}
 
 	public function getWorldHeight() : int{

@@ -25,15 +25,10 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 
-
 class StopCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.stop.description",
-			"%commands.stop.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.stop.description", "%commands.stop.usage");
 		$this->setPermission("pocketmine.command.stop");
 	}
 

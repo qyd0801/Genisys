@@ -26,8 +26,8 @@ use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
@@ -41,11 +41,11 @@ class Chest extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2.5;
 	}
 
@@ -55,17 +55,6 @@ class Chest extends Transparent{
 
 	public function getToolType(){
 		return Tool::TYPE_AXE;
-	}
-
-	protected function recalculateBoundingBox() {
-		return new AxisAlignedBB(
-			$this->x + 0.0625,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
-		);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -101,7 +90,7 @@ class Chest extends Transparent{
 			new StringTag("id", Tile::CHEST),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
+			new IntTag("z", $this->z),
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
 
@@ -152,7 +141,7 @@ class Chest extends Transparent{
 					new StringTag("id", Tile::CHEST),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
+					new IntTag("z", $this->z),
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$chest = Tile::createTile("Chest", $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
@@ -173,9 +162,13 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB($this->x + 0.0625, $this->y, $this->z + 0.0625, $this->x + 0.9375, $this->y + 0.9475, $this->z + 0.9375);
 	}
 }

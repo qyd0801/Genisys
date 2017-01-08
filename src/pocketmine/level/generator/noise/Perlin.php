@@ -24,12 +24,21 @@ namespace pocketmine\level\generator\noise;
 use pocketmine\utils\Random;
 
 class Perlin extends Noise{
-	public static $grad3 = [
-		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
-		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
-		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
-	];
 
+	public static $grad3 = [
+		[1, 1, 0],
+		[-1, 1, 0],
+		[1, -1, 0],
+		[-1, -1, 0],
+		[1, 0, 1],
+		[-1, 0, 1],
+		[1, 0, -1],
+		[-1, 0, -1],
+		[0, 1, 1],
+		[0, -1, 1],
+		[0, 1, -1],
+		[0, -1, -1],
+	];
 
 	public function __construct(Random $random, $octaves, $persistence, $expansion = 1){
 		$this->octaves = $octaves;

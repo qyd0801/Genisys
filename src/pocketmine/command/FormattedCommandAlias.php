@@ -27,6 +27,7 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\TextFormat;
 
 class FormattedCommandAlias extends Command{
+
 	private $formatStrings = [];
 
 	/**
@@ -36,6 +37,17 @@ class FormattedCommandAlias extends Command{
 	public function __construct($alias, array $formatStrings){
 		parent::__construct($alias);
 		$this->formatStrings = $formatStrings;
+	}
+
+	/**
+	 * @param int $i
+	 * @param int $j
+	 * @param int $k
+	 *
+	 * @return bool
+	 */
+	private static function inRange($i, $j, $k){
+		return $i >= $j and $i <= $k;
 	}
 
 	public function execute(CommandSender $sender, $commandLabel, array $args){
@@ -146,17 +158,6 @@ class FormattedCommandAlias extends Command{
 		}
 
 		return $formatString;
-	}
-
-	/**
-	 * @param int $i
-	 * @param int $j
-	 * @param int $k
-	 *
-	 * @return bool
-	 */
-	private static function inRange($i, $j, $k){
-		return $i >= $j and $i <= $k;
 	}
 
 }

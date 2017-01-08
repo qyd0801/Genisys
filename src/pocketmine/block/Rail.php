@@ -15,7 +15,7 @@
  * (at your option) any later version.
  *
  * @author iTX Technologies
- * @link https://itxtech.org
+ * @link   https://itxtech.org
  *
  */
 
@@ -38,7 +38,6 @@ class Rail extends Flowable{
 	const CURVED_SOUTH_EAST = 9;
 	const CURVED_NORTH_EAST = 8;
 
-
 	protected $id = self::RAIL;
 	/** @var Vector3 [] */
 	protected $connected = [];
@@ -47,16 +46,67 @@ class Rail extends Flowable{
 		$this->meta = $meta;
 	}
 
+	/**
+	 * @param Rail $rail
+	 *
+	 * @return array
+	 */
+	public static function check(Rail $rail){
+		$array = [
+			[[0, 1], [0, -1]],
+			[[1, 0], [-1, 0]],
+			[[1, 0], [-1, 0]],
+			[[1, 0], [-1, 0]],
+			[[0, 1], [0, -1]],
+			[[0, 1], [0, -1]],
+			[[1, 0], [0, 1]],
+			[[0, 1], [-1, 0]],
+			[[-1, 0], [0, -1]],
+			[[0, -1], [1, 0]],
+		];
+		$arrayY = [0, 1, -1];
+		$blocks = $array[$rail->getDamage()];
+		$connected = [];
+		foreach($arrayY as $y){
+			$v3 = new Vector3($rail->x + $blocks[0][0], $rail->y + $y, $rail->z + $blocks[0][1]);
+			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
+			$meta = $rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z);
+			if(in_array($id, [
+					self::RAIL,
+					self::ACTIVATOR_RAIL,
+					self::DETECTOR_RAIL,
+					self::POWERED_RAIL,
+				]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])
+			){
+				$connected[] = $v3;
+				break;
+			}
+		}
+		foreach($arrayY as $y){
+			$v3 = new Vector3($rail->x + $blocks[1][0], $rail->y + $y, $rail->z + $blocks[1][1]);
+			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
+			$meta = $rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z);
+			if(in_array($id, [
+					self::RAIL,
+					self::ACTIVATOR_RAIL,
+					self::DETECTOR_RAIL,
+					self::POWERED_RAIL,
+				]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])
+			){
+				$connected[] = $v3;
+				break;
+			}
+		}
+		return $connected;
+	}
+
 	public function getName() : string{
 		return "Rail";
 	}
 
-	protected function update(){
-		return true;
-	}
-
 	/**
 	 * @param Rail $block
+	 *
 	 * @return bool
 	 */
 	public function canConnect(Rail $block){
@@ -170,48 +220,7 @@ class Rail extends Flowable{
 		return true;
 	}
 
-	/**
-	 * @param Rail $rail
-	 * @return array
-	 */
-	public static function check(Rail $rail){
-		$array = [
-			[[0, 1], [0, -1]],
-			[[1, 0], [-1, 0]],
-			[[1, 0], [-1, 0]],
-			[[1, 0], [-1, 0]],
-			[[0, 1], [0, -1]],
-			[[0, 1], [0, -1]],
-			[[1, 0], [0, 1]],
-			[[0, 1], [-1, 0]],
-			[[-1, 0], [0, -1]],
-			[[0, -1], [1, 0]]
-		];
-		$arrayY = [0, 1, -1];
-		$blocks = $array[$rail->getDamage()];
-		$connected = [];
-		foreach($arrayY as $y){
-			$v3 = new Vector3($rail->x + $blocks[0][0], $rail->y + $y, $rail->z + $blocks[0][1]);
-			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
-			$meta = $rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z);
-			if(in_array($id, [self::RAIL, self::ACTIVATOR_RAIL, self::DETECTOR_RAIL, self::POWERED_RAIL]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])){
-				$connected[] = $v3;
-				break;
-			}
-		}
-		foreach($arrayY as $y){
-			$v3 = new Vector3($rail->x + $blocks[1][0], $rail->y + $y, $rail->z + $blocks[1][1]);
-			$id = $rail->getLevel()->getBlockIdAt($v3->x, $v3->y, $v3->z);
-			$meta = $rail->getLevel()->getBlockDataAt($v3->x, $v3->y, $v3->z);
-			if(in_array($id, [self::RAIL, self::ACTIVATOR_RAIL, self::DETECTOR_RAIL, self::POWERED_RAIL]) and in_array([$rail->x - $v3->x, $rail->z - $v3->z], $array[$meta])){
-				$connected[] = $v3;
-				break;
-			}
-		}
-		return $connected;
-	}
-
-	public function getHardness() {
+	public function getHardness(){
 		return 0.7;
 	}
 
@@ -220,6 +229,10 @@ class Rail extends Flowable{
 	}
 
 	public function canPassThrough(){
+		return true;
+	}
+
+	protected function update(){
 		return true;
 	}
 }

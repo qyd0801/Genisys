@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class AnimatePacket extends DataPacket{
+
 	const NETWORK_ID = Info::ANIMATE_PACKET;
 
 	public $action;

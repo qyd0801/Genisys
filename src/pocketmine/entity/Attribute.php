@@ -37,8 +37,8 @@ class Attribute{
 	const ATTACK_DAMAGE = 8;
 	const EXPERIENCE_LEVEL = 9;
 	const EXPERIENCE = 10;
-
-	private $id;
+	/** @var Attribute[] */
+	protected static $attributes = [];
 	protected $minValue;
 	protected $maxValue;
 	protected $defaultValue;
@@ -47,9 +47,18 @@ class Attribute{
 	protected $shouldSend;
 
 	protected $desynchronized = true;
+	private $id;
 
-	/** @var Attribute[] */
-	protected static $attributes = [];
+	private function __construct($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = true){
+		$this->id = (int) $id;
+		$this->name = (string) $name;
+		$this->minValue = (float) $minValue;
+		$this->maxValue = (float) $maxValue;
+		$this->defaultValue = (float) $defaultValue;
+		$this->shouldSend = (bool) $shouldSend;
+
+		$this->currentValue = $this->defaultValue;
+	}
 
 	public static function init(){
 		self::addAttribute(self::ABSORPTION, "minecraft:absorption", 0.00, 340282346638528859811704183484516925440.00, 0.00);
@@ -106,17 +115,6 @@ class Attribute{
 		}
 
 		return null;
-	}
-
-	private function __construct($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = true){
-		$this->id = (int) $id;
-		$this->name = (string) $name;
-		$this->minValue = (float) $minValue;
-		$this->maxValue = (float) $maxValue;
-		$this->defaultValue = (float) $defaultValue;
-		$this->shouldSend = (bool) $shouldSend;
-
-		$this->currentValue = $this->defaultValue;
 	}
 
 	public function getMinValue(){

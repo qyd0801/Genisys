@@ -24,8 +24,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Hopper as TileHopper;
@@ -39,7 +39,7 @@ class Hopper extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated(): bool{
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -68,11 +68,11 @@ class Hopper extends Transparent{
 		}
 		return true;
 	}
-	
+
 	public function activate(){
 		//TODO: Hopper content freezing (requires basic redstone system upgrade)
 	}
-	
+
 	public function getTarget(){
 		return $this->target;
 	}
@@ -84,7 +84,7 @@ class Hopper extends Transparent{
 			2 => 3,
 			3 => 2,
 			4 => 5,
-			5 => 4
+			5 => 4,
 		];
 		$this->meta = $faces[$face];
 		$this->getLevel()->setBlock($block, $this, true, true);
@@ -94,7 +94,7 @@ class Hopper extends Transparent{
 			new StringTag("id", Tile::HOPPER),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
+			new IntTag("z", $this->z),
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
 
@@ -113,7 +113,7 @@ class Hopper extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[Item::HOPPER, 0, 1],

@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 class UnlitRedstoneTorch extends RedstoneTorch{
+
 	protected $id = self::UNLIT_REDSTONE_TORCH;
 
 	public function getLightLevel(){

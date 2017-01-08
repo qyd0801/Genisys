@@ -45,6 +45,79 @@ class McRegion extends BaseLevelProvider{
 	/** @var Chunk[] */
 	protected $chunks = [];
 
+	public static function getProviderName() : string{
+		return "mcregion";
+	}
+
+	public static function isValid(string $path) : bool{
+		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
+
+		if($isValid){
+			$files = glob($path . "/region/*.mc*");
+			if(empty($files)){ //possible glob() issue on some systems
+				$files = array_filter(scandir($path . "/region/"), function($file){
+					return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
+				});
+			}
+
+			foreach($files as $f){
+				if(substr($f, strrpos($f, ".") + 1) !== static::REGION_FILE_EXTENSION){
+					$isValid = false;
+					break;
+				}
+			}
+		}
+
+		return $isValid;
+	}
+
+	public static function generate(string $path, string $name, $seed, string $generator, array $options = []){
+		if(!file_exists($path)){
+			mkdir($path, 0777, true);
+		}
+
+		if(!file_exists($path . "/region")){
+			mkdir($path . "/region", 0777);
+		}
+		//TODO, add extra details
+		$levelData = new CompoundTag("Data", [
+			"hardcore" => new ByteTag("hardcore", 0),
+			"initialized" => new ByteTag("initialized", 1),
+			"GameType" => new IntTag("GameType", 0),
+			"generatorVersion" => new IntTag("generatorVersion", 1), //2 in MCPE
+			"SpawnX" => new IntTag("SpawnX", 128),
+			"SpawnY" => new IntTag("SpawnY", 70),
+			"SpawnZ" => new IntTag("SpawnZ", 128),
+			"version" => new IntTag("version", 19133),
+			"DayTime" => new IntTag("DayTime", 0),
+			"LastPlayed" => new LongTag("LastPlayed", microtime(true) * 1000),
+			"RandomSeed" => new LongTag("RandomSeed", $seed),
+			"SizeOnDisk" => new LongTag("SizeOnDisk", 0),
+			"Time" => new LongTag("Time", 0),
+			"generatorName" => new StringTag("generatorName", Generator::getGeneratorName($generator)),
+			"generatorOptions" => new StringTag("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
+			"LevelName" => new StringTag("LevelName", $name),
+			"GameRules" => new CompoundTag("GameRules", []),
+		]);
+		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt->setData(new CompoundTag("", [
+			"Data" => $levelData,
+		]));
+		$buffer = $nbt->writeCompressed();
+		file_put_contents($path . "level.dat", $buffer);
+	}
+
+	/**
+	 * @param int $chunkX
+	 * @param int $chunkZ
+	 * @param int &$x
+	 * @param int &$z
+	 */
+	public static function getRegionIndex(int $chunkX, int $chunkZ, &$x, &$z){
+		$x = $chunkX >> 5;
+		$z = $chunkZ >> 5;
+	}
+
 	/**
 	 * @param Chunk $chunk
 	 *
@@ -176,15 +249,7 @@ class McRegion extends BaseLevelProvider{
 				$biomeIds = "";
 			}
 
-			$result = new Chunk(
-				$this,
-				$chunk["xPos"],
-				$chunk["zPos"],
-				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
-				$biomeIds,
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : [] //this shouldn't exist in normal mcregion worlds anyway...
+			$result = new Chunk($this, $chunk["xPos"], $chunk["zPos"], $subChunks, isset($chunk->Entities) ? $chunk->Entities->getValue() : [], isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [], $biomeIds, isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : [] //this shouldn't exist in normal mcregion worlds anyway...
 			);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
@@ -196,71 +261,9 @@ class McRegion extends BaseLevelProvider{
 		}
 	}
 
-	public static function getProviderName() : string{
-		return "mcregion";
-	}
-
 	public function getWorldHeight() : int{
 		//TODO: add world height options
 		return 128;
-	}
-
-	public static function isValid(string $path) : bool{
-		$isValid = (file_exists($path . "/level.dat") and is_dir($path . "/region/"));
-
-		if($isValid){
-			$files = glob($path . "/region/*.mc*");
-			if(empty($files)){ //possible glob() issue on some systems
-				$files = array_filter(scandir($path . "/region/"), function($file){
-					return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
-				});
-			}
-
-			foreach($files as $f){
-				if(substr($f, strrpos($f, ".") + 1) !== static::REGION_FILE_EXTENSION){
-					$isValid = false;
-					break;
-				}
-			}
-		}
-
-		return $isValid;
-	}
-
-	public static function generate(string $path, string $name, $seed, string $generator, array $options = []){
-		if(!file_exists($path)){
-			mkdir($path, 0777, true);
-		}
-
-		if(!file_exists($path . "/region")){
-			mkdir($path . "/region", 0777);
-		}
-		//TODO, add extra details
-		$levelData = new CompoundTag("Data", [
-			"hardcore" => new ByteTag("hardcore", 0),
-			"initialized" => new ByteTag("initialized", 1),
-			"GameType" => new IntTag("GameType", 0),
-			"generatorVersion" => new IntTag("generatorVersion", 1), //2 in MCPE
-			"SpawnX" => new IntTag("SpawnX", 128),
-			"SpawnY" => new IntTag("SpawnY", 70),
-			"SpawnZ" => new IntTag("SpawnZ", 128),
-			"version" => new IntTag("version", 19133),
-			"DayTime" => new IntTag("DayTime", 0),
-			"LastPlayed" => new LongTag("LastPlayed", microtime(true) * 1000),
-			"RandomSeed" => new LongTag("RandomSeed", $seed),
-			"SizeOnDisk" => new LongTag("SizeOnDisk", 0),
-			"Time" => new LongTag("Time", 0),
-			"generatorName" => new StringTag("generatorName", Generator::getGeneratorName($generator)),
-			"generatorOptions" => new StringTag("generatorOptions", isset($options["preset"]) ? $options["preset"] : ""),
-			"LevelName" => new StringTag("LevelName", $name),
-			"GameRules" => new CompoundTag("GameRules", [])
-		]);
-		$nbt = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setData(new CompoundTag("", [
-			"Data" => $levelData
-		]));
-		$buffer = $nbt->writeCompressed();
-		file_put_contents($path . "level.dat", $buffer);
 	}
 
 	public function getGenerator() : string{
@@ -291,7 +294,6 @@ class McRegion extends BaseLevelProvider{
 
 		$chunk->setX($chunkX);
 		$chunk->setZ($chunkZ);
-
 
 		if(isset($this->chunks[$index = Level::chunkHash($chunkX, $chunkZ)]) and $this->chunks[$index] !== $chunk){
 			$this->unloadChunk($chunkX, $chunkZ, false);
@@ -394,22 +396,20 @@ class McRegion extends BaseLevelProvider{
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
-	 * @param int &$x
-	 * @param int &$z
-	 */
-	public static function getRegionIndex(int $chunkX, int $chunkZ, &$x, &$z){
-		$x = $chunkX >> 5;
-		$z = $chunkZ >> 5;
-	}
-
-	/**
-	 * @param int $chunkX
-	 * @param int $chunkZ
 	 *
 	 * @return Chunk
 	 */
 	public function getEmptyChunk(int $chunkX, int $chunkZ){
 		return Chunk::getEmptyChunk($chunkX, $chunkZ, $this);
+	}
+
+	public function close(){
+		$this->unloadChunks();
+		foreach($this->regions as $index => $region){
+			$region->close();
+			unset($this->regions[$index]);
+		}
+		$this->level = null;
 	}
 
 	/**
@@ -430,14 +430,5 @@ class McRegion extends BaseLevelProvider{
 		if(!isset($this->regions[$index = Level::chunkHash($x, $z)])){
 			$this->regions[$index] = new RegionLoader($this, $x, $z, static::REGION_FILE_EXTENSION);
 		}
-	}
-
-	public function close(){
-		$this->unloadChunks();
-		foreach($this->regions as $index => $region){
-			$region->close();
-			unset($this->regions[$index]);
-		}
-		$this->level = null;
 	}
 }

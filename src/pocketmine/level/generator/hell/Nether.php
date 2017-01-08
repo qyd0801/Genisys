@@ -30,21 +30,20 @@ use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\biome\BiomeSelector;
 use pocketmine\level\generator\Generator;
-
 use pocketmine\level\generator\noise\Simplex;
-
 use pocketmine\level\generator\object\OreType;
 use pocketmine\level\generator\populator\GroundFire;
 use pocketmine\level\generator\populator\NetherGlowStone;
 use pocketmine\level\generator\populator\NetherLava;
 use pocketmine\level\generator\populator\NetherOre;
 use pocketmine\level\generator\populator\Populator;
-
 use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class Nether extends Generator{
 
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
 	/** @var Populator[] */
 	private $populators = [];
 	/** @var ChunkManager */
@@ -56,17 +55,12 @@ class Nether extends Generator{
 	private $emptyAmplitude = 1;
 	private $density = 0.5;
 	private $bedrockDepth = 5;
-
 	/** @var Populator[] */
 	private $generationPopulators = [];
 	/** @var Simplex */
 	private $noiseBase;
-
 	/** @var BiomeSelector */
 	private $selector;
-
-	private static $GAUSSIAN_KERNEL = null;
-	private static $SMOOTH_SIZE = 2;
 
 	public function __construct(array $options = []){
 		if(self::$GAUSSIAN_KERNEL === null){

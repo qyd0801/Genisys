@@ -18,11 +18,12 @@
  * @link https://itxtech.org
  *
  */
- 
- namespace pocketmine\item;
- 
- abstract class Door extends Item{
-	public function getMaxStackSize() : int {
+
+namespace pocketmine\item;
+
+abstract class Door extends Item{
+
+	public function getMaxStackSize() : int{
 		return 64;
 	}
 }

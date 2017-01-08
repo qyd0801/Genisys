@@ -26,15 +26,10 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
-
 class BanCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.ban.player.description",
-			"%commands.ban.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.ban.player.description", "%commands.ban.usage");
 		$this->setPermission("pocketmine.command.ban.player");
 	}
 
@@ -62,7 +57,6 @@ class BanCommand extends VanillaCommand{
 		}else{
 			$sender->getServer()->getNameBans()->addBan($name, $reason = implode(" ", $args), null, $sender->getName());
 		}
-
 
 		if(($player = $sender->getServer()->getPlayerExact($name)) instanceof Player){
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin." . "Banned Until:" . date('r'), $until = "Forever");

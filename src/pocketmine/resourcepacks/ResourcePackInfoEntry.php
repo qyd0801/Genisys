@@ -22,6 +22,7 @@
 namespace pocketmine\resourcepacks;
 
 class ResourcePackInfoEntry{
+
 	protected $packId; //UUID
 	protected $version;
 	protected $packSize;

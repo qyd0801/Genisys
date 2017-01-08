@@ -30,12 +30,10 @@ use pocketmine\math\Vector3;
  */
 class BlockIterator implements \Iterator{
 
+private static $gridSize = 16777216;
 	/** @var Level */
 	private $level;
-	private $maxDistance;
-
-	private static $gridSize = 16777216; //1 << 24
-
+	private $maxDistance; //1 << 24
 	private $end = false;
 
 	/** @var \SplFixedArray<Block>[3] */
@@ -172,6 +170,41 @@ class BlockIterator implements \Iterator{
 		$this->maxDistanceInt = round($maxDistance / (sqrt($mainDirection ** 2 + $secondDirection ** 2 + $thirdDirection ** 2) / $mainDirection));
 	}
 
+	public function next(){
+		$this->scan();
+
+		if($this->currentBlock <= -1){
+			throw new \OutOfBoundsException;
+		}else{
+			$this->currentBlockObject = $this->blockQueue[$this->currentBlock--];
+		}
+	}
+
+	/**
+	 * @return Block
+	 *
+	 * @throws \OutOfBoundsException
+	 */
+	public function current(){
+		if($this->currentBlockObject === null){
+			throw new \OutOfBoundsException;
+		}
+		return $this->currentBlockObject;
+	}
+
+	public function rewind(){
+		throw new \InvalidStateException("BlockIterator doesn't support rewind()");
+	}
+
+	public function key(){
+		return $this->currentBlock - 1;
+	}
+
+	public function valid(){
+		$this->scan();
+		return $this->currentBlock !== -1;
+	}
+
 	private function blockEquals(Block $a, Block $b){
 		return $a->x === $b->x and $a->y === $b->y and $a->z === $b->z;
 	}
@@ -214,41 +247,6 @@ class BlockIterator implements \Iterator{
 
 	private function getZPosition(Vector3 $direction, Vector3 $position, Block $block){
 		return $this->getPosition($direction->z, $position->z, $block->z);
-	}
-
-	public function next(){
-		$this->scan();
-
-		if($this->currentBlock <= -1){
-			throw new \OutOfBoundsException;
-		}else{
-			$this->currentBlockObject = $this->blockQueue[$this->currentBlock--];
-		}
-	}
-
-	/**
-	 * @return Block
-	 *
-	 * @throws \OutOfBoundsException
-	 */
-	public function current(){
-		if($this->currentBlockObject === null){
-			throw new \OutOfBoundsException;
-		}
-		return $this->currentBlockObject;
-	}
-
-	public function rewind(){
-		throw new \InvalidStateException("BlockIterator doesn't support rewind()");
-	}
-
-	public function key(){
-		return $this->currentBlock - 1;
-	}
-
-	public function valid(){
-		$this->scan();
-		return $this->currentBlock !== -1;
 	}
 
 	private function scan(){

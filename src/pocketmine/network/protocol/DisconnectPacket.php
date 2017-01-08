@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class DisconnectPacket extends DataPacket{
+
 	const NETWORK_ID = Info::DISCONNECT_PACKET;
 
 	public $hideDisconnectionScreen = false;

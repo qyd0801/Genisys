@@ -18,12 +18,14 @@
  *
 */
 namespace pocketmine\utils;
+
 #include <rules/DataPacket.h>
 #ifndef COMPILE
 #endif
 use pocketmine\item\Item;
 
 class BinaryStream extends \stdClass{
+
 	public $offset;
 	public $buffer;
 
@@ -209,14 +211,8 @@ class BinaryStream extends \stdClass{
 		if($nbtLen > 0){
 			$nbt = $this->get($nbtLen);
 		}
-		return Item::get(
-			$id,
-			$data,
-			$cnt,
-			$nbt
-		);
+		return Item::get($id, $data, $cnt, $nbt);
 	}
-
 
 	public function putSlot(Item $item){
 		if($item->getId() === 0){
@@ -274,7 +270,7 @@ class BinaryStream extends \stdClass{
 	public function getEntityId(){
 		return $this->getVarInt();
 	}
-	
+
 	public function putEntityId($v){
 		$this->putVarInt($v);
 	}
@@ -290,13 +286,13 @@ class BinaryStream extends \stdClass{
 		$this->putByte($y);
 		$this->putVarInt($z);
 	}
-	
+
 	public function getVector3f(&$x, &$y, &$z){
 		$x = $this->getLFloat();
 		$y = $this->getLFloat();
 		$z = $this->getLFloat();
 	}
-	
+
 	public function putVector3f($x, $y, $z){
 		$this->putLFloat($x);
 		$this->putLFloat($y);

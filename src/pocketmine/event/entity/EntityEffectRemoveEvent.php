@@ -21,10 +21,10 @@
 
 namespace pocketmine\event\entity;
 
+use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\Event;
 use pocketmine\event\Cancellable;
-use pocketmine\entity\Effect;
 
 class EntityEffectRemoveEvent extends EntityEvent implements Cancellable{
 

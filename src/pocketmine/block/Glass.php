@@ -21,8 +21,8 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\item\enchantment\enchantment;
+use pocketmine\item\Item;
 
 class Glass extends Transparent{
 
@@ -36,11 +36,11 @@ class Glass extends Transparent{
 		return "Glass";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.3;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
 			return [
 				[Item::GLASS, 0, 1],

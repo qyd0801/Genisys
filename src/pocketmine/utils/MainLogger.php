@@ -26,34 +26,20 @@ use pocketmine\Thread;
 use pocketmine\Worker;
 
 class MainLogger extends \AttachableThreadedLogger{
+
+	/** @var MainLogger */
+	public static $logger = null;
+	public $shouldSendMsg = "";
+	public $shouldRecordMsg = false;
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;
 	protected $logDebug;
-	private $logResource;
-	/** @var MainLogger */
-	public static $logger = null;
-	
-	private $consoleCallback;
-
 	/** Extra Settings */
 	protected $write = false;
-
-	public $shouldSendMsg = "";
-	public $shouldRecordMsg = false;
+	private $logResource;
+	private $consoleCallback;
 	private $lastGet = 0;
-
-	public function setSendMsg($b){
-		$this->shouldRecordMsg = $b;
-		$this->lastGet = time();
-	}
-
-	public function getMessages(){
-		$msg = $this->shouldSendMsg;
-		$this->shouldSendMsg = "";
-		$this->lastGet = time();
-		return $msg;
-	}
 
 	/**
 	 * @param string $logFile
@@ -78,6 +64,18 @@ class MainLogger extends \AttachableThreadedLogger{
 	 */
 	public static function getLogger(){
 		return static::$logger;
+	}
+
+	public function setSendMsg($b){
+		$this->shouldRecordMsg = $b;
+		$this->lastGet = time();
+	}
+
+	public function getMessages(){
+		$msg = $this->shouldSendMsg;
+		$this->shouldSendMsg = "";
+		$this->lastGet = time();
+		return $msg;
 	}
 
 	public function emergency($message, $name = "EMERGENCY"){
@@ -198,6 +196,73 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->shutdown = true;
 	}
 
+	public function run(){
+		$this->shutdown = false;
+		while($this->shutdown === false){
+			$this->synchronized(function(){
+				while($this->logStream->count() > 0){
+					$chunk = $this->logStream->shift();
+					if($this->write){
+						$this->logResource = file_put_contents($this->logFile, $chunk, FILE_APPEND);
+					}
+				}
+
+				$this->wait(200000);
+			});
+		}
+
+		if($this->logStream->count() > 0){
+			while($this->logStream->count() > 0){
+				$chunk = $this->logStream->shift();
+				if($this->write){
+					$this->logResource = file_put_contents($this->logFile, $chunk, FILE_APPEND);
+				}
+			}
+		}
+	}
+
+	/*public function run(){
+		$this->shutdown = false;
+		if($this->write){
+			$this->logResource = fopen($this->logFile, "a+b");
+			if(!is_resource($this->logResource)){
+				throw new \RuntimeException("Couldn't open log file");
+			}
+
+			while($this->shutdown === false){
+				if(!$this->write) {
+					fclose($this->logResource);
+					break;
+				}
+				$this->synchronized(function(){
+					while($this->logStream->count() > 0){
+						$chunk = $this->logStream->shift();
+						fwrite($this->logResource, $chunk);
+					}
+
+					$this->wait(25000);
+				});
+			}
+
+			if($this->logStream->count() > 0){
+				while($this->logStream->count() > 0){
+					$chunk = $this->logStream->shift();
+					fwrite($this->logResource, $chunk);
+				}
+			}
+
+			fclose($this->logResource);
+		}
+	}*/
+
+	public function setWrite($write){
+		$this->write = $write;
+	}
+
+	public function setConsoleCallback($callback){
+		$this->consoleCallback = $callback;
+	}
+
 	protected function send($message, $level, $prefix, $color){
 		$now = time();
 
@@ -242,72 +307,5 @@ class MainLogger extends \AttachableThreadedLogger{
 				$this->notify();
 			});
 		}
-	}
-
-	/*public function run(){
-		$this->shutdown = false;
-		if($this->write){
-			$this->logResource = fopen($this->logFile, "a+b");
-			if(!is_resource($this->logResource)){
-				throw new \RuntimeException("Couldn't open log file");
-			}
-
-			while($this->shutdown === false){
-				if(!$this->write) {
-					fclose($this->logResource);
-					break;
-				}
-				$this->synchronized(function(){
-					while($this->logStream->count() > 0){
-						$chunk = $this->logStream->shift();
-						fwrite($this->logResource, $chunk);
-					}
-
-					$this->wait(25000);
-				});
-			}
-
-			if($this->logStream->count() > 0){
-				while($this->logStream->count() > 0){
-					$chunk = $this->logStream->shift();
-					fwrite($this->logResource, $chunk);
-				}
-			}
-
-			fclose($this->logResource);
-		}
-	}*/
-
-	public function run(){
-		$this->shutdown = false;
-		while($this->shutdown === false){
-			$this->synchronized(function(){
-				while($this->logStream->count() > 0){
-					$chunk = $this->logStream->shift();
-					if($this->write){
-						$this->logResource = file_put_contents($this->logFile, $chunk, FILE_APPEND);
-					}
-				}
-
-				$this->wait(200000);
-			});
-		}
-
-		if($this->logStream->count() > 0){
-			while($this->logStream->count() > 0){
-				$chunk = $this->logStream->shift();
-				if($this->write){
-					$this->logResource = file_put_contents($this->logFile, $chunk, FILE_APPEND);
-				}
-			}
-		}
-	}
-
-	public function setWrite($write){
-		$this->write = $write;
-	}
-	
-	public function setConsoleCallback($callback){
-		$this->consoleCallback = $callback;
 	}
 }

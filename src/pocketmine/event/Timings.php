@@ -21,7 +21,6 @@
 
 namespace pocketmine\event;
 
-
 use pocketmine\entity\Entity;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\Player;
@@ -240,7 +239,6 @@ abstract class Timings{
 
 		return self::$packetReceiveTimingMap[$pk::NETWORK_ID];
 	}
-
 
 	/**
 	 * @param DataPacket $pk

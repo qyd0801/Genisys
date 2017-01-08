@@ -31,11 +31,7 @@ use pocketmine\utils\TextFormat;
 class WeatherCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.weather.description",
-			"%pocketmine.command.weather.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.weather.description", "%pocketmine.command.weather.usage");
 		$this->setPermission("pocketmine.command.weather");
 	}
 
@@ -52,8 +48,7 @@ class WeatherCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			$wea = Weather::getWeatherFromString($args[0]);
-			if(!isset($args[1])) $duration = mt_rand(min($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax), max($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax));
-			else $duration = (int) $args[1];
+			if(!isset($args[1])) $duration = mt_rand(min($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax), max($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax));else $duration = (int) $args[1];
 			if($wea >= 0 and $wea <= 3){
 				$sender->getLevel()->getWeather()->setWeather($wea, $duration);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.weather.changed", [$sender->getLevel()->getFolderName()]));
@@ -84,8 +79,7 @@ class WeatherCommand extends VanillaCommand{
 		}
 
 		$wea = Weather::getWeatherFromString($args[1]);
-		if(!isset($args[1])) $duration = mt_rand(min($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax), max($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax));
-		else $duration = (int) $args[1];
+		if(!isset($args[1])) $duration = mt_rand(min($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax), max($sender->getServer()->weatherRandomDurationMin, $sender->getServer()->weatherRandomDurationMax));else $duration = (int) $args[1];
 		if($wea >= 0 and $wea <= 3){
 			$level->getWeather()->setWeather($wea, $duration);
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.weather.changed", [$level->getFolderName()]));

@@ -28,6 +28,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 
 abstract class Food extends Item implements FoodSource{
+
 	public function canBeConsumed() : bool{
 		return true;
 	}

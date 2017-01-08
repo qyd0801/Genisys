@@ -21,7 +21,6 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\block\Block;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -42,25 +41,8 @@ abstract class Living extends Entity implements Damageable{
 	protected $drag = 0.02;
 
 	protected $attackTime = 0;
-	
+
 	protected $invisible = false;
-
-	protected function initEntity(){
-		parent::initEntity();
-
-		if(isset($this->namedtag->HealF)){
-			$this->namedtag->Health = new ShortTag("Health", (int) $this->namedtag["HealF"]);
-			unset($this->namedtag->HealF);
-		}
-
-		if(!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof ShortTag)){
-			$this->namedtag->Health = new ShortTag("Health", $this->getMaxHealth());
-		}
-		
-		if($this->namedtag["Health"] <= 0)
-			$this->setHealth(20);
-		else $this->setHealth($this->namedtag["Health"]);
-	}
 
 	public function setHealth($amount){
 		$wasAlive = $this->isAlive();
@@ -99,15 +81,15 @@ abstract class Living extends Entity implements Damageable{
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getDamage() >= $damage){
-                $source->setCancelled();
+				$source->setCancelled();
 			}
 		}
 
-        parent::attack($damage, $source);
+		parent::attack($damage, $source);
 
-        if($source->isCancelled()){
-            return;
-        }
+		if($source->isCancelled()){
+			return;
+		}
 
 		if($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
@@ -289,10 +271,25 @@ abstract class Living extends Entity implements Damageable{
 			if($block instanceof Block){
 				return $block;
 			}
-		}catch (\ArrayOutOfBoundsException $e){
+		}catch(\ArrayOutOfBoundsException $e){
 
 		}
 
 		return null;
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+
+		if(isset($this->namedtag->HealF)){
+			$this->namedtag->Health = new ShortTag("Health", (int) $this->namedtag["HealF"]);
+			unset($this->namedtag->HealF);
+		}
+
+		if(!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof ShortTag)){
+			$this->namedtag->Health = new ShortTag("Health", $this->getMaxHealth());
+		}
+
+		if($this->namedtag["Health"] <= 0) $this->setHealth(20);else $this->setHealth($this->namedtag["Health"]);
 	}
 }

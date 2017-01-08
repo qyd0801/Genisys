@@ -26,10 +26,9 @@ use pocketmine\Server;
 use pocketmine\utils\Binary;
 
 class QueryRegenerateEvent extends ServerEvent{
-	public static $handlerList = null;
 
 	const GAME_ID = "MINECRAFTPE";
-
+	public static $handlerList = null;
 	private $timeout;
 	private $serverName;
 	private $listPlugins;
@@ -50,7 +49,6 @@ class QueryRegenerateEvent extends ServerEvent{
 
 	private $extraData = [];
 
-
 	public function __construct(Server $server, $timeout = 5){
 		$this->timeout = $timeout;
 		$this->serverName = $server->getMotd();
@@ -63,12 +61,10 @@ class QueryRegenerateEvent extends ServerEvent{
 			}
 		}
 
-		if($server->isDServerEnabled() and $server->dserverConfig["queryMaxPlayers"]) $pc = $server->dserverConfig["queryMaxPlayers"];
-		elseif($server->isDServerEnabled() and $server->dserverConfig["queryAllPlayers"]) $pc = $server->getDServerMaxPlayers();
+		if($server->isDServerEnabled() and $server->dserverConfig["queryMaxPlayers"]) $pc = $server->dserverConfig["queryMaxPlayers"];elseif($server->isDServerEnabled() and $server->dserverConfig["queryAllPlayers"]) $pc = $server->getDServerMaxPlayers();
 		else $pc = $server->getMaxPlayers();
 
-		if($server->isDServerEnabled() and $server->dserverConfig["queryPlayers"]) $poc = $server->getDServerOnlinePlayers();
-		else $poc = count($this->players);
+		if($server->isDServerEnabled() and $server->dserverConfig["queryPlayers"]) $poc = $server->getDServerOnlinePlayers();else $poc = count($this->players);
 
 		$this->gametype = ($server->getGamemode() & 0x01) === 0 ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
@@ -184,7 +180,11 @@ class QueryRegenerateEvent extends ServerEvent{
 			$plist .= ":";
 			foreach($this->plugins as $p){
 				$d = $p->getDescription();
-				$plist .= " " . str_replace([";", ":", " "], ["", "", "_"], $d->getName()) . " " . str_replace([";", ":", " "], ["", "", "_"], $d->getVersion()) . ";";
+				$plist .= " " . str_replace([";", ":", " "], ["", "", "_"], $d->getName()) . " " . str_replace([
+						";",
+						":",
+						" ",
+					], ["", "", "_"], $d->getVersion()) . ";";
 			}
 			$plist = substr($plist, 0, -1);
 		}
@@ -202,7 +202,7 @@ class QueryRegenerateEvent extends ServerEvent{
 			"maxplayers" => $this->maxPlayers,
 			"whitelist" => $this->whitelist,
 			"hostip" => $this->ip,
-			"hostport" => $this->port
+			"hostport" => $this->port,
 		];
 
 		foreach($KVdata as $key => $value){

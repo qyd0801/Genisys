@@ -33,11 +33,7 @@ use pocketmine\utils\TextFormat;
 class GiveCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.give.description",
-			"%pocketmine.command.give.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.give.description", "%pocketmine.command.give.usage");
 		$this->setPermission("pocketmine.command.give");
 	}
 
@@ -66,7 +62,7 @@ class GiveCommand extends VanillaCommand{
 			$data = implode(" ", array_slice($args, 3));
 			try{
 				$tags = NBT::parseJSON($data);
-			}catch (\Throwable $ex){
+			}catch(\Throwable $ex){
 				$exception = $ex;
 			}
 
@@ -96,7 +92,7 @@ class GiveCommand extends VanillaCommand{
 		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
 			$item->getName() . " (" . $item->getId() . ":" . $item->getDamage() . ")",
 			(string) $item->getCount(),
-			$player->getName()
+			$player->getName(),
 		]));
 		return true;
 	}

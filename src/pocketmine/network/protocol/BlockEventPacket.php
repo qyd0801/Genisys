@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class BlockEventPacket extends DataPacket{
+
 	const NETWORK_ID = Info::BLOCK_EVENT_PACKET;
 
 	public $x;

@@ -27,10 +27,10 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class PoweredRepeater extends RedstoneSource{
-	protected $id = self::POWERED_REPEATER_BLOCK;
 
 	const ACTION_ACTIVATE = "Repeater Activate";
 	const ACTION_DEACTIVATE = "Repeater Deactivate";
+	protected $id = self::POWERED_REPEATER_BLOCK;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -66,7 +66,7 @@ class PoweredRepeater extends RedstoneSource{
 		}
 		return $direction;
 	}
-	
+
 	public function getOppositeDirection() : int{
 		return $this->getOppositeSide($this->getDirection());
 	}
@@ -131,8 +131,7 @@ class PoweredRepeater extends RedstoneSource{
 
 	public function onActivate(Item $item, Player $player = null){
 		$meta = $this->meta + 4;
-		if($meta > 15) $this->meta = $this->meta % 4;
-		else $this->meta = $meta;
+		if($meta > 15) $this->meta = $this->meta % 4;else $this->meta = $meta;
 		$this->getLevel()->setBlock($this, $this, true, false);
 		return true;
 	}
@@ -155,7 +154,7 @@ class PoweredRepeater extends RedstoneSource{
 
 	public function getDrops(Item $item) : array{
 		return [
-			[Item::REPEATER, 0, 1]
+			[Item::REPEATER, 0, 1],
 		];
 	}
 }

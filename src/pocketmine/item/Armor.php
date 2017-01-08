@@ -19,15 +19,15 @@
  *
 */
 
-
 namespace pocketmine\item;
 
+use pocketmine\item\enchantment\enchantment;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\utils\Color;
-use pocketmine\item\enchantment\enchantment;
 
 abstract class Armor extends Item{
+
 	const TIER_LEATHER = 1;
 	const TIER_GOLD = 2;
 	const TIER_CHAIN = 3;
@@ -39,7 +39,7 @@ abstract class Armor extends Item{
 	const TYPE_LEGGINGS = 2;
 	const TYPE_BOOTS = 3;
 
-	public function getMaxStackSize() : int {
+	public function getMaxStackSize() : int{
 		return 1;
 	}
 
@@ -50,7 +50,7 @@ abstract class Armor extends Item{
 	/**
 	 *
 	 * @param Item $object
-	 * @param int $cost
+	 * @param int  $cost
 	 *
 	 * @return bool
 	 */
@@ -62,7 +62,7 @@ abstract class Armor extends Item{
 			0 => 100,
 			1 => 80,
 			2 => 73,
-			3 => 70
+			3 => 70,
 		];
 		$unbreakingl = $this->getEnchantmentLevel(Enchantment::TYPE_MINING_DURABILITY);
 		if(mt_rand(1, 100) > $unbreakings[$unbreakingl]){

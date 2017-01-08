@@ -21,11 +21,17 @@
 
 namespace pocketmine\math;
 
-
 class Matrix implements \ArrayAccess{
+
 	private $matrix = [];
 	private $rows = 0;
 	private $columns = 0;
+
+	public function __construct($rows, $columns, array $set = []){
+		$this->rows = max(1, (int) $rows);
+		$this->columns = max(1, (int) $columns);
+		$this->set($set);
+	}
 
 	public function offsetExists($offset){
 		return isset($this->matrix[(int) $offset]);
@@ -41,12 +47,6 @@ class Matrix implements \ArrayAccess{
 
 	public function offsetUnset($offset){
 		unset($this->matrix[(int) $offset]);
-	}
-
-	public function __construct($rows, $columns, array $set = []){
-		$this->rows = max(1, (int) $rows);
-		$this->columns = max(1, (int) $columns);
-		$this->set($set);
 	}
 
 	public function set(array $m){
@@ -126,7 +126,6 @@ class Matrix implements \ArrayAccess{
 		return $result;
 	}
 
-
 	public function divideScalar($number){
 		$result = clone $this;
 		for($r = 0; $r < $this->rows; ++$r){
@@ -169,7 +168,6 @@ class Matrix implements \ArrayAccess{
 		return $result;
 	}
 
-
 	//Computation of the determinant of 2x2 and 3x3 matrices
 	public function determinant(){
 		if($this->isSquare() !== true){
@@ -186,7 +184,6 @@ class Matrix implements \ArrayAccess{
 
 		return false;
 	}
-
 
 	public function __toString(){
 		$s = "";

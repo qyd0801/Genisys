@@ -24,8 +24,8 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
-use pocketmine\Player;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class SignPost extends Transparent{
 
@@ -50,7 +50,6 @@ class SignPost extends Transparent{
 	public function getBoundingBox(){
 		return null;
 	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face !== 0){
@@ -80,7 +79,7 @@ class SignPost extends Transparent{
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === Block::AIR){
 				$this->getLevel()->useBreakOn($this);
-				
+
 				return Level::BLOCK_UPDATE_NORMAL;
 			}
 		}

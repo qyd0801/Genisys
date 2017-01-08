@@ -26,9 +26,10 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class CommandReader extends Thread{
-	private $readline;
+
 	/** @var \Threaded */
 	protected $buffer;
+	private $readline;
 	private $shutdown = false;
 	/** @var MainLogger */
 	private $logger;
@@ -43,25 +44,6 @@ class CommandReader extends Thread{
 
 	public function shutdown(){
 		$this->shutdown = true;
-	}
-
-	private function readline_callback($line){
-		if($line !== ""){
-			$this->buffer[] = $line;
-			readline_add_history($line);
-		}
-	}
-
-	private function readLine(){
-		if(!$this->readline){
-			global $stdin;
-			$line = trim(fgets($stdin));
-			if($line !== ""){
-				$this->buffer[] = $line;
-			}
-		}else{
-			readline_callback_read_char();
-		}
 	}
 
 	/**
@@ -120,5 +102,24 @@ class CommandReader extends Thread{
 
 	public function getThreadName(){
 		return "Console";
+	}
+
+	private function readline_callback($line){
+		if($line !== ""){
+			$this->buffer[] = $line;
+			readline_add_history($line);
+		}
+	}
+
+	private function readLine(){
+		if(!$this->readline){
+			global $stdin;
+			$line = trim(fgets($stdin));
+			if($line !== ""){
+				$this->buffer[] = $line;
+			}
+		}else{
+			readline_callback_read_char();
+		}
 	}
 }

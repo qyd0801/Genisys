@@ -18,6 +18,7 @@
 namespace pocketmine\network\protocol;
 
 class StrangePacket extends DataPacket{
+
 	const NETWORK_ID = 0x1b;
 
 	public $address;
@@ -25,6 +26,15 @@ class StrangePacket extends DataPacket{
 
 	public function pid(){
 		return 0x1b;
+	}
+
+	public function decode(){
+
+	}
+
+	public function encode(){
+		$this->reset();
+		$this->putAddress($this->address, $this->port);
 	}
 
 	protected function putAddress($addr, $port, $version = 4){
@@ -37,15 +47,6 @@ class StrangePacket extends DataPacket{
 		}else{
 			//IPv6
 		}
-	}
-
-	public function decode(){
-
-	}
-
-	public function encode(){
-		$this->reset();
-		$this->putAddress($this->address, $this->port);
 	}
 
 }

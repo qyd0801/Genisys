@@ -57,7 +57,7 @@ class RedstoneWire extends RedstoneSource{
 			Vector3::SIDE_WEST => false,
 			Vector3::SIDE_EAST => false,
 			Vector3::SIDE_NORTH => false,
-			Vector3::SIDE_SOUTH => false
+			Vector3::SIDE_SOUTH => false,
 		];
 		//check blocks around
 		foreach($hasChecked as $side => $bool){
@@ -104,7 +104,7 @@ class RedstoneWire extends RedstoneSource{
 			Vector3::SIDE_WEST => false,
 			Vector3::SIDE_EAST => false,
 			Vector3::SIDE_NORTH => false,
-			Vector3::SIDE_SOUTH => false
+			Vector3::SIDE_SOUTH => false,
 		];
 		//check blocks around
 		foreach($hasChecked as $side => $bool){
@@ -173,7 +173,7 @@ class RedstoneWire extends RedstoneSource{
 
 			$sides = [Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH];
 			foreach($sides as $s){
-				if(!in_array($s, $side[1])) {
+				if(!in_array($s, $side[1])){
 					$block = $this->getSide(Vector3::SIDE_DOWN)->getSide($s);
 					$this->activateBlock($block);
 				}
@@ -184,7 +184,14 @@ class RedstoneWire extends RedstoneSource{
 			$this->activateBlock($block);
 
 			if(!$block->isTransparent()){
-				$sides = [Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
+				$sides = [
+					Vector3::SIDE_WEST,
+					Vector3::SIDE_EAST,
+					Vector3::SIDE_SOUTH,
+					Vector3::SIDE_NORTH,
+					Vector3::SIDE_UP,
+					Vector3::SIDE_DOWN,
+				];
 				foreach($sides as $s){
 					if($s != $this->getOppositeSide($side[0])){
 						$this->activateBlockWithoutWire($block->getSide($s));
@@ -201,7 +208,7 @@ class RedstoneWire extends RedstoneSource{
 	public function deactivate(array $ignore = []){
 		if($this->canCalc()){
 			$block = $this->getSide(Vector3::SIDE_DOWN);
-			if($block->getId() == Block::ACTIVE_REDSTONE_LAMP) {
+			if($block->getId() == Block::ACTIVE_REDSTONE_LAMP){
 				/** @var ActiveRedstoneLamp $block */
 				if(!$this->checkPower($block, [Vector3::SIDE_UP], true)) $block->turnOff();
 			}
@@ -210,7 +217,7 @@ class RedstoneWire extends RedstoneSource{
 
 			$sides = [Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH];
 			foreach($sides as $s){
-				if(!in_array($s, $side[1])) {
+				if(!in_array($s, $side[1])){
 					$this->deactivateBlock($this->getSide(Vector3::SIDE_DOWN)->getSide($s));
 				}
 			}
@@ -220,7 +227,14 @@ class RedstoneWire extends RedstoneSource{
 			$this->deactivateBlockWithoutWire($block);
 
 			if(!$block->isTransparent()){
-				$sides = [Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
+				$sides = [
+					Vector3::SIDE_WEST,
+					Vector3::SIDE_EAST,
+					Vector3::SIDE_SOUTH,
+					Vector3::SIDE_NORTH,
+					Vector3::SIDE_UP,
+					Vector3::SIDE_DOWN,
+				];
 				foreach($sides as $s){
 					if($s != $this->getOppositeSide($side[0])){
 						$this->deactivateBlockWithoutWire($block->getSide($s));
@@ -244,11 +258,10 @@ class RedstoneWire extends RedstoneSource{
 			Vector3::SIDE_WEST => false,
 			Vector3::SIDE_EAST => false,
 			Vector3::SIDE_NORTH => false,
-			Vector3::SIDE_SOUTH => false
+			Vector3::SIDE_SOUTH => false,
 		];
 		$hash = Level::blockHash($wire->x, $wire->y, $wire->z);
-		if(!isset($hasUpdated[$hash])) $hasUpdated[$hash] = true;
-		else return [$powers, $hasUpdated];
+		if(!isset($hasUpdated[$hash])) $hasUpdated[$hash] = true;else return [$powers, $hasUpdated];
 
 		//check blocks around
 		foreach($hasChecked as $side => $bool){
@@ -335,7 +348,7 @@ class RedstoneWire extends RedstoneSource{
 						Vector3::SIDE_WEST => false,
 						Vector3::SIDE_EAST => false,
 						Vector3::SIDE_NORTH => false,
-						Vector3::SIDE_SOUTH => false
+						Vector3::SIDE_SOUTH => false,
 					];
 
 					foreach($hasChecked as $side => $bool){
@@ -380,7 +393,6 @@ class RedstoneWire extends RedstoneSource{
 			}
 		}
 
-
 		return $hasUpdated;
 	}
 
@@ -407,21 +419,19 @@ class RedstoneWire extends RedstoneSource{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down instanceof Transparent and $down->getId() != Block::INACTIVE_REDSTONE_LAMP and $down->getId() != Block::ACTIVE_REDSTONE_LAMP) return;
-		else{
+		if($down instanceof Transparent and $down->getId() != Block::INACTIVE_REDSTONE_LAMP and $down->getId() != Block::ACTIVE_REDSTONE_LAMP) return;else{
 			$this->getLevel()->setBlock($block, $this, true, false);
 			$this->calcSignal(15, self::PLACE);
 		}
 	}
 
 	public function onBreak(Item $item){
-		if($this->canCalc()) $this->calcSignal(0, self::DESTROY);
-		else $this->getLevel()->setBlock($this, new Air());
+		if($this->canCalc()) $this->calcSignal(0, self::DESTROY);else $this->getLevel()->setBlock($this, new Air());
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::REDSTONE, 0, 1]
+			[Item::REDSTONE, 0, 1],
 		];
 	}
 }

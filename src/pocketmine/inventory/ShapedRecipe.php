@@ -22,11 +22,12 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector2;
 use pocketmine\Server;
 use pocketmine\utils\UUID;
-use pocketmine\math\Vector2;
 
 class ShapedRecipe implements Recipe{
+
 	/** @var Item */
 	private $output;
 
@@ -105,12 +106,6 @@ class ShapedRecipe implements Recipe{
 		return $this;
 	}
 
-	protected function fixRecipe($key, $item){
-		foreach($this->shapeItems[$key] as $entry){
-			$this->ingredients[$entry->y][$entry->x] = clone $item;
-		}
-	}
-
 	/**
 	 * @return Item[][]
 	 */
@@ -131,25 +126,26 @@ class ShapedRecipe implements Recipe{
 	}
 
 	/**
- 	 * @return Item[]
- 	 */
- 	public function getIngredientList(){
- 		$ingredients = [];
- 		for ($x = 0; $x < 3; ++$x){
- 			for ($y = 0; $y < 3; ++$y){
- 				if (!empty($this->ingredients[$x][$y])){
- 					if ($this->ingredients[$x][$y]->getId() !== Item::AIR){
- 						$ingredients[] = clone $this->ingredients[$x][$y];
- 					}
- 				}
- 			}
- 		}
- 		return $ingredients;
- 	}
+	 * @return Item[]
+	 */
+	public function getIngredientList(){
+		$ingredients = [];
+		for($x = 0; $x < 3; ++$x){
+			for($y = 0; $y < 3; ++$y){
+				if(!empty($this->ingredients[$x][$y])){
+					if($this->ingredients[$x][$y]->getId() !== Item::AIR){
+						$ingredients[] = clone $this->ingredients[$x][$y];
+					}
+				}
+			}
+		}
+		return $ingredients;
+	}
 
 	/**
 	 * @param $x
 	 * @param $y
+	 *
 	 * @return null|Item
 	 */
 	public function getIngredient($x, $y){
@@ -165,5 +161,11 @@ class ShapedRecipe implements Recipe{
 
 	public function registerToCraftingManager(){
 		Server::getInstance()->getCraftingManager()->registerShapedRecipe($this);
+	}
+
+	protected function fixRecipe($key, $item){
+		foreach($this->shapeItems[$key] as $entry){
+			$this->ingredients[$entry->y][$entry->x] = clone $item;
+		}
 	}
 }

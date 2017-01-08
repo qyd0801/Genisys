@@ -28,11 +28,7 @@ use pocketmine\event\TranslationContainer;
 class PardonCidCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.unban.cid.description",
-			"%commands.unbancid.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.unban.cid.description", "%commands.unbancid.usage");
 		$this->setPermission("pocketmine.command.pardoncid");
 	}
 

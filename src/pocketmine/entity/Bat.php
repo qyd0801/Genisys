@@ -21,10 +21,10 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\level\format\Chunk;
-use pocketmine\network\protocol\AddEntityPacket;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Bat extends FlyingAnimal{
@@ -40,15 +40,6 @@ class Bat extends FlyingAnimal{
 	public $flySpeed = 0.8;
 	public $switchDirectionTicks = 100;
 
-	public function getName() : string {
-		return "Bat";
-	}
-
-	public function initEntity(){
-		$this->setMaxHealth(6);
-		parent::initEntity();
-	}
-
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		if(!isset($nbt->isResting)){
 			$nbt->isResting = new ByteTag("isResting", 0);
@@ -56,6 +47,15 @@ class Bat extends FlyingAnimal{
 		parent::__construct($chunk, $nbt);
 
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_RESTING, $this->isResting());
+	}
+
+	public function getName() : string{
+		return "Bat";
+	}
+
+	public function initEntity(){
+		$this->setMaxHealth(6);
+		parent::initEntity();
 	}
 
 	public function isResting() : int{
@@ -67,7 +67,7 @@ class Bat extends FlyingAnimal{
 	}
 
 	public function onUpdate($currentTick){
-		if ($this->age > 20 * 60 * 10) {
+		if($this->age > 20 * 60 * 10){
 			$this->kill();
 		}
 		return parent::onUpdate($currentTick);

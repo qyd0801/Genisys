@@ -15,7 +15,7 @@
  * (at your option) any later version.
  *
  * @author iTX Technologies
- * @link https://itxtech.org
+ * @link   https://itxtech.org
  *
  */
 
@@ -33,7 +33,7 @@ class SimpleTransactionQueue implements TransactionQueue{
 	protected $transactionQueue;
 	/** @var \SplQueue */
 	protected $transactionsToRetry;
-	
+
 	/** @var Inventory[] */
 	protected $inventories;
 

@@ -26,6 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class DeadBush extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;

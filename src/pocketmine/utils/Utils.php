@@ -23,12 +23,14 @@
  * Various Utilities used around the code
  */
 namespace pocketmine\utils;
+
 use pocketmine\ThreadManager;
 
 /**
  * Big collection of functions
  */
 class Utils{
+
 	public static $online = true;
 	public static $ip = false;
 	public static $os;
@@ -192,10 +194,9 @@ class Utils{
 				self::$os = "other";
 			}
 		}
-		
+
 		return self::$os;
 	}
-
 
 	public static function getRealMemoryUsage(){
 		$stack = 0;
@@ -315,7 +316,6 @@ class Utils{
 		return $output;
 	}
 
-
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
 	 *
@@ -348,9 +348,9 @@ class Utils{
 	 */
 	public static function getRandomBytes($length = 16, $secure = true, $raw = true, $startEntropy = "", &$rounds = 0, &$drop = 0){
 		$raw_output = random_bytes($length);
-		if ($raw) {
+		if($raw){
 			return $raw_output;
-		} else {
+		}else{
 			return bin2hex($raw_output);
 		}
 	}
@@ -370,8 +370,8 @@ class Utils{
 	/**
 	 * GETs an URL using cURL
 	 *
-	 * @param     $page
-	 * @param int $timeout default 10
+	 * @param       $page
+	 * @param int   $timeout default 10
 	 * @param array $extraHeaders
 	 *
 	 * @return bool|mixed
@@ -404,7 +404,7 @@ class Utils{
 	 * @param              $page
 	 * @param array|string $args
 	 * @param int          $timeout
-	 * @param array $extraHeaders
+	 * @param array        $extraHeaders
 	 *
 	 * @return bool|mixed
 	 */

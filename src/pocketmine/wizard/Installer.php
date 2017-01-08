@@ -29,6 +29,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 
 class Installer{
+
 	const DEFAULT_NAME = "Minecraft: PE Server";
 	const DEFAULT_PORT = 19132;
 	const DEFAULT_MEMORY = 512;
@@ -36,14 +37,15 @@ class Installer{
 	const DEFAULT_GAMEMODE = 0;
 	const DEFAULT_LEVEL_NAME = "world";
 	const DEFAULT_LEVEL_TYPE = "DEFAULT";
-	
+
 	const LEVEL_TYPES = [
 		"DEFAULT",
 		"FLAT",
 		"NORMAL",
 		"NORMAL2",
-		"HELL", //nether type, in case anyone wants to generate a blue-skies nether, which actually does look pretty awesome
-		"VOID"
+		"HELL",
+		//nether type, in case anyone wants to generate a blue-skies nether, which actually does look pretty awesome
+		"VOID",
 	];
 
 	private $defaultLang;
@@ -64,7 +66,6 @@ class Installer{
 			$this->defaultLang = $lang;
 		}while($lang == false);
 		$this->lang = new InstallerLang($lang);
-
 
 		echo "[*] " . $this->lang->language_has_been_selected . "\n";
 
@@ -134,14 +135,14 @@ LICENSE;
 			}
 		}while($port <= 0 or $port > 65535);
 		$config->set("server-port", $port);
-		
+
 		echo "[*] " . $this->lang->online_mode_info . "\n";
 		echo "[?] " . $this->lang->online_mode . " (y/N): ";
 		$config->set("online-mode", strtolower($this->getInput("y")) == "y");
-		
+
 		echo "[?] " . $this->lang->level_name . " (" . self::DEFAULT_LEVEL_NAME . "): ";
 		$config->set("level-name", $this->getInput(self::DEFAULT_LEVEL_NAME));
-		
+
 		do{
 			echo "[?] " . $this->lang->level_type . " (" . self::DEFAULT_LEVEL_TYPE . "): ";
 			$type = strtoupper((string) $this->getInput(self::DEFAULT_LEVEL_TYPE));
@@ -150,7 +151,7 @@ LICENSE;
 			}
 		}while(!in_array($type, self::LEVEL_TYPES));
 		$config->set("level-type", $type);
-		
+
 		/*echo "[*] " . $this->lang->ram_warning . "\n";
 		echo "[?] " . $this->lang->server_ram . " (" . self::DEFAULT_MEMORY . "): ";
 		$config->set("memory-limit", ((int) $this->getInput(self::DEFAULT_MEMORY)) . "M");*/
@@ -169,7 +170,7 @@ LICENSE;
 		}else{
 			$config->set("spawn-protection", 16);
 		}
-		
+
 		echo "[?] " . $this->lang->announce_player_achievements . " (y/N): ";
 		if(strtolower($this->getInput("n")) === "y"){
 			$config->set("announce-player-achievements", "on");
@@ -233,13 +234,15 @@ LICENSE;
 		}*/
 		$config->save();
 
-
 		echo "[*] " . $this->lang->ip_get . "\n";
 
 		$externalIP = Utils::getIP();
 		$internalIP = gethostbyname(trim(`hostname`));
 
-		echo "[!] " . $this->lang->get("ip_warning", ["{{EXTERNAL_IP}}", "{{INTERNAL_IP}}"], [$externalIP, $internalIP]) . "\n";
+		echo "[!] " . $this->lang->get("ip_warning", ["{{EXTERNAL_IP}}", "{{INTERNAL_IP}}"], [
+				$externalIP,
+				$internalIP,
+			]) . "\n";
 		echo "[!] " . $this->lang->ip_confirm;
 		$this->getInput();
 	}
@@ -256,6 +259,5 @@ LICENSE;
 
 		return $input === "" ? $default : $input;
 	}
-
 
 }

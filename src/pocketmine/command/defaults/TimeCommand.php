@@ -31,11 +31,7 @@ use pocketmine\utils\TextFormat;
 class TimeCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.time.description",
-			"%pocketmine.command.time.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.time.description", "%pocketmine.command.time.usage");
 		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set;pocketmine.command.time.start;pocketmine.command.time.stop");
 	}
 
@@ -86,7 +82,6 @@ class TimeCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer("commands.time.query", [$level->getTime()]));
 			return true;
 		}
-
 
 		if(count($args) < 2){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));

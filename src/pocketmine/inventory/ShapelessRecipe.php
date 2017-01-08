@@ -26,6 +26,7 @@ use pocketmine\Server;
 use pocketmine\utils\UUID;
 
 class ShapelessRecipe implements Recipe{
+
 	/** @var Item */
 	private $output;
 

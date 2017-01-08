@@ -29,7 +29,7 @@ use pocketmine\Server;
 
 abstract class Crops extends Flowable{
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -43,7 +43,6 @@ abstract class Crops extends Flowable{
 
 		return false;
 	}
-
 
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal

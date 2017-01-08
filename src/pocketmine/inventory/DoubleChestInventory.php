@@ -25,10 +25,10 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
-
 use pocketmine\tile\Chest;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
+
 	/** @var ChestInventory */
 	private $left;
 	/** @var ChestInventory */
@@ -78,10 +78,9 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 			$items = array_slice($items, 0, $this->size, true);
 		}
 
-
 		for($i = 0; $i < $this->size; ++$i){
 			if(!isset($items[$i])){
-				if ($i < $this->left->size){
+				if($i < $this->left->size){
 					if(isset($this->left->slots[$i])){
 						$this->clear($i);
 					}

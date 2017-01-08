@@ -31,6 +31,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Arrow extends Projectile{
+
 	const NETWORK_ID = 80;
 
 	public $width = 0.5;
@@ -68,10 +69,7 @@ class Arrow extends Projectile{
 		$hasUpdate = parent::onUpdate($currentTick);
 
 		if(!$this->hadCollision and $this->isCritical){
-			$this->level->addParticle(new CriticalParticle($this->add(
-				$this->width / 2 + mt_rand(-100, 100) / 500,
-				$this->height / 2 + mt_rand(-100, 100) / 500,
-				$this->width / 2 + mt_rand(-100, 100) / 500)));
+			$this->level->addParticle(new CriticalParticle($this->add($this->width / 2 + mt_rand(-100, 100) / 500, $this->height / 2 + mt_rand(-100, 100) / 500, $this->width / 2 + mt_rand(-100, 100) / 500)));
 		}elseif($this->onGround){
 			$this->isCritical = false;
 		}
@@ -79,10 +77,7 @@ class Arrow extends Projectile{
 		if($this->potionId != 0){
 			if(!$this->onGround or ($this->onGround and ($currentTick % 4) == 0)){
 				$color = Potion::getColor($this->potionId - 1);
-				$this->level->addParticle(new MobSpellParticle($this->add(
-					$this->width / 2 + mt_rand(-100, 100) / 500,
-					$this->height / 2 + mt_rand(-100, 100) / 500,
-					$this->width / 2 + mt_rand(-100, 100) / 500), $color[0], $color[1], $color[2]));
+				$this->level->addParticle(new MobSpellParticle($this->add($this->width / 2 + mt_rand(-100, 100) / 500, $this->height / 2 + mt_rand(-100, 100) / 500, $this->width / 2 + mt_rand(-100, 100) / 500), $color[0], $color[1], $color[2]));
 			}
 			$hasUpdate = true;
 		}

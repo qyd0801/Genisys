@@ -27,6 +27,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 
 class EntityArmorChangeEvent extends EntityEvent implements Cancellable{
+
 	public static $handlerList = null;
 
 	private $oldItem;
@@ -55,6 +56,5 @@ class EntityArmorChangeEvent extends EntityEvent implements Cancellable{
 	public function getOldItem(){
 		return $this->oldItem;
 	}
-
 
 }

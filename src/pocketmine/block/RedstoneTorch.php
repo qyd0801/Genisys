@@ -23,8 +23,8 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\Player;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class RedstoneTorch extends RedstoneSource{
 
@@ -120,7 +120,14 @@ class RedstoneTorch extends RedstoneSource{
 			$this->activated = true;
 			/** @var Door $block */
 
-			$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
+			$sides = [
+				Vector3::SIDE_EAST,
+				Vector3::SIDE_WEST,
+				Vector3::SIDE_SOUTH,
+				Vector3::SIDE_NORTH,
+				Vector3::SIDE_UP,
+				Vector3::SIDE_DOWN,
+			];
 
 			foreach($sides as $side){
 				if(!in_array($side, $ignore)){
@@ -188,11 +195,7 @@ class RedstoneTorch extends RedstoneSource{
 			$below = $this->getSide(0);
 			$side = $this->getDamage();
 
-			if($this->getSide($faces[$side])->isTransparent() === true and
-				!($side === 0 and ($below->getId() === self::FENCE or
-						$below->getId() === self::COBBLE_WALL
-					))
-			){
+			if($this->getSide($faces[$side])->isTransparent() === true and !($side === 0 and ($below->getId() === self::FENCE or $below->getId() === self::COBBLE_WALL))){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -201,8 +204,7 @@ class RedstoneTorch extends RedstoneSource{
 		}
 
 		if($type == Level::BLOCK_UPDATE_SCHEDULED){
-			if($this->id == self::UNLIT_REDSTONE_TORCH) $this->turnOn($this->ignore);
-			else $this->turnOff($this->ignore);
+			if($this->id == self::UNLIT_REDSTONE_TORCH) $this->turnOn($this->ignore);else $this->turnOff($this->ignore);
 			return Level::BLOCK_UPDATE_SCHEDULED;
 		}
 
@@ -239,12 +241,7 @@ class RedstoneTorch extends RedstoneSource{
 			$this->getLevel()->setBlock($block, $this, true, true);
 
 			return true;
-		}elseif(
-			$below->isTransparent() === false or $below->getId() === self::FENCE or
-			$below->getId() === self::COBBLE_WALL or
-			$below->getId() == Block::INACTIVE_REDSTONE_LAMP or
-			$below->getId() == Block::ACTIVE_REDSTONE_LAMP
-		){
+		}elseif($below->isTransparent() === false or $below->getId() === self::FENCE or $below->getId() === self::COBBLE_WALL or $below->getId() == Block::INACTIVE_REDSTONE_LAMP or $below->getId() == Block::ACTIVE_REDSTONE_LAMP){
 			$this->meta = 0;
 			$this->getLevel()->setBlock($block, $this, true, true);
 

@@ -21,8 +21,8 @@
 
 namespace pocketmine\wizard;
 
-
 class InstallerLang{
+
 	public static $languages = [
 		"eng" => "English",
 		"chs" => "简体中文",
@@ -31,7 +31,7 @@ class InstallerLang{
 		"rus" => "Русский",
 		"ita" => "Italiano",
 		"kor" => "한국어",
-		"deu" => "Deutsch"
+		"deu" => "Deutsch",
 	];
 	private $texts = [];
 	private $lang;
@@ -82,7 +82,10 @@ class InstallerLang{
 				continue;
 			}
 			$line = explode("=", $line);
-			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace(["\\n", "\\N",], "\n", implode("=", $line)));
+			$this->texts[$lang][trim(array_shift($line))] = trim(str_replace([
+				"\\n",
+				"\\N",
+			], "\n", implode("=", $line)));
 		}
 	}
 

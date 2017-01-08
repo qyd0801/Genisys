@@ -21,9 +21,9 @@
 
 namespace pocketmine\block;
 
-use pocketmine\Player;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class PoweredRail extends Rail{
 
@@ -39,13 +39,9 @@ class PoweredRail extends Rail{
 		return "PoweredRail";
 	}
 
-	protected function update(){
-
-		return true;
-	}
-
 	/**
 	 * @param Rail $block
+	 *
 	 * @return bool
 	 */
 	public function canConnect(Rail $block){
@@ -178,11 +174,16 @@ class PoweredRail extends Rail{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.7;
 	}
 
 	public function canPassThrough(){
+		return true;
+	}
+
+	protected function update(){
+
 		return true;
 	}
 }

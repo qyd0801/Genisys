@@ -31,12 +31,7 @@ use pocketmine\utils\TextFormat;
 class GamemodeCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.gamemode.description",
-			"%commands.gamemode.usage",
-			["gm"]
-		);
+		parent::__construct($name, "%pocketmine.command.gamemode.description", "%commands.gamemode.usage", ["gm"]);
 		$this->setPermission("pocketmine.command.gamemode");
 	}
 
@@ -80,7 +75,10 @@ class GamemodeCommand extends VanillaCommand{
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.self", [Server::getGamemodeString($gameMode)]));
 			}else{
 				$target->sendMessage(new TranslationContainer("gameMode.changed"));
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [$target->getName(), Server::getGamemodeString($gameMode)]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [
+					$target->getName(),
+					Server::getGamemodeString($gameMode),
+				]));
 			}
 		}
 

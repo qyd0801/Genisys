@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class StartGamePacket extends DataPacket{
+
 	const NETWORK_ID = Info::START_GAME_PACKET;
 
 	public $entityUniqueId;

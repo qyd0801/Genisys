@@ -24,7 +24,6 @@ namespace pocketmine\block;
 use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -46,14 +45,7 @@ class EnchantingTable extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.75,
-			$this->z + 1
-		);
+		return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 0.75, $this->z + 1);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -62,7 +54,7 @@ class EnchantingTable extends Transparent{
 			new StringTag("id", Tile::ENCHANT_TABLE),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
+			new IntTag("z", $this->z),
 		]);
 
 		if($item->hasCustomName()){
@@ -118,7 +110,7 @@ class EnchantingTable extends Transparent{
 					new StringTag("id", Tile::ENCHANT_TABLE),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
+					new IntTag("z", $this->z),
 				]);
 
 				if($item->hasCustomName()){
@@ -137,7 +129,6 @@ class EnchantingTable extends Transparent{
 			$player->addWindow(new EnchantInventory($this));
 			$player->craftingType = Player::CRAFTING_ENCHANT;
 		}
-
 
 		return true;
 	}

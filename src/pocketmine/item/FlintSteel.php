@@ -26,10 +26,11 @@ use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
 use pocketmine\level\Level;
-use pocketmine\Player;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class FlintSteel extends Tool{
+
 	/** @var Vector3 */
 	private $temporalVector = null;
 

@@ -26,23 +26,17 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
 
 class RCONInstance extends Thread{
+
 	public $stop;
 	public $cmd;
 	public $response;
+	public $serverStatus;
 	private $socket;
 	private $password;
 	private $maxClients;
 	private $waiting;
-
 	/** @var MainLogger */
 	private $logger;
-
-	public $serverStatus;
-
-	public function isWaiting(){
-		return $this->waiting === true;
-	}
-
 
 	public function __construct($logger, $socket, $password, $maxClients = 50){
 		$this->logger = $logger;
@@ -61,33 +55,8 @@ class RCONInstance extends Thread{
 		$this->start();
 	}
 
-	private function writePacket($client, $requestID, $packetType, $payload){
-		$pk = Binary::writeLInt((int) $requestID)
-			. Binary::writeLInt((int) $packetType)
-			. $payload
-			. "\x00\x00"; //Terminate payload and packet
-		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
-	}
-
-	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
-		socket_set_nonblock($client);
-		$d = @socket_read($client, 4);
-		if($this->stop === true){
-			return false;
-		}elseif($d === false){
-			return null;
-		}elseif($d === "" or strlen($d) < 4){
-			return false;
-		}
-		socket_set_block($client);
-		$size = Binary::readLInt($d);
-		if($size < 0 or $size > 65535){
-			return false;
-		}
-		$requestID = Binary::readLInt(socket_read($client, 4));
-		$packetType = Binary::readLInt(socket_read($client, 4));
-		$payload = rtrim(socket_read($client, $size + 2)); //Strip two null bytes
-		return true;
+	public function isWaiting(){
+		return $this->waiting === true;
 	}
 
 	public function close(){
@@ -157,7 +126,7 @@ class RCONInstance extends Thread{
 								}
 								$res = (array) [
 									"serverStatus" => unserialize($this->serverStatus),
-									"logger" => str_replace("\n", "\r\n", trim($this->logger->getMessages()))
+									"logger" => str_replace("\n", "\r\n", trim($this->logger->getMessages())),
 								];
 								$this->writePacket($client, $requestID, 0, serialize($res));
 								$this->response = "";
@@ -216,5 +185,31 @@ class RCONInstance extends Thread{
 
 	public function getThreadName(){
 		return "RCON";
+	}
+
+	private function writePacket($client, $requestID, $packetType, $payload){
+		$pk = Binary::writeLInt((int) $requestID) . Binary::writeLInt((int) $packetType) . $payload . "\x00\x00"; //Terminate payload and packet
+		return socket_write($client, Binary::writeLInt(strlen($pk)) . $pk);
+	}
+
+	private function readPacket($client, &$size, &$requestID, &$packetType, &$payload){
+		socket_set_nonblock($client);
+		$d = @socket_read($client, 4);
+		if($this->stop === true){
+			return false;
+		}elseif($d === false){
+			return null;
+		}elseif($d === "" or strlen($d) < 4){
+			return false;
+		}
+		socket_set_block($client);
+		$size = Binary::readLInt($d);
+		if($size < 0 or $size > 65535){
+			return false;
+		}
+		$requestID = Binary::readLInt(socket_read($client, 4));
+		$packetType = Binary::readLInt(socket_read($client, 4));
+		$payload = rtrim(socket_read($client, $size + 2)); //Strip two null bytes
+		return true;
 	}
 }

@@ -25,28 +25,21 @@ use pocketmine\event\Timings;
 
 class TaskHandler{
 
-	/** @var Task */
-	protected $task;
-
-	/** @var int */
-	protected $taskId;
-
-	/** @var int */
-	protected $delay;
-
-	/** @var int */
-	protected $period;
-
-	/** @var int */
-	protected $nextRun;
-
-	/** @var bool */
-	protected $cancelled = false;
-
 	/** @var \pocketmine\event\TimingsHandler */
 	public $timings;
-
 	public $timingName = null;
+	/** @var Task */
+	protected $task;
+	/** @var int */
+	protected $taskId;
+	/** @var int */
+	protected $delay;
+	/** @var int */
+	protected $period;
+	/** @var int */
+	protected $nextRun;
+	/** @var bool */
+	protected $cancelled = false;
 
 	/**
 	 * @param string $timingName

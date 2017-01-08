@@ -30,12 +30,10 @@ use pocketmine\utils\TextFormat;
 class VersionCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.version.description",
-			"%pocketmine.command.version.usage",
-			["ver", "about"]
-		);
+		parent::__construct($name, "%pocketmine.command.version.description", "%pocketmine.command.version.usage", [
+				"ver",
+				"about",
+			]);
 		$this->setPermission("pocketmine.command.version");
 	}
 
@@ -47,21 +45,21 @@ class VersionCommand extends VanillaCommand{
 		if(\count($args) === 0){
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended.title"));
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended1", [
-											$sender->getServer()->getName(), 
-											$sender->getServer()->getFormattedVersion("-"),
-											$sender->getServer()->getCodename()
+				$sender->getServer()->getName(),
+				$sender->getServer()->getFormattedVersion("-"),
+				$sender->getServer()->getCodename(),
 			]));
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended2", [
-											phpversion()
+				phpversion(),
 			]));
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended3", [
-											$sender->getServer()->getApiVersion(),
-											$sender->getServer()->getiTXApiVersion()
-			
+				$sender->getServer()->getApiVersion(),
+				$sender->getServer()->getiTXApiVersion(),
+
 			]));
 			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended4", [
-											$sender->getServer()->getVersion(),
-											Info::CURRENT_PROTOCOL
+				$sender->getServer()->getVersion(),
+				Info::CURRENT_PROTOCOL,
 			]));
 		}else{
 			$pluginName = \implode(" ", $args);

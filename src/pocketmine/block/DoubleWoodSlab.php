@@ -32,7 +32,7 @@ class DoubleWoodSlab extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -49,12 +49,12 @@ class DoubleWoodSlab extends Solid{
 			4 => "Acacia",
 			5 => "Dark Oak",
 			6 => "",
-			7 => ""
+			7 => "",
 		];
 		return "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::WOOD_SLAB, $this->meta & 0x07, 2],
 		];

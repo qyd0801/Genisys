@@ -21,9 +21,9 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\network\protocol\AddEntityPacket;
@@ -31,6 +31,7 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\Player;
 
 class Squid extends WaterAnimal implements Ageable{
+
 	const NETWORK_ID = 17;
 
 	public $width = 0.95;
@@ -71,11 +72,6 @@ class Squid extends WaterAnimal implements Ageable{
 			$this->server->broadcastPacket($this->hasSpawned, $pk);
 		}
 	}
-
-	private function generateRandomDirection(){
-		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
-	}
-
 
 	public function onUpdate($currentTick){
 		if($this->closed !== false){
@@ -146,7 +142,6 @@ class Squid extends WaterAnimal implements Ageable{
 		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
 	}
 
-
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
@@ -172,7 +167,11 @@ class Squid extends WaterAnimal implements Ageable{
 			$lootingL = $cause->getDamager()->getItemInHand()->getEnchantmentLevel(Enchantment::TYPE_WEAPON_LOOTING);
 		}
 		return [
-			ItemItem::get(ItemItem::DYE, 0, mt_rand(1, 3 + $lootingL))
+			ItemItem::get(ItemItem::DYE, 0, mt_rand(1, 3 + $lootingL)),
 		];
+	}
+
+	private function generateRandomDirection(){
+		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
 	}
 }

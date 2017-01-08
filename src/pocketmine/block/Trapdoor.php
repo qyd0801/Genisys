@@ -23,9 +23,9 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
-use pocketmine\level\sound\DoorSound;
 
 class Trapdoor extends Transparent{
 
@@ -39,7 +39,7 @@ class Trapdoor extends Transparent{
 		return "Wooden Trapdoor";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 3;
 	}
 
@@ -47,79 +47,8 @@ class Trapdoor extends Transparent{
 		return 15;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
-	}
-
-	protected function recalculateBoundingBox() {
-
-		$damage = $this->getDamage();
-
-		$f = 0.1875;
-
-		if(($damage & 0x08) > 0){
-			$bb = new AxisAlignedBB(
-				$this->x,
-				$this->y + 1 - $f,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}else{
-			$bb = new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + $f,
-				$this->z + 1
-			);
-		}
-
-		if(($damage & 0x04) > 0){
-			if(($damage & 0x03) === 0){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z + 1 - $f,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
-			}elseif(($damage & 0x03) === 1){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + $f
-				);
-			}
-			if(($damage & 0x03) === 2){
-				$bb->setBounds(
-					$this->x + 1 - $f,
-					$this->y,
-					$this->z,
-					$this->x + 1,
-					$this->y + 1,
-					$this->z + 1
-				);
-			}
-			if(($damage & 0x03) === 3){
-				$bb->setBounds(
-					$this->x,
-					$this->y,
-					$this->z,
-					$this->x + $f,
-					$this->y + 1,
-					$this->z + 1
-				);
-			}
-		}
-
-		return $bb;
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -127,7 +56,7 @@ class Trapdoor extends Transparent{
 			0 => 1,
 			1 => 3,
 			2 => 0,
-			3 => 2
+			3 => 2,
 		];
 		if($player !== null){
 			$this->meta = $directions[$player->getDirection() & 0x03];
@@ -139,7 +68,7 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];
@@ -158,5 +87,34 @@ class Trapdoor extends Transparent{
 
 	public function getToolType(){
 		return Tool::TYPE_AXE;
+	}
+
+	protected function recalculateBoundingBox(){
+
+		$damage = $this->getDamage();
+
+		$f = 0.1875;
+
+		if(($damage & 0x08) > 0){
+			$bb = new AxisAlignedBB($this->x, $this->y + 1 - $f, $this->z, $this->x + 1, $this->y + 1, $this->z + 1);
+		}else{
+			$bb = new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + $f, $this->z + 1);
+		}
+
+		if(($damage & 0x04) > 0){
+			if(($damage & 0x03) === 0){
+				$bb->setBounds($this->x, $this->y, $this->z + 1 - $f, $this->x + 1, $this->y + 1, $this->z + 1);
+			}elseif(($damage & 0x03) === 1){
+				$bb->setBounds($this->x, $this->y, $this->z, $this->x + 1, $this->y + 1, $this->z + $f);
+			}
+			if(($damage & 0x03) === 2){
+				$bb->setBounds($this->x + 1 - $f, $this->y, $this->z, $this->x + 1, $this->y + 1, $this->z + 1);
+			}
+			if(($damage & 0x03) === 3){
+				$bb->setBounds($this->x, $this->y, $this->z, $this->x + $f, $this->y + 1, $this->z + 1);
+			}
+		}
+
+		return $bb;
 	}
 }

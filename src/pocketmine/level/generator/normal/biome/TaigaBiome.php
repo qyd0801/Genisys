@@ -21,8 +21,8 @@
 
 namespace pocketmine\level\generator\normal\biome;
 
-use pocketmine\block\Sapling;
 use pocketmine\block\Block;
+use pocketmine\block\Sapling;
 use pocketmine\level\generator\populator\MossStone;
 use pocketmine\level\generator\populator\Tree;
 
@@ -49,7 +49,7 @@ class TaigaBiome extends SnowyBiome{
 			Block::get(Block::PODZOL, 0),
 			Block::get(Block::DIRT, 0),
 			Block::get(Block::DIRT, 0),
-			Block::get(Block::DIRT, 0)
+			Block::get(Block::DIRT, 0),
 		]);
 	}
 

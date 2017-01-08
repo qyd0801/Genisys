@@ -28,12 +28,7 @@ use pocketmine\utils\TextFormat;
 class PluginsCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.plugins.description",
-			"%pocketmine.command.plugins.usage",
-			["pl"]
-		);
+		parent::__construct($name, "%pocketmine.command.plugins.description", "%pocketmine.command.plugins.usage", ["pl"]);
 		$this->setPermission("pocketmine.command.plugins");
 	}
 

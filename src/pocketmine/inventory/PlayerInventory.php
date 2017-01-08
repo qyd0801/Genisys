@@ -67,7 +67,7 @@ class PlayerInventory extends BaseInventory{
 					}
 				}
 			}else{
-				throw new \InvalidArgumentException("Expecting ListTag, received ".gettype($contents));
+				throw new \InvalidArgumentException("Expecting ListTag, received " . gettype($contents));
 			}
 		}
 	}
@@ -210,6 +210,7 @@ class PlayerInventory extends BaseInventory{
 
 	/**
 	 * @deprecated
+	 *
 	 * @param int $slot
 	 */
 	public function setHeldItemSlot($slot){
@@ -339,7 +340,6 @@ class PlayerInventory extends BaseInventory{
 			$item = $ev->getNewItem();
 		}
 
-
 		$old = $this->getItem($index);
 		$this->slots[$index] = clone $item;
 		$this->onSlotChange($index, $old, $send);
@@ -452,7 +452,6 @@ class PlayerInventory extends BaseInventory{
 			}
 		}
 	}
-
 
 	/**
 	 * @param int             $index

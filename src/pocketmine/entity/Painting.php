@@ -7,14 +7,15 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\network\protocol\AddPaintingPacket;
-use pocketmine\item\Item as ItemItem;
-use pocketmine\Player;
-use pocketmine\level\particle\DestroyBlockParticle;
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Item as ItemItem;
+use pocketmine\level\particle\DestroyBlockParticle;
+use pocketmine\network\protocol\AddPaintingPacket;
+use pocketmine\Player;
 
 class Painting extends Hanging{
+
 	const NETWORK_ID = 83;
 
 	private $motive;
@@ -48,11 +49,11 @@ class Painting extends Hanging{
 		parent::spawnTo($player);
 	}
 
-	protected function updateMovement(){
-		//Nothing to update, paintings cannot move.
-	}
-
 	public function getDrops(){
 		return [ItemItem::get(ItemItem::PAINTING, 0, 1)];
+	}
+
+	protected function updateMovement(){
+		//Nothing to update, paintings cannot move.
 	}
 }

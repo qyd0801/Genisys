@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class CraftingEventPacket extends DataPacket{
+
 	const NETWORK_ID = Info::CRAFTING_EVENT_PACKET;
 
 	public $windowId;

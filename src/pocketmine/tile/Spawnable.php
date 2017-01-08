@@ -29,6 +29,11 @@ use pocketmine\Player;
 
 abstract class Spawnable extends Tile{
 
+	public function __construct(Chunk $chunk, CompoundTag $nbt){
+		parent::__construct($chunk, $nbt);
+		$this->spawnToAll();
+	}
+
 	public function spawnTo(Player $player){
 		if($this->closed){
 			return false;
@@ -46,11 +51,6 @@ abstract class Spawnable extends Tile{
 		return true;
 	}
 
-	public function __construct(Chunk $chunk, CompoundTag $nbt){
-		parent::__construct($chunk, $nbt);
-		$this->spawnToAll();
-	}
-
 	public function spawnToAll(){
 		if($this->closed){
 			return;
@@ -60,15 +60,6 @@ abstract class Spawnable extends Tile{
 			if($player->spawned === true){
 				$this->spawnTo($player);
 			}
-		}
-	}
-
-	protected function onChanged(){
-		$this->spawnToAll();
-
-		if($this->chunk !== null){
-			$this->chunk->setChanged();
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
 		}
 	}
 
@@ -88,5 +79,14 @@ abstract class Spawnable extends Tile{
 	 */
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
 		return false;
+	}
+
+	protected function onChanged(){
+		$this->spawnToAll();
+
+		if($this->chunk !== null){
+			$this->chunk->setChanged();
+			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
+		}
 	}
 }

@@ -36,7 +36,7 @@ class HayBale extends Solid{
 		return "Hay Bale";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.5;
 	}
 
@@ -64,7 +64,7 @@ class HayBale extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];

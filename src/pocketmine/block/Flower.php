@@ -27,6 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Flower extends Flowable{
+
 	const TYPE_POPPY = 0;
 	const TYPE_BLUE_ORCHID = 1;
 	const TYPE_ALLIUM = 2;
@@ -60,11 +61,10 @@ class Flower extends Flowable{
 			12 => "Unknown",
 			13 => "Unknown",
 			14 => "Unknown",
-			15 => "Unknown"
+			15 => "Unknown",
 		];
 		return $names[$this->meta];
 	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);

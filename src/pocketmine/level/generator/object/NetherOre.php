@@ -26,8 +26,9 @@ use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 
 class NetherOre{
-	private $random;
+
 	public $type;
+	private $random;
 
 	public function __construct(Random $random, OreType $type){
 		$this->type = $type;

@@ -21,24 +21,19 @@
 
 namespace pocketmine\command\defaults;
 
-
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
+use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
-use pocketmine\math\Vector3;
-use pocketmine\item\ItemBlock;
-use pocketmine\item\Item;
-use pocketmine\level\Level;
 
 class FillCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.fill.description",
-			"%commands.fill.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.fill.description", "%commands.fill.usage");
 		$this->setPermission("pocketmine.command.fill");
 	}
 
@@ -64,13 +59,12 @@ class FillCommand extends VanillaCommand{
 						for($x = $xmin; $x <= $xmax; $x++){
 							for($y = $ymin; $y <= $ymax; $y++){
 								for($z = $zmin; $z <= $zmax; $z++){
-									if ($this->setBlock(new Vector3($x, $y, $z), $level, $item, isset($args[7]) ? $args[7] : 0)) {
+									if($this->setBlock(new Vector3($x, $y, $z), $level, $item, isset($args[7]) ? $args[7] : 0)){
 										$n++;
-										if (is_int($n/10000)) {
+										if(is_int($n / 10000)){
 											$sender->sendMessage(new TranslationContainer("$n out of $nmax blocks filled, now at $x $y $z", []));
 										}
-									}
-									else {
+									}else{
 										$sender->sendMessage(TextFormat::RED . new TranslationContainer("Error after filling $n out of $nmax blocks.", []));
 										return false;
 									}
@@ -83,8 +77,8 @@ class FillCommand extends VanillaCommand{
 					$sender->sendMessage(TextFormat::RED . new TranslationContainer($args[6] . " is not a valid block.", []));
 					return false;
 				}
-					$sender->sendMessage(TextFormat::RED . new TranslationContainer($args[$a] . " is not a valid coordinate.", []));
-					$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+				$sender->sendMessage(TextFormat::RED . new TranslationContainer($args[$a] . " is not a valid coordinate.", []));
+				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			$sender->sendMessage(TextFormat::RED . new TranslationContainer("pocketmine.command.fill.missingParameter", []));

@@ -30,12 +30,40 @@ use pocketmine\Server;
  * Represents a permission
  */
 class Permission{
+
 	const DEFAULT_OP = "op";
 	const DEFAULT_NOT_OP = "notop";
 	const DEFAULT_TRUE = "true";
 	const DEFAULT_FALSE = "false";
 
 	public static $DEFAULT_PERMISSION = self::DEFAULT_OP;
+	/** @var string */
+	private $name;
+	/** @var string */
+	private $description;
+	/**
+	 * @var string[]
+	 */
+	private $children = [];
+	/** @var string */
+	private $defaultValue;
+
+	/**
+	 * Creates a new Permission object to be attached to Permissible objects
+	 *
+	 * @param string       $name
+	 * @param string       $description
+	 * @param string       $defaultValue
+	 * @param Permission[] $children
+	 */
+	public function __construct($name, $description = null, $defaultValue = null, array $children = []){
+		$this->name = $name;
+		$this->description = $description !== null ? $description : "";
+		$this->defaultValue = $defaultValue !== null ? $defaultValue : self::$DEFAULT_PERMISSION;
+		$this->children = $children;
+
+		$this->recalculatePermissibles();
+	}
 
 	/**
 	 * @param $value
@@ -75,35 +103,64 @@ class Permission{
 		}
 	}
 
-	/** @var string */
-	private $name;
-
-	/** @var string */
-	private $description;
-
 	/**
-	 * @var string[]
-	 */
-	private $children = [];
-
-	/** @var string */
-	private $defaultValue;
-
-	/**
-	 * Creates a new Permission object to be attached to Permissible objects
+	 * @param array $data
+	 * @param       $default
 	 *
-	 * @param string       $name
-	 * @param string       $description
-	 * @param string       $defaultValue
-	 * @param Permission[] $children
+	 * @return Permission[]
 	 */
-	public function __construct($name, $description = null, $defaultValue = null, array $children = []){
-		$this->name = $name;
-		$this->description = $description !== null ? $description : "";
-		$this->defaultValue = $defaultValue !== null ? $defaultValue : self::$DEFAULT_PERMISSION;
-		$this->children = $children;
+	public static function loadPermissions(array $data, $default = self::DEFAULT_OP){
+		$result = [];
+		foreach($data as $key => $entry){
+			$result[] = self::loadPermission($key, $entry, $default, $result);
+		}
 
-		$this->recalculatePermissibles();
+		return $result;
+	}
+
+	/**
+	 * @param string $name
+	 * @param array  $data
+	 * @param string $default
+	 * @param array  $output
+	 *
+	 * @return Permission
+	 *
+	 * @throws \Throwable
+	 */
+	public static function loadPermission($name, array $data, $default = self::DEFAULT_OP, &$output = []){
+		$desc = null;
+		$children = [];
+		if(isset($data["default"])){
+			$value = Permission::getByName($data["default"]);
+			if($value !== null){
+				$default = $value;
+			}else{
+				throw new \InvalidStateException("'default' key contained unknown value");
+			}
+		}
+
+		if(isset($data["children"])){
+			if(is_array($data["children"])){
+				foreach($data["children"] as $k => $v){
+					if(is_array($v)){
+						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
+							$output[] = $perm;
+						}
+					}
+					$children[$k] = true;
+				}
+			}else{
+				throw new \InvalidStateException("'children' key is of wrong type");
+			}
+		}
+
+		if(isset($data["description"])){
+			$desc = $data["description"];
+		}
+
+		return new Permission($name, $desc, $default, $children);
+
 	}
 
 	/**
@@ -168,7 +225,6 @@ class Permission{
 		}
 	}
 
-
 	/**
 	 * @param string|Permission $name
 	 * @param                   $value
@@ -192,66 +248,5 @@ class Permission{
 			return $perm;
 		}
 	}
-
-	/**
-	 * @param array $data
-	 * @param       $default
-	 *
-	 * @return Permission[]
-	 */
-	public static function loadPermissions(array $data, $default = self::DEFAULT_OP){
-		$result = [];
-		foreach($data as $key => $entry){
-			$result[] = self::loadPermission($key, $entry, $default, $result);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param string $name
-	 * @param array  $data
-	 * @param string $default
-	 * @param array  $output
-	 *
-	 * @return Permission
-	 *
-	 * @throws \Throwable
-	 */
-	public static function loadPermission($name, array $data, $default = self::DEFAULT_OP, &$output = []){
-		$desc = null;
-		$children = [];
-		if(isset($data["default"])){
-			$value = Permission::getByName($data["default"]);
-			if($value !== null){
-				$default = $value;
-			}else{
-				throw new \InvalidStateException("'default' key contained unknown value");
-			}
-		}
-
-		if(isset($data["children"])){
-			if(is_array($data["children"])){
-				foreach($data["children"] as $k => $v){
-					if(is_array($v)){
-						if(($perm = self::loadPermission($k, $v, $default, $output)) !== null){
-							$output[] = $perm;
-						}
-					}
-					$children[$k] = true;
-				}
-			}else{
-				throw new \InvalidStateException("'children' key is of wrong type");
-			}
-		}
-
-		if(isset($data["description"])){
-			$desc = $data["description"];
-		}
-
-		return new Permission($name, $desc, $default, $children);
-
-	}
-
 
 }

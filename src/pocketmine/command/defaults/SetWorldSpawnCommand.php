@@ -31,12 +31,7 @@ use pocketmine\utils\TextFormat;
 class SetWorldSpawnCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.setworldspawn.description",
-			"%commands.setworldspawn.usage",
-			["setspawn"]
-		);
+		parent::__construct($name, "%pocketmine.command.setworldspawn.description", "%commands.setworldspawn.usage", ["setspawn"]);
 		$this->setPermission("pocketmine.command.setworldspawn");
 	}
 
@@ -65,7 +60,11 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		$level->setSpawnLocation($pos);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.setworldspawn.success", [round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.setworldspawn.success", [
+			round($pos->x, 2),
+			round($pos->y, 2),
+			round($pos->z, 2),
+		]));
 
 		return true;
 	}

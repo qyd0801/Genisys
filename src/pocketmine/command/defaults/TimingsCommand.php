@@ -25,17 +25,12 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
 
-
 class TimingsCommand extends VanillaCommand{
 
 	public static $timingStart = 0;
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.timings.description",
-			"%pocketmine.command.timings.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.timings.description", "%pocketmine.command.timings.usage");
 		$this->setPermission("pocketmine.command.timings");
 	}
 
@@ -100,7 +95,7 @@ class TimingsCommand extends VanillaCommand{
 				$data = [
 					"syntax" => "text",
 					"poster" => $sender->getServer()->getName(),
-					"content" => stream_get_contents($fileTimings)
+					"content" => stream_get_contents($fileTimings),
 				];
 
 				$ch = curl_init("http://paste.ubuntu.com/");
@@ -122,7 +117,6 @@ class TimingsCommand extends VanillaCommand{
 
 					return true;
 				}
-
 
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsUpload", ["http://paste.ubuntu.com/" . $matches[1] . "/"]));
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead", ["http://timings.aikar.co/?url=" . $matches[1]]));

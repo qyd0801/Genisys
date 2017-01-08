@@ -29,6 +29,7 @@ use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 
 class Cave extends Populator{
+
 	public function populate(ChunkManager $level, $chunkX, $chunkZ, Random $random){
 		$overLap = 8;
 		$firstSeed = $random->nextInt();
@@ -143,11 +144,7 @@ class Cave extends Populator{
 				return;
 			}
 
-			if($target->getX() < ($middle->getX() - 16 - $horizontalSize * 2)
-				or $target->getZ() < ($middle->getZ() - 16 - $horizontalSize * 2)
-				or $target->getX() > ($middle->getX() + 16 + $horizontalSize * 2)
-				or $target->getZ() > ($middle->getZ() + 16 + $horizontalSize * 2)
-			){
+			if($target->getX() < ($middle->getX() - 16 - $horizontalSize * 2) or $target->getZ() < ($middle->getZ() - 16 - $horizontalSize * 2) or $target->getX() > ($middle->getX() + 16 + $horizontalSize * 2) or $target->getZ() > ($middle->getZ() + 16 + $horizontalSize * 2)){
 				continue;
 			}
 
@@ -171,6 +168,7 @@ class Cave extends Populator{
 }
 
 class CaveNode{
+
 	/** @var ChunkManager */
 	private $level;
 	/** @var Vector3 */
@@ -192,14 +190,6 @@ class CaveNode{
 		$this->target = $target;
 		$this->verticalSize = $verticalSize;
 		$this->horizontalSize = $horizontalSize;
-	}
-
-	private function clamp(Vector3 $pos){
-		return new Vector3(
-			Math::clamp($pos->getFloorX(), 0, 16),
-			Math::clamp($pos->getFloorY(), 1, 120),
-			Math::clamp($pos->getFloorZ(), 0, 16)
-		);
 	}
 
 	public function canPlace(){
@@ -247,5 +237,9 @@ class CaveNode{
 				}
 			}
 		}
+	}
+
+	private function clamp(Vector3 $pos){
+		return new Vector3(Math::clamp($pos->getFloorX(), 0, 16), Math::clamp($pos->getFloorY(), 1, 120), Math::clamp($pos->getFloorZ(), 0, 16));
 	}
 }

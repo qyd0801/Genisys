@@ -22,9 +22,9 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\item\enchantment\enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\item\enchantment\enchantment;
 
 class Cobweb extends Flowable{
 
@@ -42,7 +42,7 @@ class Cobweb extends Flowable{
 		return "Cobweb";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 4;
 	}
 
@@ -54,7 +54,7 @@ class Cobweb extends Flowable{
 		$entity->resetFallDistance();
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isShears()){
 			return [
 				[Item::COBWEB, 0, 1],

@@ -25,8 +25,8 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Dispenser as TileDispenser;
@@ -40,11 +40,11 @@ class Dispenser extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 3.5;
 	}
 
@@ -61,17 +61,16 @@ class Dispenser extends Solid{
 		if($player instanceof Player){
 			$pitch = $player->getPitch();
 			if(abs($pitch) >= 45){
-				if($pitch < 0) $f = 4;
-				else $f = 5;
-			} else $f = $player->getDirection();
-		} else $f = 0;
+				if($pitch < 0) $f = 4;else $f = 5;
+			}else $f = $player->getDirection();
+		}else $f = 0;
 		$faces = [
 			3 => 3,
 			0 => 4,
 			2 => 5,
 			1 => 2,
 			4 => 0,
-			5 => 1
+			5 => 1,
 		];
 		$this->meta = $faces[$f];
 
@@ -81,7 +80,7 @@ class Dispenser extends Solid{
 			new StringTag("id", Tile::DISPENSER),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
+			new IntTag("z", $this->z),
 		]);
 		$nbt->Items->setTagType(NBT::TAG_Compound);
 
@@ -119,7 +118,7 @@ class Dispenser extends Solid{
 					new StringTag("id", Tile::DISPENSER),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
+					new IntTag("z", $this->z),
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$dispenser = Tile::createTile(Tile::DISPENSER, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
@@ -135,7 +134,7 @@ class Dispenser extends Solid{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];

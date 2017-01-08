@@ -19,7 +19,7 @@
  *
 */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace pocketmine\level;
 
@@ -136,7 +136,7 @@ class SimpleChunkManager implements ChunkManager{
 
 	/**
 	 * Updates the light around the block
-	 * 
+	 *
 	 * @param $x
 	 * @param $y
 	 * @param $z
@@ -193,41 +193,6 @@ class SimpleChunkManager implements ChunkManager{
 		}
 	}
 
-	private function computeRemoveBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
-		$current = $this->getBlockLightAt($x, $y, $z);
-
-		if($current !== 0 and $current < $currentLight){
-			$this->setBlockLightAt($x, $y, $z, 0);
-
-			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
-				$visited[$index] = true;
-				if($current > 1){
-					$queue->enqueue([new Vector3($x, $y, $z), $current]);
-				}
-			}
-		}elseif($current >= $currentLight){
-			if(!isset($spreadVisited[$index = Level::blockHash($x, $y, $z)])){
-				$spreadVisited[$index] = true;
-				$spreadQueue->enqueue(new Vector3($x, $y, $z));
-			}
-		}
-	}
-
-	private function computeSpreadBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, array &$visited){
-		$current = $this->getBlockLightAt($x, $y, $z);
-
-		if($current < $currentLight){
-			$this->setBlockLightAt($x, $y, $z, $currentLight);
-
-			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
-				$visited[$index] = true;
-				if($currentLight > 1){
-					$queue->enqueue(new Vector3($x, $y, $z));
-				}
-			}
-		}
-	}
-
 	/**
 	 * @param int $chunkX
 	 * @param int $chunkZ
@@ -262,5 +227,40 @@ class SimpleChunkManager implements ChunkManager{
 	 */
 	public function getSeed(){
 		return $this->seed;
+	}
+
+	private function computeRemoveBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
+		$current = $this->getBlockLightAt($x, $y, $z);
+
+		if($current !== 0 and $current < $currentLight){
+			$this->setBlockLightAt($x, $y, $z, 0);
+
+			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
+				$visited[$index] = true;
+				if($current > 1){
+					$queue->enqueue([new Vector3($x, $y, $z), $current]);
+				}
+			}
+		}elseif($current >= $currentLight){
+			if(!isset($spreadVisited[$index = Level::blockHash($x, $y, $z)])){
+				$spreadVisited[$index] = true;
+				$spreadQueue->enqueue(new Vector3($x, $y, $z));
+			}
+		}
+	}
+
+	private function computeSpreadBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, array &$visited){
+		$current = $this->getBlockLightAt($x, $y, $z);
+
+		if($current < $currentLight){
+			$this->setBlockLightAt($x, $y, $z, $currentLight);
+
+			if(!isset($visited[$index = Level::blockHash($x, $y, $z)])){
+				$visited[$index] = true;
+				if($currentLight > 1){
+					$queue->enqueue(new Vector3($x, $y, $z));
+				}
+			}
+		}
 	}
 }

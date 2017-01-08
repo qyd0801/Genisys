@@ -21,9 +21,7 @@
 
 namespace pocketmine\tile;
 
-
 interface Nameable{
-
 
 	/**
 	 * @return string

@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -31,6 +30,9 @@ use pocketmine\math\Vector3;
 
 abstract class Liquid extends Transparent{
 
+	public $adjacentSources = 0;
+	public $isOptimalFlowDirection = [0, 0, 0, 0];
+	public $flowCost = [0, 0, 0, 0];
 	/** @var Vector3 */
 	private $temporalVector = null;
 
@@ -50,10 +52,6 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	public $adjacentSources = 0;
-	public $isOptimalFlowDirection = [0, 0, 0, 0];
-	public $flowCost = [0, 0, 0, 0];
-
 	public function getFluidHeightPercent(){
 		$d = $this->meta;
 		if($d >= 8){
@@ -61,36 +59,6 @@ abstract class Liquid extends Transparent{
 		}
 
 		return ($d + 1) / 9;
-	}
-
-	protected function getFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}else{
-			return $pos->getDamage();
-		}
-	}
-
-	protected function getEffectiveFlowDecay(Vector3 $pos){
-		if(!($pos instanceof Block)){
-			$pos = $this->getLevel()->getBlock($pos);
-		}
-
-		if($pos->getId() !== $this->getId()){
-			return -1;
-		}
-
-		$decay = $pos->getDamage();
-
-		if($decay >= 8){
-			$decay = 0;
-		}
-
-		return $decay;
 	}
 
 	public function getFlowVector(){
@@ -309,6 +277,61 @@ abstract class Liquid extends Transparent{
 		}
 	}
 
+	public function getHardness(){
+		return 100;
+	}
+
+	public function getBoundingBox(){
+		return null;
+	}
+
+	public function getDrops(Item $item) : array{
+		return [];
+	}
+
+	protected function getFlowDecay(Vector3 $pos){
+		if(!($pos instanceof Block)){
+			$pos = $this->getLevel()->getBlock($pos);
+		}
+
+		if($pos->getId() !== $this->getId()){
+			return -1;
+		}else{
+			return $pos->getDamage();
+		}
+	}
+
+	protected function getEffectiveFlowDecay(Vector3 $pos){
+		if(!($pos instanceof Block)){
+			$pos = $this->getLevel()->getBlock($pos);
+		}
+
+		if($pos->getId() !== $this->getId()){
+			return -1;
+		}
+
+		$decay = $pos->getDamage();
+
+		if($decay >= 8){
+			$decay = 0;
+		}
+
+		return $decay;
+	}
+
+	/**
+	 * Creates fizzing sound and smoke. Used when lava flows over block or mixes with water.
+	 *
+	 * @param Vector3 $pos
+	 */
+	protected function triggerLavaMixEffects(Vector3 $pos){
+		$this->getLevel()->addSound(new FizzSound($pos->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
+
+		for($i = 0; $i < 8; ++$i){
+			$this->getLevel()->addParticle(new SmokeParticle($pos->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
+		}
+	}
+
 	private function flowIntoBlock(Block $block, $newFlowDecay){
 		if($block->canBeFlowedInto()){
 			if($block instanceof Lava){
@@ -326,12 +349,7 @@ abstract class Liquid extends Transparent{
 		$cost = 1000;
 
 		for($j = 0; $j < 4; ++$j){
-			if(
-				($j === 0 and $previousDirection === 1) or
-				($j === 1 and $previousDirection === 0) or
-				($j === 2 and $previousDirection === 3) or
-				($j === 3 and $previousDirection === 2)
-			){
+			if(($j === 0 and $previousDirection === 1) or ($j === 1 and $previousDirection === 0) or ($j === 2 and $previousDirection === 3) or ($j === 3 and $previousDirection === 2)){
 				$x = $block->x;
 				$y = $block->y;
 				$z = $block->z;
@@ -368,10 +386,6 @@ abstract class Liquid extends Transparent{
 		}
 
 		return $cost;
-	}
-
-	public function getHardness() {
-		return 100;
 	}
 
 	private function getOptimalFlowDirections(){
@@ -452,27 +466,6 @@ abstract class Liquid extends Transparent{
 				}
 				$this->triggerLavaMixEffects($this);
 			}
-		}
-	}
-
-	public function getBoundingBox(){
-		return null;
-	}
-
-	public function getDrops(Item $item) : array {
-		return [];
-	}
-
-	/**
-	 * Creates fizzing sound and smoke. Used when lava flows over block or mixes with water.
-	 *
-	 * @param Vector3 $pos
-	 */
-	protected function triggerLavaMixEffects(Vector3 $pos){
-		$this->getLevel()->addSound(new FizzSound($pos->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
-
-		for($i = 0; $i < 8; ++$i){
-			$this->getLevel()->addParticle(new SmokeParticle($pos->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
 		}
 	}
 }

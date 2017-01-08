@@ -22,6 +22,7 @@
 namespace pocketmine\utils;
 
 abstract class Terminal{
+
 	public static $FORMAT_BOLD = "";
 	public static $FORMAT_OBFUSCATED = "";
 	public static $FORMAT_ITALIC = "";
@@ -60,6 +61,27 @@ abstract class Terminal{
 		}
 
 		return self::$formattingCodes;
+	}
+
+	public static function init(){
+		if(!self::hasFormattingCodes()){
+			return;
+		}
+
+		switch(Utils::getOS()){
+			case "linux":
+			case "mac":
+			case "bsd":
+				self::getEscapeCodes();
+				return;
+
+			case "win":
+			case "android":
+				self::getFallbackEscapeCodes();
+				return;
+		}
+
+		//TODO: iOS
 	}
 
 	protected static function getFallbackEscapeCodes(){
@@ -126,27 +148,6 @@ abstract class Terminal{
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = `tput setaf 6`;
 			self::$COLOR_GRAY = self::$COLOR_WHITE = `tput setaf 7`;
 		}
-	}
-
-	public static function init(){
-		if(!self::hasFormattingCodes()){
-			return;
-		}
-
-		switch(Utils::getOS()){
-			case "linux":
-			case "mac":
-			case "bsd":
-				self::getEscapeCodes();
-				return;
-
-			case "win":
-			case "android":
-				self::getFallbackEscapeCodes();
-				return;
-		}
-
-		//TODO: iOS
 	}
 
 }

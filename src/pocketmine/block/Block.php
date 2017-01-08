@@ -37,8 +37,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 
-
-class Block extends Position implements BlockIds, Metadatable{	
+class Block extends Position implements BlockIds, Metadatable{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -55,12 +54,19 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $hardness = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
-
+	/** @var AxisAlignedBB */
+	public $boundingBox = null;
 	protected $id;
 	protected $meta = 0;
 
-	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	/**
+	 * @param int $id
+	 * @param int $meta
+	 */
+	public function __construct($id, $meta = 0){
+		$this->id = (int) $id;
+		$this->meta = (int) $meta;
+	}
 
 	public static function init(){
 		if(self::$list === null){
@@ -166,7 +172,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
 
 			self::$list[self::STONE_BRICKS] = StoneBricks::class;
-			
+
 			self::$list[self::BROWN_MUSHROOM_BLOCK] = BrownMushroomBlock::class;
 			self::$list[self::RED_MUSHROOM_BLOCK] = RedMushroomBlock::class;
 
@@ -353,15 +359,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @param int $id
-	 * @param int $meta
-	 */
-	public function __construct($id, $meta = 0){
-		$this->id = (int) $id;
-		$this->meta = (int) $meta;
-	}
-
-	/**
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 *
 	 * @param Item   $item
@@ -460,7 +457,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($this->isSolid()){
 			return true;
 		}else{
-			if($this instanceof Stair and ($this->getDamage() &4) == 4){
+			if($this instanceof Stair and ($this->getDamage() & 4) == 4){
 				return true;
 			}elseif($this instanceof Slab and ($this->getDamage() & 8) == 8){
 				return true;
@@ -646,11 +643,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($this->canBeBrokenWith($item)){
 			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
 				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
+			}elseif(($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or ($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or ($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)){
 				switch($tier){
 					case Tool::TIER_WOODEN:
 						$base /= 2;
@@ -735,20 +728,6 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->boundingBox = $this->recalculateBoundingBox();
 		}
 		return $this->boundingBox;
-	}
-
-	/**
-	 * @return AxisAlignedBB
-	 */
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 1,
-			$this->z + 1
-		);
 	}
 
 	/**
@@ -863,5 +842,12 @@ class Block extends Position implements BlockIds, Metadatable{
 		if($this->getLevel() instanceof Level){
 			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $plugin);
 		}
+	}
+
+	/**
+	 * @return AxisAlignedBB
+	 */
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 1, $this->z + 1);
 	}
 }

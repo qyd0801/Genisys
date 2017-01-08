@@ -56,7 +56,7 @@ class CrashDump{
 			$this->addLine("CrashDump crashed while generating base crash data");
 			$this->addLine();
 		}
-		
+
 		$this->generalData();
 		$this->pluginsData();
 
@@ -75,6 +75,14 @@ class CrashDump{
 
 	public function getData(){
 		return $this->data;
+	}
+
+	public function addLine($line = ""){
+		fwrite($this->fp, $line . PHP_EOL);
+	}
+
+	public function add($str){
+		fwrite($this->fp, $str);
 	}
 
 	private function encodeData(){
@@ -106,7 +114,7 @@ class CrashDump{
 					"softDepends" => $d->getSoftDepend(),
 					"main" => $d->getMain(),
 					"load" => $d->getOrder() === PluginLoadOrder::POSTWORLD ? "POSTWORLD" : "STARTUP",
-					"website" => $d->getWebsite()
+					"website" => $d->getWebsite(),
 				];
 				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
 			}
@@ -184,7 +192,7 @@ class CrashDump{
 		$this->addLine("File: " . $error["file"]);
 		$this->addLine("Line: " . $error["line"]);
 		$this->addLine("Type: " . $error["type"]);
-		
+
 		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($error["fullFile"])){
 			$this->addLine();
 			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
@@ -245,15 +253,7 @@ class CrashDump{
 		$this->addLine();
 		$this->addLine("Server uptime: " . $this->server->getUptime());
 		$this->addLine("Number of loaded worlds: " . count($this->server->getLevels()));
-		$this->addLine("Players online: ".count($this->server->getOnlinePlayers())."/".$this->server->getMaxPlayers());
-	}
-
-	public function addLine($line = ""){
-		fwrite($this->fp, $line . PHP_EOL);
-	}
-
-	public function add($str){
-		fwrite($this->fp, $str);
+		$this->addLine("Players online: " . count($this->server->getOnlinePlayers()) . "/" . $this->server->getMaxPlayers());
 	}
 
 }

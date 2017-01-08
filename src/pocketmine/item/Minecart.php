@@ -21,21 +21,22 @@
 
 namespace pocketmine\item;
 
-use pocketmine\level\Level;
 use pocketmine\block\Block;
-use pocketmine\Player;
+use pocketmine\entity\Minecart as MinecartEntity;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\entity\Minecart as MinecartEntity;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\Player;
 
 class Minecart extends Item{
+
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::MINECART, $meta, $count, "Minecart");
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -44,16 +45,16 @@ class Minecart extends Item{
 			"Pos" => new ListTag("Pos", [
 				new DoubleTag("", $block->getX()),
 				new DoubleTag("", $block->getY() + 0.8),
-				new DoubleTag("", $block->getZ())
+				new DoubleTag("", $block->getZ()),
 			]),
 			"Motion" => new ListTag("Motion", [
 				new DoubleTag("", 0),
 				new DoubleTag("", 0),
-				new DoubleTag("", 0)
+				new DoubleTag("", 0),
 			]),
 			"Rotation" => new ListTag("Rotation", [
 				new FloatTag("", 0),
-				new FloatTag("", 0)
+				new FloatTag("", 0),
 			]),
 		]));
 		$minecart->spawnToAll();
@@ -69,7 +70,7 @@ class Minecart extends Item{
 			$item->setCount($count);
 			$player->getInventory()->setItemInHand($item);
 		}
-		
+
 		return true;
 	}
 }

@@ -29,20 +29,20 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\EndTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\IntArrayTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\NamedTAG;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-#ifndef COMPILE
 use pocketmine\utils\Binary;
 
-#endif
+#ifndef COMPILE
 
+#endif
 
 #include <rules/NBT.h>
 
@@ -67,9 +67,14 @@ class NBT{
 	const TAG_IntArray = 11;
 
 	public $buffer;
-	private $offset;
 	public $endianness;
+	private $offset;
 	private $data;
+
+	public function __construct($endianness = self::LITTLE_ENDIAN){
+		$this->offset = 0;
+		$this->endianness = $endianness & 0x01;
+	}
 
 	public static function matchList(ListTag $tag1, ListTag $tag2){
 		if($tag1->getName() !== $tag2->getName() or $tag1->getCount() !== $tag2->getCount()){
@@ -164,9 +169,22 @@ class NBT{
 		return null;
 	}
 
+	public static function fromArrayGuesser($key, $value){
+		if(is_int($value)){
+			return new IntTag($key, $value);
+		}elseif(is_float($value)){
+			return new FloatTag($key, $value);
+		}elseif(is_string($value)){
+			return new StringTag($key, $value);
+		}elseif(is_bool($value)){
+			return new ByteTag($key, $value ? 1 : 0);
+		}
+
+		return null;
+	}
+
 	private static function parseList($str, &$offset = 0){
 		$len = strlen($str);
-
 
 		$key = 0;
 		$value = null;
@@ -399,6 +417,42 @@ class NBT{
 		return $key;
 	}
 
+	private static function toArray(array &$data, Tag $tag){
+		/** @var CompoundTag[]|ListTag[]|IntArrayTag[] $tag */
+		foreach($tag as $key => $value){
+			if($value instanceof CompoundTag or $value instanceof ListTag or $value instanceof IntArrayTag){
+				$data[$key] = [];
+				self::toArray($data[$key], $value);
+			}else{
+				$data[$key] = $value->getValue();
+			}
+		}
+	}
+
+	private static function fromArray(Tag $tag, array $data, callable $guesser){
+		foreach($data as $key => $value){
+			if(is_array($value)){
+				$isNumeric = true;
+				$isIntArray = true;
+				foreach($value as $k => $v){
+					if(!is_numeric($k)){
+						$isNumeric = false;
+						break;
+					}elseif(!is_int($v)){
+						$isIntArray = false;
+					}
+				}
+				$tag{$key} = $isNumeric ? ($isIntArray ? new IntArrayTag($key, []) : new ListTag($key, [])) : new CompoundTag($key, []);
+				self::fromArray($tag->{$key}, $value, $guesser);
+			}else{
+				$v = call_user_func($guesser, $key, $value);
+				if($v instanceof Tag){
+					$tag{$key} = $v;
+				}
+			}
+		}
+	}
+
 	public function get($len){
 		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
@@ -416,11 +470,6 @@ class NBT{
 
 	public function feof(){
 		return !isset($this->buffer{$this->offset});
-	}
-
-	public function __construct($endianness = self::LITTLE_ENDIAN){
-		$this->offset = 0;
-		$this->endianness = $endianness & 0x01;
 	}
 
 	public function read($buffer, $doMultiple = false, bool $network = false){
@@ -443,7 +492,6 @@ class NBT{
 	public function readNetworkCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
 		$this->read(zlib_decode($buffer), false, true);
 	}
-
 
 	/**
 	 * @param bool $network
@@ -624,56 +672,6 @@ class NBT{
 	public function getArray(){
 		$data = [];
 		self::toArray($data, $this->data);
-	}
-
-	private static function toArray(array &$data, Tag $tag){
-		/** @var CompoundTag[]|ListTag[]|IntArrayTag[] $tag */
-		foreach($tag as $key => $value){
-			if($value instanceof CompoundTag or $value instanceof ListTag or $value instanceof IntArrayTag){
-				$data[$key] = [];
-				self::toArray($data[$key], $value);
-			}else{
-				$data[$key] = $value->getValue();
-			}
-		}
-	}
-
-	public static function fromArrayGuesser($key, $value){
-		if(is_int($value)){
-			return new IntTag($key, $value);
-		}elseif(is_float($value)){
-			return new FloatTag($key, $value);
-		}elseif(is_string($value)){
-			return new StringTag($key, $value);
-		}elseif(is_bool($value)){
-			return new ByteTag($key, $value ? 1 : 0);
-		}
-
-		return null;
-	}
-
-	private static function fromArray(Tag $tag, array $data, callable $guesser){
-		foreach($data as $key => $value){
-			if(is_array($value)){
-				$isNumeric = true;
-				$isIntArray = true;
-				foreach($value as $k => $v){
-					if(!is_numeric($k)){
-						$isNumeric = false;
-						break;
-					}elseif(!is_int($v)){
-						$isIntArray = false;
-					}
-				}
-				$tag{$key} = $isNumeric ? ($isIntArray ? new IntArrayTag($key, []) : new ListTag($key, [])) : new CompoundTag($key, []);
-				self::fromArray($tag->{$key}, $value, $guesser);
-			}else{
-				$v = call_user_func($guesser, $key, $value);
-				if($v instanceof Tag){
-					$tag{$key} = $v;
-				}
-			}
-		}
 	}
 
 	public function setArray(array $data, callable $guesser = null){

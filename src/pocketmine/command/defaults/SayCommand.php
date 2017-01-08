@@ -30,12 +30,10 @@ use pocketmine\utils\TextFormat;
 class SayCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.say.description",
-			"%commands.say.usage",
-			["broadcast", "announce"]
-		);
+		parent::__construct($name, "%pocketmine.command.say.description", "%commands.say.usage", [
+				"broadcast",
+				"announce",
+			]);
 		$this->setPermission("pocketmine.command.say");
 	}
 
@@ -50,7 +48,10 @@ class SayCommand extends VanillaCommand{
 			return false;
 		}
 
-		$sender->getServer()->broadcastMessage(new TranslationContainer(TextFormat::LIGHT_PURPLE . "%chat.type.announcement", [$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()), TextFormat::LIGHT_PURPLE . implode(" ", $args)]));
+		$sender->getServer()->broadcastMessage(new TranslationContainer(TextFormat::LIGHT_PURPLE . "%chat.type.announcement", [
+			$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
+			TextFormat::LIGHT_PURPLE . implode(" ", $args),
+		]));
 		return true;
 	}
 }

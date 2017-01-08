@@ -25,15 +25,10 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 
-
 class PardonCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.unban.player.description",
-			"%commands.unban.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.unban.player.description", "%commands.unban.usage");
 		$this->setPermission("pocketmine.command.unban.player");
 	}
 

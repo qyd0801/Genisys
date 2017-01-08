@@ -21,17 +21,18 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\level\format\Chunk;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Rabbit extends Animal{
+
 	const NETWORK_ID = 18;
 
 	const DATA_RABBIT_TYPE = 18;
@@ -51,11 +52,6 @@ class Rabbit extends Animal{
 
 	public $dropExp = [1, 3];
 
-	public function initEntity(){
-		$this->setMaxHealth(3);
-		parent::initEntity();
-	}
-
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		if(!isset($nbt->RabbitType)){
 			$nbt->RabbitType = new ByteTag("RabbitType", $this->getRandomRabbitType());
@@ -63,6 +59,11 @@ class Rabbit extends Animal{
 		parent::__construct($chunk, $nbt);
 
 		$this->setDataProperty(self::DATA_RABBIT_TYPE, self::DATA_TYPE_BYTE, $this->getRabbitType());
+	}
+
+	public function initEntity(){
+		$this->setMaxHealth(3);
+		parent::initEntity();
 	}
 
 	public function getRandomRabbitType() : int{
@@ -118,6 +119,5 @@ class Rabbit extends Animal{
 		}
 		return $drops;
 	}
-
 
 }

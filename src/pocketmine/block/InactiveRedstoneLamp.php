@@ -22,6 +22,7 @@
 namespace pocketmine\block;
 
 class InactiveRedstoneLamp extends ActiveRedstoneLamp{
+
 	protected $id = self::INACTIVE_REDSTONE_LAMP;
 
 	public function getLightLevel(){

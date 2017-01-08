@@ -127,14 +127,80 @@ class Enchantment{
 	const SLOT_FISHING_ROD = 0b100000000000;
 	const SLOT_CARROT_STICK = 0b1000000000000;
 
-	public static $words = ["the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air",
-		"earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize",
-		"enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink",
-		"demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"];
-
+	public static $words = [
+		"the",
+		"elder",
+		"scrolls",
+		"klaatu",
+		"berata",
+		"niktu",
+		"xyzzy",
+		"bless",
+		"curse",
+		"light",
+		"darkness",
+		"fire",
+		"air",
+		"earth",
+		"water",
+		"hot",
+		"dry",
+		"cold",
+		"wet",
+		"ignite",
+		"snuff",
+		"embiggen",
+		"twist",
+		"shorten",
+		"stretch",
+		"fiddle",
+		"destroy",
+		"imbue",
+		"galvanize",
+		"enchant",
+		"free",
+		"limited",
+		"range",
+		"of",
+		"towards",
+		"inside",
+		"sphere",
+		"cube",
+		"self",
+		"other",
+		"ball",
+		"mental",
+		"physical",
+		"grow",
+		"shrink",
+		"demon",
+		"elemental",
+		"spirit",
+		"animal",
+		"creature",
+		"beast",
+		"humanoid",
+		"undead",
+		"fresh",
+		"stale",
+	];
 
 	/** @var Enchantment[] */
 	protected static $enchantments;
+	private $id;
+	private $level = 1;
+	private $name;
+	private $rarity;
+	private $activationType;
+	private $slot;
+
+	private function __construct($id, $name, $rarity, $activationType, $slot){
+		$this->id = (int) $id;
+		$this->name = (string) $name;
+		$this->rarity = (int) $rarity;
+		$this->activationType = (int) $activationType;
+		$this->slot = (int) $slot;
+	}
 
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
@@ -171,6 +237,7 @@ class Enchantment{
 
 	/**
 	 * @param int $id
+	 *
 	 * @return $this
 	 */
 	public static function getEnchantment($id){
@@ -184,18 +251,18 @@ class Enchantment{
 		if(defined(Enchantment::class . "::TYPE_" . strtoupper($name))){
 			return self::getEnchantment(constant(Enchantment::class . "::TYPE_" . strtoupper($name)));
 		}elseif(defined(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name))); 
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_WEAPON_" . strtoupper($name)));
 		}elseif(defined(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name))); 
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_ARMOR_" . strtoupper($name)));
 		}elseif(defined(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_MINING_" . strtoupper($name))); 
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_MINING_" . strtoupper($name)));
 		}elseif(defined(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_BOW_" . strtoupper($name))); 
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_BOW_" . strtoupper($name)));
 		}elseif(defined(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))){
-			return self::getEnchantment(constant(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name))); 
+			return self::getEnchantment(constant(Enchantment::class . "::TYPE_FISHING_" . strtoupper($name)));
 		}else{
 			return new Enchantment(self::TYPE_INVALID, "unknown", 0, 0, 0);
-	    }
+		}
 	}
 
 	public static function getEnchantAbility(Item $item){
@@ -316,19 +383,13 @@ class Enchantment{
 		return 999;
 	}
 
-	private $id;
-	private $level = 1;
-	private $name;
-	private $rarity;
-	private $activationType;
-	private $slot;
-
-	private function __construct($id, $name, $rarity, $activationType, $slot){
-		$this->id = (int) $id;
-		$this->name = (string) $name;
-		$this->rarity = (int) $rarity;
-		$this->activationType = (int) $activationType;
-		$this->slot = (int) $slot;
+	public static function getRandomName(){
+		$count = mt_rand(3, 6);
+		$set = [];
+		while(count($set) < $count){
+			$set[] = self::$words[mt_rand(0, count(self::$words) - 1)];
+		}
+		return implode(" ", $set);
 	}
 
 	public function getId(){
@@ -370,14 +431,5 @@ class Enchantment{
 			return true;
 		}
 		return false;
-	}
-
-	public static function getRandomName(){
-		$count = mt_rand(3, 6);
-		$set = [];
-		while(count($set) < $count){
-			$set[] = self::$words[mt_rand(0, count(self::$words) - 1)];
-		}
-		return implode(" ", $set);
 	}
 }

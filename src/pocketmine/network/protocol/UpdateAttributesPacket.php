@@ -23,7 +23,6 @@ namespace pocketmine\network\protocol;
 
 use pocketmine\entity\Attribute;
 
-
 class UpdateAttributesPacket extends DataPacket{
 
 	const NETWORK_ID = Info::UPDATE_ATTRIBUTES_PACKET;

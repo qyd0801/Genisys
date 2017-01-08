@@ -31,6 +31,14 @@ class PluginLogger implements \AttachableLogger{
 	/** @var \LoggerAttachment[] */
 	private $attachments = [];
 
+	/**
+	 * @param Plugin $context
+	 */
+	public function __construct(Plugin $context){
+		$prefix = $context->getDescription()->getPrefix();
+		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
+	}
+
 	public function addAttachment(\LoggerAttachment $attachment){
 		$this->attachments[spl_object_hash($attachment)] = $attachment;
 	}
@@ -45,14 +53,6 @@ class PluginLogger implements \AttachableLogger{
 
 	public function getAttachments(){
 		return $this->attachments;
-	}
-
-	/**
-	 * @param Plugin $context
-	 */
-	public function __construct(Plugin $context){
-		$prefix = $context->getDescription()->getPrefix();
-		$this->pluginName = $prefix != null ? "[$prefix] " : "[" . $context->getDescription()->getName() . "] ";
 	}
 
 	public function emergency($message){

@@ -30,10 +30,11 @@ namespace pocketmine\network\rcon;
 
 use pocketmine\command\RemoteConsoleCommandSender;
 use pocketmine\event\server\RemoteServerCommandEvent;
-use pocketmine\utils\Utils;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 
 class RCON{
+
 	const PROTOCOL_VERSION = 3;
 
 	/** @var Server */
@@ -94,7 +95,7 @@ class RCON{
 			"download" => round($this->server->getNetwork()->getDownload() / 1024, 2),
 			"tps" => $this->server->getTicksPerSecondAverage(),
 			"load" => $this->server->getTickUsageAverage(),
-			"usage" => $usage
+			"usage" => $usage,
 		]);
 		for($n = 0; $n < $this->threads; ++$n){
 			if(!$this->workers[$n]->isTerminated()){

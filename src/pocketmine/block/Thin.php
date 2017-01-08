@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\math\AxisAlignedBB;
 
 abstract class Thin extends Transparent{
@@ -30,7 +29,11 @@ abstract class Thin extends Transparent{
 		return false;
 	}
 
-	protected function recalculateBoundingBox() {
+	public function canConnect(Block $block){
+		return $block->isSolid() or $block->getId() === $this->getId() or $block->getId() === self::GLASS_PANE or $block->getId() === self::GLASS;
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$f = 0.4375;
 		$f1 = 0.5625;
@@ -64,19 +67,7 @@ abstract class Thin extends Transparent{
 			$f3 = 1;
 		}
 
-		return new AxisAlignedBB(
-			$this->x + $f,
-			$this->y,
-			$this->z + $f2,
-			$this->x + $f1,
-			$this->y + 1,
-			$this->z + $f3
-		);
-	}
-
-
-	public function canConnect(Block $block){
-		return $block->isSolid() or $block->getId() === $this->getId() or $block->getId() === self::GLASS_PANE or $block->getId() === self::GLASS;
+		return new AxisAlignedBB($this->x + $f, $this->y, $this->z + $f2, $this->x + $f1, $this->y + 1, $this->z + $f3);
 	}
 
 }

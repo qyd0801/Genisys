@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class AddPaintingPacket extends DataPacket{
+
 	const NETWORK_ID = Info::ADD_PAINTING_PACKET;
 
 	public $eid;

@@ -22,7 +22,9 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\format\Chunk;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, IntTag, StringTag};
+use pocketmine\nbt\tag\{
+	ByteTag, CompoundTag, IntTag, StringTag
+};
 
 class Skull extends Spawnable{
 
@@ -51,10 +53,10 @@ class Skull extends Spawnable{
 		return new CompoundTag("", [
 			new StringTag("id", Tile::SKULL),
 			$this->namedtag->SkullType,
-			new IntTag("x", (int)$this->x),
-			new IntTag("y", (int)$this->y),
-			new IntTag("z", (int)$this->z),
-			$this->namedtag->Rot
+			new IntTag("x", (int) $this->x),
+			new IntTag("y", (int) $this->y),
+			new IntTag("z", (int) $this->z),
+			$this->namedtag->Rot,
 		]);
 	}
 

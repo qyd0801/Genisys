@@ -24,6 +24,7 @@ namespace pocketmine\permission;
 use pocketmine\utils\MainLogger;
 
 class BanEntry{
+
 	public static $format = "Y-m-d H:i:s O";
 
 	private $name;
@@ -37,6 +38,42 @@ class BanEntry{
 	public function __construct($name){
 		$this->name = strtolower($name);
 		$this->creationDate = new \DateTime();
+	}
+
+	/**
+	 * @param string $str
+	 *
+	 * @return BanEntry
+	 */
+	public static function fromString($str){
+		if(strlen($str) < 2){
+			return null;
+		}else{
+			$str = explode("|", trim($str));
+			$entry = new BanEntry(trim(array_shift($str)));
+			if(count($str) > 0){
+				$datetime = \DateTime::createFromFormat(self::$format, array_shift($str));
+				if(!($datetime instanceof \DateTime)){
+					MainLogger::getLogger()->alert("Error parsing date for BanEntry for player \"" . $entry->getName() . "\", the format may be invalid!");
+					return $entry;
+				}
+				$entry->setCreated($datetime);
+				if(count($str) > 0){
+					$entry->setSource(trim(array_shift($str)));
+					if(count($str) > 0){
+						$expire = trim(array_shift($str));
+						if(strtolower($expire) !== "forever" and strlen($expire) > 0){
+							$entry->setExpires(\DateTime::createFromFormat(self::$format, $expire));
+						}
+						if(count($str) > 0){
+							$entry->setReason(trim(array_shift($str)));
+						}
+					}
+				}
+			}
+
+			return $entry;
+		}
 	}
 
 	public function getName() : string{
@@ -97,41 +134,5 @@ class BanEntry{
 		$str .= $this->getReason();
 
 		return $str;
-	}
-
-	/**
-	 * @param string $str
-	 *
-	 * @return BanEntry
-	 */
-	public static function fromString($str){
-		if(strlen($str) < 2){
-			return null;
-		}else{
-			$str = explode("|", trim($str));
-			$entry = new BanEntry(trim(array_shift($str)));
-			if(count($str) > 0){
-				$datetime = \DateTime::createFromFormat(self::$format, array_shift($str));
-				if(!($datetime instanceof \DateTime)){
-					MainLogger::getLogger()->alert("Error parsing date for BanEntry for player \"" . $entry->getName() . "\", the format may be invalid!");
-					return $entry;
-				}
-				$entry->setCreated($datetime);
-				if(count($str) > 0){
-					$entry->setSource(trim(array_shift($str)));
-					if(count($str) > 0){
-						$expire = trim(array_shift($str));
-						if(strtolower($expire) !== "forever" and strlen($expire) > 0){
-							$entry->setExpires(\DateTime::createFromFormat(self::$format, $expire));
-						}
-						if(count($str) > 0){
-							$entry->setReason(trim(array_shift($str)));
-						}
-					}
-				}
-			}
-
-			return $entry;
-		}
 	}
 }

@@ -51,8 +51,10 @@ use pocketmine\math\Vector3 as Vector3;
 use pocketmine\utils\Random;
 
 class Normal extends Generator{
-	const NAME = "Normal";
 
+	const NAME = "Normal";
+	private static $GAUSSIAN_KERNEL = null;
+	private static $SMOOTH_SIZE = 2;
 	/** @var Populator[] */
 	protected $populators = [];
 	/** @var ChunkManager */
@@ -61,17 +63,12 @@ class Normal extends Generator{
 	protected $random;
 	protected $waterHeight = 62;
 	protected $bedrockDepth = 5;
-
 	/** @var Populator[] */
 	protected $generationPopulators = [];
 	/** @var Simplex */
 	protected $noiseBase;
-
 	/** @var BiomeSelector */
 	protected $selector;
-
-	private static $GAUSSIAN_KERNEL = null;
-	private static $SMOOTH_SIZE = 2;
 
 	public function __construct(array $options = []){
 		if(self::$GAUSSIAN_KERNEL === null){
@@ -197,33 +194,33 @@ class Normal extends Generator{
 			new OreType(new Stone(Stone::GRANITE), 20, 32, 0, 128),
 			new OreType(new Stone(Stone::DIORITE), 20, 32, 0, 128),
 			new OreType(new Stone(Stone::ANDESITE), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128)
+			new OreType(new Gravel(), 10, 16, 0, 128),
 		]);
 		$this->populators[] = $ores;
 	}
 
-	public function generateChunk($chunkX, $chunkZ) {
+	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
 		$noise = Generator::getFastNoise3D($this->noiseBase, 16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 		$chunk = $this->level->getChunk($chunkX, $chunkZ);
 		$biomeCache = [];
-		for($x = 0; $x < 16; ++$x) {
-			for($z = 0; $z < 16; ++$z) {
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
 				$minSum = 0;
 				$maxSum = 0;
 				$weightSum = 0;
 				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
-				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx) {
-					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz) {
+				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
+					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
 						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
-						if($sx === 0 and $sz === 0) {
+						if($sx === 0 and $sz === 0){
 							$adjacent = $biome;
-						} else {
+						}else{
 							$index = Level::chunkHash($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
-							if(isset($biomeCache[$index])) {
+							if(isset($biomeCache[$index])){
 								$adjacent = $biomeCache[$index];
-							} else {
+							}else{
 								$biomeCache[$index] = $adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
 							}
 						}
@@ -235,10 +232,10 @@ class Normal extends Generator{
 				$minSum /= $weightSum;
 				$maxSum /= $weightSum;
 				$solidLand = false;
-				for($y = 127; $y >= 0; --$y) {
+				for($y = 127; $y >= 0; --$y){
 					$smoothHeight = ($maxSum - $minSum) / 2;
-					for($y = 0; $y < 128; ++$y) {
-						if($y === 0) {
+					for($y = 0; $y < 128; ++$y){
+						if($y === 0){
 							$chunk->setBlockId($x, $y, $z, Block::BEDROCK);
 							continue;
 						}
@@ -250,16 +247,16 @@ class Normal extends Generator{
 						$distAboveCaveLevel = max(0, $y - $caveLevel); // must be positive
 						$noiseAdjustment = min($noiseAdjustment, 0.4 + ($distAboveCaveLevel / 10));
 						$noiseValue = $noise[$x][$z][$y] + $noiseAdjustment;
-						if($noiseValue > 0) {
+						if($noiseValue > 0){
 							$chunk->setBlockId($x, $y, $z, Block::STONE);
 							$solidLand = true;
-						} elseif($y <= $this->waterHeight && $solidLand == false) {
+						}elseif($y <= $this->waterHeight && $solidLand == false){
 							$chunk->setBlockId($x, $y, $z, Block::STILL_WATER);
 						}
 					}
 				}
 			}
-			foreach($this->generationPopulators as $populator) {
+			foreach($this->generationPopulators as $populator){
 				$populator->populate($this->level, $chunkX, $chunkZ, $this->random);
 			}
 		}

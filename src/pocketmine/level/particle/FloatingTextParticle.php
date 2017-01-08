@@ -29,6 +29,7 @@ use pocketmine\network\protocol\RemoveEntityPacket;
 use pocketmine\utils\UUID;
 
 class FloatingTextParticle extends Particle{
+
 	//TODO: HACK!
 
 	protected $text;
@@ -38,8 +39,8 @@ class FloatingTextParticle extends Particle{
 
 	/**
 	 * @param Vector3 $pos
-	 * @param int $text
-	 * @param string $title
+	 * @param int     $text
+	 * @param string  $title
 	 */
 	public function __construct(Vector3 $pos, $text, $title = ""){
 		parent::__construct($pos->x, $pos->y, $pos->z);
@@ -62,11 +63,11 @@ class FloatingTextParticle extends Particle{
 	public function setTitle($title){
 		$this->title = $title;
 	}
-	
+
 	public function isInvisible(){
 		return $this->invisible;
 	}
-	
+
 	public function setInvisible($value = true){
 		$this->invisible = (bool) $value;
 	}
@@ -103,9 +104,12 @@ class FloatingTextParticle extends Particle{
 			$flags |= 1 << Entity::DATA_FLAG_IMMOBILE;
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
-				Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")],
+				Entity::DATA_NAMETAG => [
+					Entity::DATA_TYPE_STRING,
+					$this->title . ($this->text !== "" ? "\n" . $this->text : ""),
+				],
 				Entity::DATA_LEAD_HOLDER_EID => [Entity::DATA_TYPE_LONG, -1],
-            ];
+			];
 
 			$p[] = $pk;
 		}

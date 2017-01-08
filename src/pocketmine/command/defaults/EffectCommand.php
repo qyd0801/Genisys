@@ -21,7 +21,6 @@
 
 namespace pocketmine\command\defaults;
 
-
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Effect;
 use pocketmine\entity\InstantEffect;
@@ -31,11 +30,7 @@ use pocketmine\utils\TextFormat;
 class EffectCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.effect.description",
-			"%commands.effect.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.effect.description", "%commands.effect.usage");
 		$this->setPermission("pocketmine.command.effect;pocketmine.command.effect.other");
 	}
 
@@ -55,8 +50,8 @@ class EffectCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 			return true;
 		}
-		
-		if($player->getName()!=$sender->getName() && !$sender->hasPermission("pocketmine.command.effect.other")){
+
+		if($player->getName() != $sender->getName() && !$sender->hasPermission("pocketmine.command.effect.other")){
 			$sender->sendMessage("You don't have permission to give effect to other player .");
 			return true;
 		}
@@ -96,10 +91,16 @@ class EffectCommand extends VanillaCommand{
 		if(count($args) >= 4){
 			$amplification = (int) $args[3];
 			if($amplification > 255){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooBig", [(string) $args[3], "255"]));
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooBig", [
+					(string) $args[3],
+					"255",
+				]));
 				return true;
 			}elseif($amplification < 0){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooSmall", [(string) $args[3], "0"]));
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooSmall", [
+					(string) $args[3],
+					"0",
+				]));
 				return true;
 			}
 		}
@@ -116,22 +117,33 @@ class EffectCommand extends VanillaCommand{
 				if(count($player->getEffects()) === 0){
 					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", [$player->getDisplayName()]));
 				}else{
-					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive", [$effect->getName(), $player->getDisplayName()]));
+					$sender->sendMessage(new TranslationContainer("commands.effect.failure.notActive", [
+						$effect->getName(),
+						$player->getDisplayName(),
+					]));
 				}
 				return true;
 			}
 
-			if ($player->removeEffect($effect->getId())) {
-				$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
+			if($player->removeEffect($effect->getId())){
+				$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [
+					$effect->getName(),
+					$player->getDisplayName(),
+				]));
 			}
 		}else{
 			$effect->setDuration($duration)->setAmplifier($amplification);
 
-			if ($player->addEffect($effect)) {
-				self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $effect->getId(), $effect->getAmplifier(), $player->getDisplayName(), $effect->getDuration() / 20]));
+			if($player->addEffect($effect)){
+				self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [
+					$effect->getName(),
+					$effect->getId(),
+					$effect->getAmplifier(),
+					$player->getDisplayName(),
+					$effect->getDuration() / 20,
+				]));
 			}
 		}
-
 
 		return true;
 	}

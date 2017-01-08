@@ -40,12 +40,9 @@ use pocketmine\utils\PluginException;
  */
 class PluginManager{
 
-	/** @var Server */
-	private $server;
-
-	/** @var SimpleCommandMap */
-	private $commandMap;
-
+	/** @var TimingsHandler */
+	public static $pluginParentTimer;
+	public static $useTimings = false;
 	/**
 	 * @var Plugin[]
 	 */
@@ -85,11 +82,10 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 */
 	protected $fileAssociations = [];
-
-	/** @var TimingsHandler */
-	public static $pluginParentTimer;
-
-	public static $useTimings = false;
+	/** @var Server */
+	private $server;
+	/** @var SimpleCommandMap */
+	private $commandMap;
 
 	/**
 	 * @param Server           $server
@@ -200,7 +196,10 @@ class PluginManager{
 						if($description instanceof PluginDescription){
 							$name = $description->getName();
 							if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+									$name,
+									"%pocketmine.plugin.restrictedName",
+								]));
 								continue;
 							}elseif(strpos($name, " ") !== false){
 								$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
@@ -263,7 +262,10 @@ class PluginManager{
 							}
 
 							if($compatible === false){
-								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
+								$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+									$name,
+									"%pocketmine.plugin.incompatibleAPI",
+								]));
 								continue;
 							}
 
@@ -286,12 +288,15 @@ class PluginManager{
 							}
 						}
 					}catch(\Throwable $e){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [
+							$file,
+							$directory,
+							$e->getMessage(),
+						]));
 						$this->server->getLogger()->logException($e);
 					}
 				}
 			}
-
 
 			while(count($plugins) > 0){
 				$missingDependency = true;
@@ -301,7 +306,10 @@ class PluginManager{
 							if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 								unset($dependencies[$name][$key]);
 							}elseif(!isset($plugins[$dependency])){
-								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.unknownDependency"]));
+								$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+									$name,
+									"%pocketmine.plugin.unknownDependency",
+								]));
 								break;
 							}
 						}
@@ -351,7 +359,10 @@ class PluginManager{
 					//No plugins loaded :(
 					if($missingDependency === true){
 						foreach($plugins as $name => $file){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+								$name,
+								"%pocketmine.plugin.circularDependency",
+							]));
 						}
 						$plugins = [];
 					}
@@ -429,32 +440,6 @@ class PluginManager{
 			unset($this->defaultPermsOp[$permission->getName()]);
 			unset($this->defaultPerms[$permission->getName()]);
 			$this->calculatePermissionDefault($permission);
-		}
-	}
-
-	/**
-	 * @param Permission $permission
-	 */
-	private function calculatePermissionDefault(Permission $permission){
-		Timings::$permissionDefaultTimer->startTiming();
-		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			$this->defaultPermsOp[$permission->getName()] = $permission;
-			$this->dirtyPermissibles(true);
-		}
-
-		if($permission->getDefault() === Permission::DEFAULT_NOT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
-			$this->defaultPerms[$permission->getName()] = $permission;
-			$this->dirtyPermissibles(false);
-		}
-		Timings::$permissionDefaultTimer->stopTiming();
-	}
-
-	/**
-	 * @param boolean $op
-	 */
-	private function dirtyPermissibles($op){
-		foreach($this->getDefaultPermSubscriptions($op) as $p){
-			$p->recalculatePermissions();
 		}
 	}
 
@@ -603,57 +588,6 @@ class PluginManager{
 		}
 	}
 
-	/**
-	 * @param Plugin $plugin
-	 *
-	 * @return PluginCommand[]
-	 */
-	protected function parseYamlCommands(Plugin $plugin){
-		$pluginCmds = [];
-
-		foreach($plugin->getDescription()->getCommands() as $key => $data){
-			if(strpos($key, ":") !== false){
-				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $plugin->getDescription()->getFullName()]));
-				continue;
-			}
-			if(is_array($data)){
-				$newCmd = new PluginCommand($key, $plugin);
-				if(isset($data["description"])){
-					$newCmd->setDescription($data["description"]);
-				}
-
-				if(isset($data["usage"])){
-					$newCmd->setUsage($data["usage"]);
-				}
-
-				if(isset($data["aliases"]) and is_array($data["aliases"])){
-					$aliasList = [];
-					foreach($data["aliases"] as $alias){
-						if(strpos($alias, ":") !== false){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $plugin->getDescription()->getFullName()]));
-							continue;
-						}
-						$aliasList[] = $alias;
-					}
-
-					$newCmd->setAliases($aliasList);
-				}
-
-				if(isset($data["permission"])){
-					$newCmd->setPermission($data["permission"]);
-				}
-
-				if(isset($data["permission-message"])){
-					$newCmd->setPermissionMessage($data["permission-message"]);
-				}
-
-				$pluginCmds[] = $newCmd;
-			}
-		}
-
-		return $pluginCmds;
-	}
-
 	public function disablePlugins(){
 		foreach($this->getPlugins() as $plugin){
 			$this->disablePlugin($plugin);
@@ -702,13 +636,12 @@ class PluginManager{
 			try{
 				$registration->callEvent($event);
 			}catch(\Throwable $e){
-				$this->server->getLogger()->critical(
-					$this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
-						$event->getEventName(),
-						$registration->getPlugin()->getDescription()->getFullName(),
-						$e->getMessage(),
-						get_class($registration->getListener())
-					]));
+				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.eventError", [
+					$event->getEventName(),
+					$registration->getPlugin()->getDescription()->getFullName(),
+					$e->getMessage(),
+					get_class($registration->getListener()),
+				]));
 				$this->server->getLogger()->logException($e);
 			}
 		}
@@ -755,7 +688,7 @@ class PluginManager{
 						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.deprecatedEvent", [
 							$plugin->getName(),
 							$class,
-							get_class($listener) . "->" . $method->getName() . "()"
+							get_class($listener) . "->" . $method->getName() . "()",
 						]));
 					}
 					$this->registerEvent($class, $listener, $priority, new MethodEventExecutor($method->getName()), $plugin, $ignoreCancelled);
@@ -796,19 +729,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param $event
-	 *
-	 * @return HandlerList
-	 */
-	private function getEventListeners($event){
-		if($event::$handlerList === null){
-			$event::$handlerList = new HandlerList();
-		}
-
-		return $event::$handlerList;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function useTimings(){
@@ -820,6 +740,102 @@ class PluginManager{
 	 */
 	public function setUseTimings($use){
 		self::$useTimings = (bool) $use;
+	}
+
+	/**
+	 * @param Plugin $plugin
+	 *
+	 * @return PluginCommand[]
+	 */
+	protected function parseYamlCommands(Plugin $plugin){
+		$pluginCmds = [];
+
+		foreach($plugin->getDescription()->getCommands() as $key => $data){
+			if(strpos($key, ":") !== false){
+				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [
+					$key,
+					$plugin->getDescription()->getFullName(),
+				]));
+				continue;
+			}
+			if(is_array($data)){
+				$newCmd = new PluginCommand($key, $plugin);
+				if(isset($data["description"])){
+					$newCmd->setDescription($data["description"]);
+				}
+
+				if(isset($data["usage"])){
+					$newCmd->setUsage($data["usage"]);
+				}
+
+				if(isset($data["aliases"]) and is_array($data["aliases"])){
+					$aliasList = [];
+					foreach($data["aliases"] as $alias){
+						if(strpos($alias, ":") !== false){
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [
+								$alias,
+								$plugin->getDescription()->getFullName(),
+							]));
+							continue;
+						}
+						$aliasList[] = $alias;
+					}
+
+					$newCmd->setAliases($aliasList);
+				}
+
+				if(isset($data["permission"])){
+					$newCmd->setPermission($data["permission"]);
+				}
+
+				if(isset($data["permission-message"])){
+					$newCmd->setPermissionMessage($data["permission-message"]);
+				}
+
+				$pluginCmds[] = $newCmd;
+			}
+		}
+
+		return $pluginCmds;
+	}
+
+	/**
+	 * @param Permission $permission
+	 */
+	private function calculatePermissionDefault(Permission $permission){
+		Timings::$permissionDefaultTimer->startTiming();
+		if($permission->getDefault() === Permission::DEFAULT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
+			$this->defaultPermsOp[$permission->getName()] = $permission;
+			$this->dirtyPermissibles(true);
+		}
+
+		if($permission->getDefault() === Permission::DEFAULT_NOT_OP or $permission->getDefault() === Permission::DEFAULT_TRUE){
+			$this->defaultPerms[$permission->getName()] = $permission;
+			$this->dirtyPermissibles(false);
+		}
+		Timings::$permissionDefaultTimer->stopTiming();
+	}
+
+	/**
+	 * @param boolean $op
+	 */
+	private function dirtyPermissibles($op){
+		foreach($this->getDefaultPermSubscriptions($op) as $p){
+			$p->recalculatePermissions();
+		}
+	}
+
+	/**
+	 * @param $event
+	 *
+	 * @return HandlerList
+	 */
+	private function getEventListeners($event){
+		if($event::$handlerList === null){
+			$event::$handlerList = new HandlerList();
+		}
+
+		return $event::$handlerList;
 	}
 
 }

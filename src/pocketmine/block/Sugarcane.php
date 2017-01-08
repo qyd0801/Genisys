@@ -40,8 +40,7 @@ class Sugarcane extends Flowable{
 		return "Sugarcane";
 	}
 
-
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::SUGARCANE, 0, 1],
 		];

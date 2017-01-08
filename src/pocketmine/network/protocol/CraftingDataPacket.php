@@ -23,7 +23,6 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\inventory\FurnaceRecipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
@@ -31,6 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\utils\BinaryStream;
 
 class CraftingDataPacket extends DataPacket{
+
 	const NETWORK_ID = Info::CRAFTING_DATA_PACKET;
 
 	const ENTRY_SHAPELESS = 0;
@@ -42,6 +42,66 @@ class CraftingDataPacket extends DataPacket{
 	/** @var object[] */
 	public $entries = [];
 	public $cleanRecipes = false;
+
+	private static function writeEntry($entry, BinaryStream $stream){
+		if($entry instanceof ShapelessRecipe){
+			return self::writeShapelessRecipe($entry, $stream);
+		}elseif($entry instanceof ShapedRecipe){
+			return self::writeShapedRecipe($entry, $stream);
+		}elseif($entry instanceof FurnaceRecipe){
+			return self::writeFurnaceRecipe($entry, $stream);
+		}
+		//TODO: add MultiRecipe
+
+		return -1;
+	}
+
+	private static function writeShapelessRecipe(ShapelessRecipe $recipe, BinaryStream $stream){
+		$stream->putUnsignedVarInt($recipe->getIngredientCount());
+		foreach($recipe->getIngredientList() as $item){
+			$stream->putSlot($item);
+		}
+
+		$stream->putUnsignedVarInt(1);
+		$stream->putSlot($recipe->getResult());
+
+		$stream->putUUID($recipe->getId());
+
+		return CraftingDataPacket::ENTRY_SHAPELESS;
+	}
+
+	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
+		$stream->putVarInt($recipe->getWidth());
+		$stream->putVarInt($recipe->getHeight());
+
+		for($z = 0; $z < $recipe->getHeight(); ++$z){
+			for($x = 0; $x < $recipe->getWidth(); ++$x){
+				$stream->putSlot($recipe->getIngredient($x, $z));
+			}
+		}
+
+		$stream->putUnsignedVarInt(1);
+		$stream->putSlot($recipe->getResult());
+
+		$stream->putUUID($recipe->getId());
+
+		return CraftingDataPacket::ENTRY_SHAPED;
+	}
+
+	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){
+		if($recipe->getInput()->getDamage() !== null){ //Data recipe
+			$stream->putVarInt($recipe->getInput()->getId());
+			$stream->putVarInt($recipe->getInput()->getDamage());
+			$stream->putSlot($recipe->getResult());
+
+			return CraftingDataPacket::ENTRY_FURNACE_DATA;
+		}else{
+			$stream->putVarInt($recipe->getInput()->getId());
+			$stream->putSlot($recipe->getResult());
+
+			return CraftingDataPacket::ENTRY_FURNACE;
+		}
+	}
 
 	public function clean(){
 		$this->entries = [];
@@ -103,66 +163,6 @@ class CraftingDataPacket extends DataPacket{
 			$entries[] = $entry;
 		}
 		$this->getBool(); //cleanRecipes
-	}
-
-	private static function writeEntry($entry, BinaryStream $stream){
-		if($entry instanceof ShapelessRecipe){
-			return self::writeShapelessRecipe($entry, $stream);
-		}elseif($entry instanceof ShapedRecipe){
-			return self::writeShapedRecipe($entry, $stream);
-		}elseif($entry instanceof FurnaceRecipe){
-			return self::writeFurnaceRecipe($entry, $stream);
-		}
-		//TODO: add MultiRecipe
-
-		return -1;
-	}
-
-	private static function writeShapelessRecipe(ShapelessRecipe $recipe, BinaryStream $stream){
-		$stream->putUnsignedVarInt($recipe->getIngredientCount());
-		foreach($recipe->getIngredientList() as $item){
-			$stream->putSlot($item);
-		}
-
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
-
-		$stream->putUUID($recipe->getId());
-
-		return CraftingDataPacket::ENTRY_SHAPELESS;
-	}
-
-	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
-		$stream->putVarInt($recipe->getWidth());
-		$stream->putVarInt($recipe->getHeight());
-
-		for($z = 0; $z < $recipe->getHeight(); ++$z){
-			for($x = 0; $x < $recipe->getWidth(); ++$x){
-				$stream->putSlot($recipe->getIngredient($x, $z));
-			}
-		}
-
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
-
-		$stream->putUUID($recipe->getId());
-
-		return CraftingDataPacket::ENTRY_SHAPED;
-	}
-
-	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){
-		if($recipe->getInput()->getDamage() !== null){ //Data recipe
-		$stream->putVarInt($recipe->getInput()->getId());
-			$stream->putVarInt($recipe->getInput()->getDamage());
-			$stream->putSlot($recipe->getResult());
-
-			return CraftingDataPacket::ENTRY_FURNACE_DATA;
-		}else{
-			$stream->putVarInt($recipe->getInput()->getId());
-			$stream->putSlot($recipe->getResult());
-
-			return CraftingDataPacket::ENTRY_FURNACE;
-		}
 	}
 
 	public function addShapelessRecipe(ShapelessRecipe $recipe){

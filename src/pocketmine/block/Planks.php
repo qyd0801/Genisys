@@ -21,10 +21,10 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\item\Tool;
 
 class Planks extends Solid{
+
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -38,7 +38,7 @@ class Planks extends Solid{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -63,7 +63,7 @@ class Planks extends Solid{
 			self::ACACIA => "Acacia Wood Planks",
 			self::DARK_OAK => "Dark Oak Wood Planks",
 			6 => "Unknown Planks",
-			7 => "Unknown Planks"
+			7 => "Unknown Planks",
 		];
 		return $names[$this->meta & 0x07];
 	}

@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class ContainerOpenPacket extends DataPacket{
+
 	const NETWORK_ID = Info::CONTAINER_OPEN_PACKET;
 
 	public $windowid;

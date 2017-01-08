@@ -58,7 +58,7 @@ class SendUsageTask extends AsyncTask{
 					"build" => $version->getBuild(),
 					"api" => $server->getApiVersion(),
 					"minecraftVersion" => $server->getVersion(),
-					"protocol" => Info::CURRENT_PROTOCOL
+					"protocol" => Info::CURRENT_PROTOCOL,
 				];
 
 				$data["system"] = [
@@ -67,12 +67,12 @@ class SendUsageTask extends AsyncTask{
 					"phpVersion" => PHP_VERSION,
 					"machine" => php_uname("a"),
 					"release" => php_uname("r"),
-					"platform" => php_uname("i")
+					"platform" => php_uname("i"),
 				];
 
 				$data["players"] = [
 					"count" => 0,
-					"limit" => $server->getMaxPlayers()
+					"limit" => $server->getMaxPlayers(),
 				];
 
 				$plugins = [];
@@ -83,7 +83,7 @@ class SendUsageTask extends AsyncTask{
 					$plugins[$d->getName()] = [
 						"name" => $d->getName(),
 						"version" => $d->getVersion(),
-						"enabled" => $p->isEnabled()
+						"enabled" => $p->isEnabled(),
 					];
 				}
 
@@ -96,9 +96,8 @@ class SendUsageTask extends AsyncTask{
 				$data["server"] = [
 					"ticksPerSecond" => $server->getTicksPerSecondAverage(),
 					"tickUsage" => $server->getTickUsageAverage(),
-					"ticks" => $server->getTick()
+					"ticks" => $server->getTick(),
 				];
-
 
 				//This anonymizes the user ids so they cannot be reversed to the original
 				foreach($playerList as $k => $v){
@@ -116,7 +115,7 @@ class SendUsageTask extends AsyncTask{
 					"count" => count($players),
 					"limit" => $server->getMaxPlayers(),
 					"currentList" => $players,
-					"historyList" => array_values($playerList)
+					"historyList" => array_values($playerList),
 				];
 
 				$info = Utils::getMemoryUsage(true);
@@ -124,7 +123,7 @@ class SendUsageTask extends AsyncTask{
 					"mainMemory" => $info[0],
 					"totalMemory" => $info[1],
 					"availableMemory" => $info[2],
-					"threadCount" => Utils::getThreadCount()
+					"threadCount" => Utils::getThreadCount(),
 				];
 
 				break;
@@ -142,7 +141,7 @@ class SendUsageTask extends AsyncTask{
 		try{
 			Utils::postURL($this->endpoint, $this->data, 5, [
 				"Content-Type: application/json",
-				"Content-Length: ". strlen($this->data)
+				"Content-Length: " . strlen($this->data),
 			]);
 		}catch(\Throwable $e){
 

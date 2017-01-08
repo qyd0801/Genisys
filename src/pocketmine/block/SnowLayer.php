@@ -42,14 +42,13 @@ class SnowLayer extends Flowable{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.1;
 	}
 
 	public function getToolType(){
 		return Tool::TYPE_SHOVEL;
 	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
@@ -74,7 +73,7 @@ class SnowLayer extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isShovel() !== false){
 			return [
 				[Item::SNOWBALL, 0, 1],

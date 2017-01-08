@@ -26,6 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class GroundFire extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;

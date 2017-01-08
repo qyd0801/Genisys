@@ -28,7 +28,6 @@ class DServerTask extends AsyncTask{
 		$this->re = (array) $re;
 	}
 
-
 	public function getInfo($ds, $time = 1){
 		$tmp = explode(":", $ds);
 		$ip = $tmp[0];

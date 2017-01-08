@@ -41,6 +41,10 @@ class PMAnvil extends Anvil{
 
 	const REGION_FILE_EXTENSION = "mcapm";
 
+	public static function getProviderName() : string{
+		return "pmanvil";
+	}
+
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
 		$nbt->xPos = new IntTag("xPos", $chunk->getX());
@@ -60,11 +64,11 @@ class PMAnvil extends Anvil{
 				continue;
 			}
 			$nbt->Sections[++$subChunks] = new CompoundTag(null, [
-				"Y"          => new ByteTag("Y", $y),
-				"Blocks"     => new ByteArrayTag("Blocks",     $subChunk->getBlockIdArray()),
-				"Data"       => new ByteArrayTag("Data",       $subChunk->getBlockDataArray()),
-				"SkyLight"   => new ByteArrayTag("SkyLight",   $subChunk->getSkyLightArray()),
-				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray())
+				"Y" => new ByteTag("Y", $y),
+				"Blocks" => new ByteArrayTag("Blocks", $subChunk->getBlockIdArray()),
+				"Data" => new ByteArrayTag("Data", $subChunk->getBlockDataArray()),
+				"SkyLight" => new ByteArrayTag("SkyLight", $subChunk->getSkyLightArray()),
+				"BlockLight" => new ByteArrayTag("BlockLight", $subChunk->getBlockLightArray()),
 			]);
 		}
 
@@ -118,26 +122,12 @@ class PMAnvil extends Anvil{
 			if($chunk->Sections instanceof ListTag){
 				foreach($chunk->Sections as $subChunk){
 					if($subChunk instanceof CompoundTag){
-						$subChunks[$subChunk->Y->getValue()] = new SubChunk(
-							$subChunk->Blocks->getValue(),
-							$subChunk->Data->getValue(),
-							$subChunk->SkyLight->getValue(),
-							$subChunk->BlockLight->getValue()
-						);
+						$subChunks[$subChunk->Y->getValue()] = new SubChunk($subChunk->Blocks->getValue(), $subChunk->Data->getValue(), $subChunk->SkyLight->getValue(), $subChunk->BlockLight->getValue());
 					}
 				}
 			}
 
-			$result = new Chunk(
-				$this,
-				$chunk["xPos"],
-				$chunk["zPos"],
-				$subChunks,
-				isset($chunk->Entities) ? $chunk->Entities->getValue() : [],
-				isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [],
-				isset($chunk->Biomes) ? $chunk->Biomes->getValue() : "",
-				isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []
-			);
+			$result = new Chunk($this, $chunk["xPos"], $chunk["zPos"], $subChunks, isset($chunk->Entities) ? $chunk->Entities->getValue() : [], isset($chunk->TileEntities) ? $chunk->TileEntities->getValue() : [], isset($chunk->Biomes) ? $chunk->Biomes->getValue() : "", isset($chunk->HeightMap) ? $chunk->HeightMap->getValue() : []);
 			$result->setLightPopulated(isset($chunk->LightPopulated) ? ((bool) $chunk->LightPopulated->getValue()) : false);
 			$result->setPopulated(isset($chunk->TerrainPopulated) ? ((bool) $chunk->TerrainPopulated->getValue()) : false);
 			$result->setGenerated(true);
@@ -146,9 +136,5 @@ class PMAnvil extends Anvil{
 			MainLogger::getLogger()->logException($e);
 			return null;
 		}
-	}
-
-	public static function getProviderName() : string{
-		return "pmanvil";
 	}
 }

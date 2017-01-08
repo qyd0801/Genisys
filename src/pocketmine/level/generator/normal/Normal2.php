@@ -43,7 +43,9 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Normal2 extends Normal{
+
 	const NAME = "Normal2";
+	protected $bedrockDepth = 5;
 	/** @var Simplex */
 	private $noiseSeaFloor;
 	/** @var Simplex */
@@ -54,14 +56,11 @@ class Normal2 extends Normal{
 	private $noiseBaseGround;
 	/** @var Simplex */
 	private $noiseRiver;
-
 	private $heightOffset;
-
 	private $seaHeight = 62;
 	private $seaFloorHeight = 48;
 	private $beathStartHeight = 60;
 	private $beathStopHeight = 64;
-	protected $bedrockDepth = 5;
 	private $seaFloorGenerateRange = 5;
 	private $landHeightRange = 18; // 36 / 2
 	private $mountainHeight = 13; // 26 / 2
@@ -83,7 +82,6 @@ class Normal2 extends Normal{
 
 		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
 	}
-
 
 	public function init(ChunkManager $level, Random $random){
 		$this->level = $level;
@@ -162,11 +160,10 @@ class Normal2 extends Normal{
 			new OreType(new GoldOre(), 2, 8, 0, 32),
 			new OreType(new DiamondOre(), 1, 7, 0, 16),
 			new OreType(new Dirt(), 20, 32, 0, 128),
-			new OreType(new Gravel(), 10, 16, 0, 128)
+			new OreType(new Gravel(), 10, 16, 0, 128),
 		]);
 		$this->populators[] = $ores;
 	}
-
 
 	public function generateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());
@@ -227,9 +224,7 @@ class Normal2 extends Normal{
 						$baseGroundHeight = (int) ($this->landHeightRange * $landHeightNoise) - $this->landHeightRange;
 						$baseGroundHeight2 = (int) ($this->basegroundHeight * ($baseNoise[$genx][$genz] + 1));
 						if($baseGroundHeight2 > $baseGroundHeight) $baseGroundHeight2 = $baseGroundHeight;
-						if($baseGroundHeight2 > $mountainGenerate)
-							$baseGroundHeight2 = $baseGroundHeight2 - $mountainGenerate;
-						else $baseGroundHeight2 = 0;
+						if($baseGroundHeight2 > $mountainGenerate) $baseGroundHeight2 = $baseGroundHeight2 - $mountainGenerate;else $baseGroundHeight2 = 0;
 						$genyHeight += $baseGroundHeight2;
 					}
 				}
@@ -288,7 +283,6 @@ class Normal2 extends Normal{
 		}
 
 	}
-
 
 	public function populateChunk($chunkX, $chunkZ){
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->level->getSeed());

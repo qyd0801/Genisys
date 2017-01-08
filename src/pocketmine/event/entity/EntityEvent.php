@@ -27,6 +27,7 @@ namespace pocketmine\event\entity;
 use pocketmine\event\Event;
 
 abstract class EntityEvent extends Event{
+
 	/** @var \pocketmine\entity\Entity */
 	protected $entity;
 

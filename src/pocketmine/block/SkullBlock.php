@@ -28,17 +28,17 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\tile\Tile;
-use pocketmine\math\AxisAlignedBB;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\tile\Skull;
+use pocketmine\tile\Tile;
 
 class SkullBlock extends Transparent{
-	
+
 	const SKELETON = 0;
 	const WITHER_SKELETON = 1;
 	const ZOMBIE_HEAD = 2;
@@ -51,10 +51,10 @@ class SkullBlock extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 1;
 	}
-	
+
 	public function isHelmet(){
 		return true;
 	}
@@ -64,14 +64,7 @@ class SkullBlock extends Transparent{
 	}
 
 	public function getBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x - 0.75,
-			$this->y - 0.5,
-			$this->z - 0.75,
-			$this->x + 0.75,
-			$this->y + 0.5,
-			$this->z + 0.75
-		);
+		return new AxisAlignedBB($this->x - 0.75, $this->y - 0.5, $this->z - 0.75, $this->x + 0.75, $this->y + 0.5, $this->z + 0.75);
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
@@ -89,13 +82,13 @@ class SkullBlock extends Transparent{
 				new IntTag("y", $block->y),
 				new IntTag("z", $block->z),
 				new ByteTag("SkullType", $item->getDamage()),
-				$rot
+				$rot,
 			]);
-			
+
 			if($item->hasCustomBlockData()){
-			    foreach($item->getCustomBlockData() as $key => $v){
-				    $nbt->{$key} = $v;
-			    }
+				foreach($item->getCustomBlockData() as $key => $v){
+					$nbt->{$key} = $v;
+				}
 			}
 
 			$chunk = $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4);
@@ -116,7 +109,7 @@ class SkullBlock extends Transparent{
 			1 => "Wither Skeleton Skull",
 			2 => "Zombie Head",
 			3 => "Head",
-			4 => "Creeper Head"
+			4 => "Creeper Head",
 		];
 		return $names[$this->meta & 0x04];
 	}
@@ -130,9 +123,9 @@ class SkullBlock extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		/** @var Skull $tile */
-		if($this->getLevel()!=null && (($tile = $this->getLevel()->getTile($this)) instanceof Skull)){
+		if($this->getLevel() != null && (($tile = $this->getLevel()->getTile($this)) instanceof Skull)){
 			return [[Item::SKULL, $tile->getSkullType(), 1]];
 		}else
 			return [[Item::SKULL, 0, 1]];

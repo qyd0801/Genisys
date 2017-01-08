@@ -29,10 +29,10 @@ use pocketmine\Server;
 use pocketmine\utils\Binary;
 
 class QueryHandler{
-	private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
 	const HANDSHAKE = 9;
 	const STATISTICS = 0;
+	private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
 	public function __construct(){
 		$this->server = Server::getInstance();
@@ -52,7 +52,14 @@ class QueryHandler{
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
 		$this->regenerateInfo();
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [
+			$addr,
+			$port,
+		]));
+	}
+
+	public static function getTokenString($token, $salt){
+		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 	public function regenerateInfo(){
@@ -65,10 +72,6 @@ class QueryHandler{
 	public function regenerateToken(){
 		$this->lastToken = $this->token;
 		$this->token = random_bytes(16);
-	}
-
-	public static function getTokenString($token, $salt){
-		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 	public function handle($address, $port, $packet){

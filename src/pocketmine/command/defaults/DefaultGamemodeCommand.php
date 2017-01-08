@@ -25,15 +25,10 @@ use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
 
-
 class DefaultGamemodeCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.defaultgamemode.description",
-			"%commands.defaultgamemode.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.defaultgamemode.description", "%commands.defaultgamemode.usage");
 		$this->setPermission("pocketmine.command.defaultgamemode");
 	}
 

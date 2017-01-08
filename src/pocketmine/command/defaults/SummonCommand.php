@@ -22,24 +22,20 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Entity;
 use pocketmine\event\TranslationContainer;
 use pocketmine\nbt\NBT;
-use pocketmine\Player;
-use pocketmine\entity\Entity;
-use pocketmine\utils\TextFormat;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\Player;
+use pocketmine\utils\TextFormat;
 
 class SummonCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.summon.description",
-			"%commands.summon.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.summon.description", "%commands.summon.usage");
 		$this->setPermission("pocketmine.command.summon");
 	}
 
@@ -127,16 +123,16 @@ class SummonCommand extends VanillaCommand{
 			"Pos" => new ListTag("Pos", [
 				new DoubleTag("", $x),
 				new DoubleTag("", $y),
-				new DoubleTag("", $z)
+				new DoubleTag("", $z),
 			]),
 			"Motion" => new ListTag("Motion", [
 				new DoubleTag("", 0),
 				new DoubleTag("", 0),
-				new DoubleTag("", 0)
+				new DoubleTag("", 0),
 			]),
 			"Rotation" => new ListTag("Rotation", [
 				new FloatTag("", lcg_value() * 360),
-				new FloatTag("", 0)
+				new FloatTag("", 0),
 			]),
 		]);
 		if(count($args) == 5 and $args[4]{0} == "{"){//Tags are found

@@ -24,14 +24,14 @@ namespace pocketmine\tile;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityGenerateEvent;
 use pocketmine\item\Item;
+use pocketmine\level\format\Chunk;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\level\format\Chunk;
 use pocketmine\Player;
 
 class MobSpawner extends Spawnable{
@@ -163,16 +163,16 @@ class MobSpawner extends Spawnable{
 								"Pos" => new ListTag("Pos", [
 									new DoubleTag("", $pos->x),
 									new DoubleTag("", $pos->y),
-									new DoubleTag("", $pos->z)
+									new DoubleTag("", $pos->z),
 								]),
 								"Motion" => new ListTag("Motion", [
 									new DoubleTag("", 0),
 									new DoubleTag("", 0),
-									new DoubleTag("", 0)
+									new DoubleTag("", 0),
 								]),
 								"Rotation" => new ListTag("Rotation", [
 									new FloatTag("", mt_rand() / mt_getrandmax() * 360),
-									new FloatTag("", 0)
+									new FloatTag("", 0),
 								]),
 							]);
 							$entity = Entity::createEntity($this->getEntityId(), $this->chunk, $nbt);
@@ -199,7 +199,7 @@ class MobSpawner extends Spawnable{
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			new IntTag("EntityId", (int) $this->getEntityId())
+			new IntTag("EntityId", (int) $this->getEntityId()),
 		]);
 
 		return $c;

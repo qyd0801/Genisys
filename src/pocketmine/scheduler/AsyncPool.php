@@ -26,11 +26,9 @@ use pocketmine\Server;
 
 class AsyncPool{
 
+	protected $size;
 	/** @var Server */
 	private $server;
-
-	protected $size;
-
 	/** @var AsyncTask[] */
 	private $tasks = [];
 	/** @var int[] */
@@ -104,23 +102,6 @@ class AsyncPool{
 		$this->submitTaskToWorker($task, $selectedWorker);
 	}
 
-	private function removeTask(AsyncTask $task, $force = false){
-		$task->setGarbage();
-
-		if(isset($this->taskWorkers[$task->getTaskId()])){
-			if(!$force and ($task->isRunning() or !$task->isGarbage())){
-				return;
-			}
-			$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
-			$this->workers[$this->taskWorkers[$task->getTaskId()]]->collector($task);
-		}
-
-		unset($this->tasks[$task->getTaskId()]);
-		unset($this->taskWorkers[$task->getTaskId()]);
-
-		$task->cleanObject();
-	}
-
 	public function removeTasks(){
 		do{
 			foreach($this->tasks as $task){
@@ -159,5 +140,22 @@ class AsyncPool{
 		}
 
 		Timings::$schedulerAsyncTimer->stopTiming();
+	}
+
+	private function removeTask(AsyncTask $task, $force = false){
+		$task->setGarbage();
+
+		if(isset($this->taskWorkers[$task->getTaskId()])){
+			if(!$force and ($task->isRunning() or !$task->isGarbage())){
+				return;
+			}
+			$this->workerUsage[$this->taskWorkers[$task->getTaskId()]]--;
+			$this->workers[$this->taskWorkers[$task->getTaskId()]]->collector($task);
+		}
+
+		unset($this->tasks[$task->getTaskId()]);
+		unset($this->taskWorkers[$task->getTaskId()]);
+
+		$task->cleanObject();
 	}
 }

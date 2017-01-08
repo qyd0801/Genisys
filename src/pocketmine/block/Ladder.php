@@ -48,7 +48,7 @@ class Ladder extends Transparent{
 		return false;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.4;
 	}
 
@@ -56,52 +56,6 @@ class Ladder extends Transparent{
 		$entity->resetFallDistance();
 		$entity->onGround = true;
 	}
-
-	protected function recalculateBoundingBox() {
-
-		$f = 0.125;
-
-		if($this->meta === 2){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z + 1 - $f,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}elseif($this->meta === 3){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + $f
-			);
-		}elseif($this->meta === 4){
-			return new AxisAlignedBB(
-				$this->x + 1 - $f,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}elseif($this->meta === 5){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + $f,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}
-
-		return null;
-	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($target->isTransparent() === false){
@@ -135,8 +89,8 @@ class Ladder extends Transparent{
 			return Level::BLOCK_UPDATE_NORMAL;
 			}*/
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if(isset($faces[$this->meta])) {
-				if ($this->getSide($faces[$this->meta])->getId() === self::AIR) {
+			if(isset($faces[$this->meta])){
+				if($this->getSide($faces[$this->meta])->getId() === self::AIR){
 					$this->getLevel()->useBreakOn($this);
 				}
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -144,14 +98,31 @@ class Ladder extends Transparent{
 		}
 		return false;
 	}
-	
+
 	public function getToolType(){
 		return Tool::TYPE_AXE;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+
+		$f = 0.125;
+
+		if($this->meta === 2){
+			return new AxisAlignedBB($this->x, $this->y, $this->z + 1 - $f, $this->x + 1, $this->y + 1, $this->z + 1);
+		}elseif($this->meta === 3){
+			return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 1, $this->z + $f);
+		}elseif($this->meta === 4){
+			return new AxisAlignedBB($this->x + 1 - $f, $this->y, $this->z, $this->x + 1, $this->y + 1, $this->z + 1);
+		}elseif($this->meta === 5){
+			return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + $f, $this->y + 1, $this->z + 1);
+		}
+
+		return null;
 	}
 }

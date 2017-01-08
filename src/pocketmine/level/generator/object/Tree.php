@@ -27,6 +27,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 abstract class Tree{
+
 	public $overridable = [
 		Block::AIR => true,
 		6 => true,
@@ -34,7 +35,7 @@ abstract class Tree{
 		18 => true,
 		Block::SNOW_LAYER => true,
 		Block::LOG2 => true,
-		Block::LEAVES2 => true
+		Block::LEAVES2 => true,
 	];
 
 	public $type = 0;
@@ -77,7 +78,6 @@ abstract class Tree{
 			$tree->placeObject($level, $x, $y, $z, $random);
 		}
 	}
-
 
 	public function canPlaceObject(ChunkManager $level, $x, $y, $z, Random $random){
 		$radiusToCheck = 0;

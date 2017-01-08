@@ -26,32 +26,28 @@ namespace pocketmine\utils;
  * Most of the code in this class was adapted from the XorShift128Engine in the php-random library.
  */
 class Random{
+
 	const X = 123456789;
 	const Y = 362436069;
 	const Z = 521288629;
 	const W = 88675123;
-
+	protected $seed;
 	/**
 	 * @var int
 	 */
 	private $x;
-
 	/**
 	 * @var int
 	 */
 	private $y;
-
 	/**
 	 * @var int
 	 */
 	private $z;
-
 	/**
 	 * @var int
 	 */
 	private $w;
-
-	protected $seed;
 
 	/**
 	 * @param int $seed Integer to be used as seed.
@@ -71,9 +67,10 @@ class Random{
 		$this->seed = $seed;
 		$this->x = self::X ^ $seed;
 		$this->y = self::Y ^ ($seed << 17) | (($seed >> 15) & 0x7fffffff) & 0xffffffff;
-		$this->z = self::Z ^ ($seed << 31) | (($seed >>  1) & 0x7fffffff) & 0xffffffff;
+		$this->z = self::Z ^ ($seed << 31) | (($seed >> 1) & 0x7fffffff) & 0xffffffff;
 		$this->w = self::W ^ ($seed << 18) | (($seed >> 14) & 0x7fffffff) & 0xffffffff;
 	}
+
 	public function getSeed(){
 		return $this->seed;
 	}
@@ -98,8 +95,7 @@ class Random{
 		$this->x = $this->y;
 		$this->y = $this->z;
 		$this->z = $this->w;
-		$this->w = ($this->w ^ (($this->w >> 19) & 0x7fffffff)
-							 ^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
+		$this->w = ($this->w ^ (($this->w >> 19) & 0x7fffffff) ^ ($t ^ (($t >> 8) & 0x7fffffff))) & 0xffffffff;
 
 		return $this->w;
 	}

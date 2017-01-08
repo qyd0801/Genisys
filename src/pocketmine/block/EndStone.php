@@ -21,7 +21,6 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\item\Tool;
 
 class EndStone extends Solid{
@@ -40,7 +39,7 @@ class EndStone extends Solid{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 3;
 	}
 }

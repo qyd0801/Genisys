@@ -37,6 +37,7 @@ use pocketmine\Server;
 use pocketmine\tile\EnchantTable;
 
 class EnchantInventory extends TemporaryInventory{
+
 	private $bookshelfAmount = 0;
 
 	private $levels = [];
@@ -53,7 +54,7 @@ class EnchantInventory extends TemporaryInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
-	
+
 	public function getResultSlotIndex(){
 		return -1; //enchanting tables don't have result slots, they modify the item in the target slot instead
 	}
@@ -75,13 +76,9 @@ class EnchantInventory extends TemporaryInventory{
 			$this->levels = [
 				0 => max($base / 3, 1),
 				1 => (($base * 2) / 3 + 1),
-				2 => max($base, $this->bookshelfAmount * 2)
+				2 => max($base, $this->bookshelfAmount * 2),
 			];
 		}
-	}
-
-	private function randomFloat($min = 0, $max = 1){
-		return $min + mt_rand() / mt_getrandmax() * ($max - $min);
 	}
 
 	public function onSlotChange($index, $before, $send){
@@ -218,9 +215,7 @@ class EnchantInventory extends TemporaryInventory{
 
 	public function onEnchant(Player $who, Item $before, Item $after){
 		$result = ($before->getId() === Item::BOOK) ? new EnchantedBook() : $before;
-		if(!$before->hasEnchantments() and $after->hasEnchantments() and $after->getId() == $result->getId() and
-			$this->levels != null and $this->entries != null
-		){
+		if(!$before->hasEnchantments() and $after->hasEnchantments() and $after->getId() == $result->getId() and $this->levels != null and $this->entries != null){
 			$enchantments = $after->getEnchantments();
 			for($i = 0; $i < 3; $i++){
 				if($this->checkEnts($enchantments, $this->entries[$i]->getEnchantments())){
@@ -246,7 +241,20 @@ class EnchantInventory extends TemporaryInventory{
 		if($this->getHolder()->getLevel()->getServer()->countBookshelf){
 			$count = 0;
 			$pos = $this->getHolder();
-			$offsets = [[2, 0], [-2, 0], [0, 2], [0, -2], [2, 1], [2, -1], [-2, 1], [-2, 1], [1, 2], [-1, 2], [1, -2], [-1, -2]];
+			$offsets = [
+				[2, 0],
+				[-2, 0],
+				[0, 2],
+				[0, -2],
+				[2, 1],
+				[2, -1],
+				[-2, 1],
+				[-2, 1],
+				[1, 2],
+				[-1, 2],
+				[1, -2],
+				[-1, -2],
+			];
 			for($i = 0; $i < 3; $i++){
 				foreach($offsets as $offset){
 					if($pos->getLevel()->getBlockIdAt($pos->x + $offset[0], $pos->y + $i, $pos->z + $offset[1]) == Block::BOOKSHELF){
@@ -277,8 +285,9 @@ class EnchantInventory extends TemporaryInventory{
 	}
 
 	/**
-	 * @param Enchantment   $enchantment
+	 * @param Enchantment $enchantment
 	 * @param Enchantment[] $enchantments
+	 *
 	 * @return Enchantment[]
 	 */
 	public function removeConflictEnchantment(Enchantment $enchantment, array $enchantments){
@@ -316,5 +325,9 @@ class EnchantInventory extends TemporaryInventory{
 			}
 		}
 		return $result;
+	}
+
+	private function randomFloat($min = 0, $max = 1){
+		return $min + mt_rand() / mt_getrandmax() * ($max - $min);
 	}
 }

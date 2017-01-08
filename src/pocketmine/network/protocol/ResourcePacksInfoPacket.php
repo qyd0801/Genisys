@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class ResourcePacksInfoPacket extends DataPacket{
+
 	const NETWORK_ID = Info::RESOURCE_PACKS_INFO_PACKET;
 
 	public $mustAccept = false; //force client to use selected resource packs

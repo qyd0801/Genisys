@@ -27,18 +27,16 @@ use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\protocol\ContainerSetDataPacket;
 use pocketmine\Server;
 
 class BrewingStand extends Spawnable implements InventoryHolder, Container, Nameable{
-	const MAX_BREW_TIME = 400;
-	/** @var BrewingInventory */
-	protected $inventory;
 
+	const MAX_BREW_TIME = 400;
 	public static $ingredients = [
 		Item::NETHER_WART => 0,
 		Item::GLOWSTONE_DUST => 0,
@@ -58,6 +56,8 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 
 		Item::GUNPOWDER => 0,
 	];
+	/** @var BrewingInventory */
+	protected $inventory;
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt){
 		parent::__construct($chunk, $nbt);
@@ -120,21 +120,6 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 	 */
 	public function getSize(){
 		return 4;
-	}
-
-	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex($index){
-		foreach($this->namedtag->Items as $i => $slot){
-			if($slot["Slot"] === $index){
-				return $i;
-			}
-		}
-
-		return -1;
 	}
 
 	/**
@@ -220,9 +205,7 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		$canBrew = false;
 
 		for($i = 1; $i <= 3; $i++){//查瓶子
-			if($this->inventory->getItem($i)->getId() === Item::POTION or
-				$this->inventory->getItem($i)->getId() === Item::SPLASH_POTION
-			){
+			if($this->inventory->getItem($i)->getId() === Item::POTION or $this->inventory->getItem($i)->getId() === Item::SPLASH_POTION){
 				$canBrew = true;
 			}
 		}
@@ -313,5 +296,20 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 			$nbt->CustomName = $this->namedtag->CustomName;
 		}
 		return $nbt;
+	}
+
+	/**
+	 * @param $index
+	 *
+	 * @return int
+	 */
+	protected function getSlotIndex($index){
+		foreach($this->namedtag->Items as $i => $slot){
+			if($slot["Slot"] === $index){
+				return $i;
+			}
+		}
+
+		return -1;
 	}
 }

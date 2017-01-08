@@ -68,7 +68,7 @@ class Sign extends Spawnable{
 			$this->namedtag["Text1"],
 			$this->namedtag["Text2"],
 			$this->namedtag["Text3"],
-			$this->namedtag["Text4"]
+			$this->namedtag["Text4"],
 		];
 	}
 
@@ -81,7 +81,7 @@ class Sign extends Spawnable{
 			$this->namedtag->Text4,
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
+			new IntTag("z", (int) $this->z),
 		]);
 	}
 
@@ -94,7 +94,7 @@ class Sign extends Spawnable{
 			TextFormat::clean($nbt["Text1"], ($removeFormat = $player->getRemoveFormat())),
 			TextFormat::clean($nbt["Text2"], $removeFormat),
 			TextFormat::clean($nbt["Text3"], $removeFormat),
-			TextFormat::clean($nbt["Text4"], $removeFormat)
+			TextFormat::clean($nbt["Text4"], $removeFormat),
 		]);
 
 		if(!isset($this->namedtag->Creator) or $this->namedtag["Creator"] !== $player->getRawUniqueId()){

@@ -25,6 +25,7 @@ use pocketmine\permission\Permission;
 use pocketmine\utils\PluginException;
 
 class PluginDescription{
+
 	private $name;
 	private $main;
 	private $api;
@@ -51,76 +52,6 @@ class PluginDescription{
 	 */
 	public function __construct($yamlString){
 		$this->loadMap(!is_array($yamlString) ? \yaml_parse($yamlString) : $yamlString);
-	}
-
-	/**
-	 * @param array $plugin
-	 *
-	 * @throws PluginException
-	 */
-	private function loadMap(array $plugin){
-		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
-		if($this->name === ""){
-			throw new PluginException("Invalid PluginDescription name");
-		}
-		$this->name = str_replace(" ", "_", $this->name);
-		$this->version = $plugin["version"];
-		$this->main = $plugin["main"];
-		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
-		if(!isset($plugin["geniapi"])){
-			$this->geniapi = ["1.0.0"];
-		}else{
-			$this->geniapi = !is_array($plugin["geniapi"]) ? [$plugin["geniapi"]] : $plugin["geniapi"];
-		}
-
-		if(stripos($this->main, "pocketmine\\") === 0){
-			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
-		}
-
-		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
-			$this->commands = $plugin["commands"];
-		}
-
-		if(isset($plugin["depend"])){
-			$this->depend = (array) $plugin["depend"];
-		}
-		if(isset($plugin["softdepend"])){
-			$this->softDepend = (array) $plugin["softdepend"];
-		}
-		if(isset($plugin["loadbefore"])){
-			$this->loadBefore = (array) $plugin["loadbefore"];
-		}
-
-		if(isset($plugin["website"])){
-			$this->website = $plugin["website"];
-		}
-		if(isset($plugin["description"])){
-			$this->description = $plugin["description"];
-		}
-		if(isset($plugin["prefix"])){
-			$this->prefix = $plugin["prefix"];
-		}
-		if(isset($plugin["load"])){
-			$order = strtoupper($plugin["load"]);
-			if(!defined(PluginLoadOrder::class . "::" . $order)){
-				throw new PluginException("Invalid PluginDescription load");
-			}else{
-				$this->order = constant(PluginLoadOrder::class . "::" . $order);
-			}
-		}
-		$this->authors = [];
-		if(isset($plugin["author"])){
-			$this->authors[] = $plugin["author"];
-		}
-		if(isset($plugin["authors"])){
-			foreach($plugin["authors"] as $author){
-				$this->authors[] = $author;
-			}
-		}
-
-		if(isset($plugin["permissions"])){
-			$this->permissions = Permission::loadPermissions($plugin["permissions"]);
-		}
 	}
 
 	/**
@@ -233,5 +164,75 @@ class PluginDescription{
 	 */
 	public function getWebsite(){
 		return $this->website;
+	}
+
+	/**
+	 * @param array $plugin
+	 *
+	 * @throws PluginException
+	 */
+	private function loadMap(array $plugin){
+		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
+		if($this->name === ""){
+			throw new PluginException("Invalid PluginDescription name");
+		}
+		$this->name = str_replace(" ", "_", $this->name);
+		$this->version = $plugin["version"];
+		$this->main = $plugin["main"];
+		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
+		if(!isset($plugin["geniapi"])){
+			$this->geniapi = ["1.0.0"];
+		}else{
+			$this->geniapi = !is_array($plugin["geniapi"]) ? [$plugin["geniapi"]] : $plugin["geniapi"];
+		}
+
+		if(stripos($this->main, "pocketmine\\") === 0){
+			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
+		}
+
+		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
+			$this->commands = $plugin["commands"];
+		}
+
+		if(isset($plugin["depend"])){
+			$this->depend = (array) $plugin["depend"];
+		}
+		if(isset($plugin["softdepend"])){
+			$this->softDepend = (array) $plugin["softdepend"];
+		}
+		if(isset($plugin["loadbefore"])){
+			$this->loadBefore = (array) $plugin["loadbefore"];
+		}
+
+		if(isset($plugin["website"])){
+			$this->website = $plugin["website"];
+		}
+		if(isset($plugin["description"])){
+			$this->description = $plugin["description"];
+		}
+		if(isset($plugin["prefix"])){
+			$this->prefix = $plugin["prefix"];
+		}
+		if(isset($plugin["load"])){
+			$order = strtoupper($plugin["load"]);
+			if(!defined(PluginLoadOrder::class . "::" . $order)){
+				throw new PluginException("Invalid PluginDescription load");
+			}else{
+				$this->order = constant(PluginLoadOrder::class . "::" . $order);
+			}
+		}
+		$this->authors = [];
+		if(isset($plugin["author"])){
+			$this->authors[] = $plugin["author"];
+		}
+		if(isset($plugin["authors"])){
+			foreach($plugin["authors"] as $author){
+				$this->authors[] = $author;
+			}
+		}
+
+		if(isset($plugin["permissions"])){
+			$this->permissions = Permission::loadPermissions($plugin["permissions"]);
+		}
 	}
 }

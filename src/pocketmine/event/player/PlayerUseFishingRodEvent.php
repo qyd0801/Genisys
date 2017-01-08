@@ -25,11 +25,10 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerUseFishingRodEvent extends PlayerEvent implements Cancellable{
-	public static $handlerList = null;
 
 	const ACTION_START_FISHING = 0;
 	const ACTION_STOP_FISHING = 1;
-
+	public static $handlerList = null;
 	private $action;
 
 	public function __construct(Player $player, int $action = PlayerUseFishingRodEvent::ACTION_START_FISHING){

@@ -60,11 +60,7 @@ use pocketmine\utils\TextFormat;
 class ParticleCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.particle.description",
-			"%pocketmine.command.particle.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.particle.description", "%pocketmine.command.particle.usage");
 		$this->setPermission("pocketmine.command.particle");
 	}
 
@@ -104,23 +100,17 @@ class ParticleCommand extends VanillaCommand{
 			return true;
 		}
 
-
 		$sender->sendMessage(new TranslationContainer("commands.particle.success", [$name, $count]));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
 
 		for($i = 0; $i < $count; ++$i){
-			$particle->setComponents(
-				$pos->x + $random->nextSignedFloat() * $xd,
-				$pos->y + $random->nextSignedFloat() * $yd,
-				$pos->z + $random->nextSignedFloat() * $zd
-			);
+			$particle->setComponents($pos->x + $random->nextSignedFloat() * $xd, $pos->y + $random->nextSignedFloat() * $yd, $pos->z + $random->nextSignedFloat() * $zd);
 			$level->addParticle($particle);
 		}
 
 		return true;
 	}
-
 
 	/**
 	 * @param         $name
@@ -129,6 +119,7 @@ class ParticleCommand extends VanillaCommand{
 	 * @param         $yd
 	 * @param         $zd
 	 * @param         $data
+	 *
 	 * @return null|DustParticle|ItemBreakParticle|TerrainParticle
 	 */
 	private function getParticle($name, Vector3 $pos, $xd, $yd, $zd, $data){

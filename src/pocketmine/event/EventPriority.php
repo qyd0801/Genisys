@@ -21,7 +21,6 @@
 
 namespace pocketmine\event;
 
-
 /**
  * List of event priorities
  *
@@ -31,6 +30,7 @@ namespace pocketmine\event;
  * MONITOR events should not change the event outcome or contents
  */
 abstract class EventPriority{
+
 	/**
 	 * Event call is of very low importance and should be ran first, to allow
 	 * other plugins to further customise the outcome

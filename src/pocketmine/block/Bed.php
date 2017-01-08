@@ -36,27 +36,16 @@ class Bed extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.2;
 	}
 
 	public function getName() : string{
 		return "Bed Block";
-	}
-
-	protected function recalculateBoundingBox() {
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.5625,
-			$this->z + 1
-		);
 	}
 
 	public function onActivate(Item $item, Player $player = null){
@@ -158,10 +147,14 @@ class Bed extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[Item::BED, 0, 1],
 		];
+	}
+
+	protected function recalculateBoundingBox(){
+		return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 0.5625, $this->z + 1);
 	}
 
 }

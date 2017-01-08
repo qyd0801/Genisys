@@ -23,15 +23,15 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
-use pocketmine\tile\Tile;
 use pocketmine\tile\BrewingStand as TileBrewingStand;
-use pocketmine\math\Vector3;
+use pocketmine\tile\Tile;
 
 class BrewingStand extends Transparent{
 
@@ -49,7 +49,7 @@ class BrewingStand extends Transparent{
 				new StringTag("id", Tile::BREWING_STAND),
 				new IntTag("x", $this->x),
 				new IntTag("y", $this->y),
-				new IntTag("z", $this->z)
+				new IntTag("z", $this->z),
 			]);
 			$nbt->Items->setTagType(NBT::TAG_Compound);
 			if($item->hasCustomName()){
@@ -69,11 +69,11 @@ class BrewingStand extends Transparent{
 		return false;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.5;
 	}
 
@@ -105,7 +105,7 @@ class BrewingStand extends Transparent{
 					new StringTag("id", Tile::BREWING_STAND),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
+					new IntTag("z", $this->z),
 				]);
 				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$brewingStand = Tile::createTile(Tile::BREWING_STAND, $this->getLevel()->getChunk($this->x >> 4, $this->z >> 4), $nbt);
@@ -115,7 +115,7 @@ class BrewingStand extends Transparent{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			$drops[] = [Item::BREWING_STAND, 0, 1];

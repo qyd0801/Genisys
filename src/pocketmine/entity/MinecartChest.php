@@ -25,6 +25,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class MinecartChest extends Minecart{
+
 	const NETWORK_ID = 98;
 
 	public function getName() : string{

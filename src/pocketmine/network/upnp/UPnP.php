@@ -27,6 +27,7 @@ namespace pocketmine\network\upnp;
 use pocketmine\utils\Utils;
 
 abstract class UPnP{
+
 	public static function PortForward($port){
 		if(Utils::$online === false){
 			return false;

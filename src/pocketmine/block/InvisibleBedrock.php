@@ -35,7 +35,7 @@ class InvisibleBedrock extends Transparent{
 		return "Invisible Bedrock";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return -1;
 	}
 

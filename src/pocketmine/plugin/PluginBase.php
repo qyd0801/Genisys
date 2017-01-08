@@ -163,13 +163,6 @@ abstract class PluginBase implements Plugin{
 	}
 
 	/**
-	 * @return bool
-	 */
-	protected function isPhar(){
-		return substr($this->file, 0, 7) === "phar://";
-	}
-
-	/**
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
@@ -284,15 +277,22 @@ abstract class PluginBase implements Plugin{
 		return $this->description->getFullName();
 	}
 
-	protected function getFile(){
-		return $this->file;
-	}
-
 	/**
 	 * @return PluginLoader
 	 */
 	public function getPluginLoader(){
 		return $this->loader;
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected function isPhar(){
+		return substr($this->file, 0, 7) === "phar://";
+	}
+
+	protected function getFile(){
+		return $this->file;
 	}
 
 }

@@ -29,11 +29,7 @@ use pocketmine\utils\TextFormat;
 class MeCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.me.description",
-			"%commands.me.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.me.description", "%commands.me.usage");
 		$this->setPermission("pocketmine.command.me");
 	}
 
@@ -48,7 +44,10 @@ class MeCommand extends VanillaCommand{
 			return false;
 		}
 
-		$sender->getServer()->broadcastMessage(new TranslationContainer("chat.type.emote", [$sender instanceof Player ? $sender->getDisplayName() : $sender->getName(), TextFormat::WHITE . implode(" ", $args)]));
+		$sender->getServer()->broadcastMessage(new TranslationContainer("chat.type.emote", [
+			$sender instanceof Player ? $sender->getDisplayName() : $sender->getName(),
+			TextFormat::WHITE . implode(" ", $args),
+		]));
 
 		return true;
 	}

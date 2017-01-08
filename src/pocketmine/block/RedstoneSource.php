@@ -31,6 +31,7 @@ use pocketmine\Player;
  */
 
 class RedstoneSource extends Flowable{
+
 	protected $maxStrength = 15;
 	protected $activated = false;
 
@@ -119,7 +120,13 @@ class RedstoneSource extends Flowable{
 			$this->activated = true;
 			/** @var Door $block */
 
-			$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_DOWN];
+			$sides = [
+				Vector3::SIDE_EAST,
+				Vector3::SIDE_WEST,
+				Vector3::SIDE_SOUTH,
+				Vector3::SIDE_NORTH,
+				Vector3::SIDE_DOWN,
+			];
 
 			foreach($sides as $side){
 				if(!in_array($side, $ignore)){
@@ -168,7 +175,7 @@ class RedstoneSource extends Flowable{
 			Vector3::SIDE_EAST,
 			Vector3::SIDE_WEST,
 			Vector3::SIDE_SOUTH,
-			Vector3::SIDE_NORTH
+			Vector3::SIDE_NORTH,
 		];
 		foreach($sides as $side){
 			if(!in_array($side, $ignore)){
@@ -196,7 +203,6 @@ class RedstoneSource extends Flowable{
 
 		return false;
 	}
-
 
 	public function checkTorchOn(Block $pos, array $ignore = []){
 		$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP];

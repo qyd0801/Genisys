@@ -22,6 +22,7 @@
 namespace pocketmine\utils;
 
 class Range{
+
 	public $minValue;
 	public $maxValue;
 

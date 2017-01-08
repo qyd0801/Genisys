@@ -21,8 +21,8 @@
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
 use pocketmine\item\enchantment\enchantment;
+use pocketmine\item\Item;
 
 class Wheat extends Crops{
 
@@ -36,7 +36,7 @@ class Wheat extends Crops{
 		return "Wheat Block";
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($this->meta >= 0x07){
 			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);

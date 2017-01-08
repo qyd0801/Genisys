@@ -28,6 +28,7 @@ use pocketmine\Player;
 use pocketmine\utils\Random;
 
 class Sapling extends Flowable{
+
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -41,7 +42,7 @@ class Sapling extends Flowable{
 		$this->meta = $meta;
 	}
 
-	public function canBeActivated() : bool {
+	public function canBeActivated() : bool{
 		return true;
 	}
 
@@ -58,7 +59,6 @@ class Sapling extends Flowable{
 		];
 		return $names[$this->meta & 0x07];
 	}
-
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
@@ -110,7 +110,7 @@ class Sapling extends Flowable{
 		return false;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
 			[$this->id, $this->meta & 0x07, 1],
 		];

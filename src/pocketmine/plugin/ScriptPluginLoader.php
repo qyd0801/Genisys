@@ -100,7 +100,7 @@ class ScriptPluginLoader implements PluginLoader{
 
 				if($key === "notscript"){
 					return null;
- 				}
+				}
 
 				$data[$key] = $content;
 			}
@@ -123,17 +123,6 @@ class ScriptPluginLoader implements PluginLoader{
 	 */
 	public function getPluginFilters(){
 		return "/\\.php$/i";
-	}
-
-	/**
-	 * @param PluginBase        $plugin
-	 * @param PluginDescription $description
-	 * @param string            $dataFolder
-	 * @param string            $file
-	 */
-	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
-		$plugin->init($this, $this->server, $description, $dataFolder, $file);
-		$plugin->onLoad();
 	}
 
 	/**
@@ -160,5 +149,16 @@ class ScriptPluginLoader implements PluginLoader{
 
 			$plugin->setEnabled(false);
 		}
+	}
+
+	/**
+	 * @param PluginBase        $plugin
+	 * @param PluginDescription $description
+	 * @param string            $dataFolder
+	 * @param string            $file
+	 */
+	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
+		$plugin->init($this, $this->server, $description, $dataFolder, $file);
+		$plugin->onLoad();
 	}
 }

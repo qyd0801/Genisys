@@ -25,14 +25,14 @@ use pocketmine\math\Vector3;
 use pocketmine\network\protocol\BlockEventPacket;
 
 class NoteblockSound extends GenericSound{
-	protected $instrument;
-	protected $pitch;
 
 	const INSTRUMENT_PIANO = 0;
 	const INSTRUMENT_BASS_DRUM = 1;
 	const INSTRUMENT_CLICK = 2;
 	const INSTRUMENT_TABOUR = 3;
 	const INSTRUMENT_BASS = 4;
+	protected $instrument;
+	protected $pitch;
 
 	public function __construct(Vector3 $pos, $instrument = self::INSTRUMENT_PIANO, $pitch = 0){
 		parent::__construct($pos, $instrument, $pitch);

@@ -19,7 +19,6 @@
  *
  */
 
-
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\CreeperPowerEvent;
@@ -28,6 +27,7 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Creeper extends Monster{
+
 	const NETWORK_ID = 33;
 
 	const DATA_SWELL = 19;
@@ -35,7 +35,7 @@ class Creeper extends Monster{
 	const DATA_SWELL_DIRECTION = 21;
 
 	public $dropExp = [5, 5];
-	
+
 	public function getName() : string{
 		return "Creeper";
 	}

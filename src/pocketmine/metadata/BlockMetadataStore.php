@@ -26,6 +26,7 @@ use pocketmine\level\Level;
 use pocketmine\plugin\Plugin;
 
 class BlockMetadataStore extends MetadataStore{
+
 	/** @var Level */
 	private $owningLevel;
 

@@ -140,6 +140,118 @@ class Chunk{
 	}
 
 	/**
+	 * Deserializes a fast-serialized chunk
+	 *
+	 * @param string             $data
+	 * @param LevelProvider|null $provider
+	 *
+	 * @return Chunk
+	 */
+	public static function fastDeserialize(string $data, LevelProvider $provider = null){
+		$stream = new BinaryStream();
+		$stream->setBuffer($data);
+		$data = null;
+		$x = $stream->getInt();
+		$z = $stream->getInt();
+		$subChunks = [];
+		$count = $stream->getByte();
+		for($y = 0; $y < $count; ++$y){
+			$subChunks[$stream->getByte()] = SubChunk::fastDeserialize($stream->get(10240));
+		}
+		$heightMap = array_values(unpack("C*", $stream->get(256)));
+		$biomeIds = $stream->get(256);
+
+		$chunk = new Chunk($provider, $x, $z, $subChunks, [], [], $biomeIds, $heightMap);
+		$flags = $stream->getByte();
+		$chunk->lightPopulated = (bool) ($flags & 4);
+		$chunk->terrainPopulated = (bool) ($flags & 2);
+		$chunk->terrainGenerated = (bool) ($flags & 1);
+		return $chunk;
+	}
+
+	public static function getEmptyChunk(int $x, int $z, LevelProvider $provider = null) : Chunk{
+		return new Chunk($provider, $x, $z);
+	}
+
+	/**
+	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
+	 * @internal
+	 *
+	 * @param int $x 0-15
+	 * @param int $y 0-255
+	 * @param int $z 0-15
+	 *
+	 * @return int
+	 */
+	public static function chunkBlockHash(int $x, int $y, int $z) : int{
+		return ($x << 12) | ($z << 8) | $y;
+	}
+
+	/**
+	 * Re-orders a byte array (YZX -> XZY and vice versa)
+	 *
+	 * @param string $array length 4096
+	 *
+	 * @return string length 4096
+	 */
+	public static final function reorderByteArray(string $array) : string{
+		$result = str_repeat("\x00", 4096);
+		$i = 0;
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 256; $z += 16){
+				$zx = ($z + $x);
+				for($y = 0; $y < 4096; $y += 256){
+					$result{$i} = $array{$y + $zx};
+					++$i;
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Re-orders a nibble array (YZX -> XZY and vice versa)
+	 *
+	 * @param string $array length 2048
+	 *
+	 * @return string length 2048
+	 */
+	public static final function reorderNibbleArray(string $array) : string{
+		$result = str_repeat("\x00", 2048);
+		$i = 0;
+		for($x = 0; $x < 8; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$zx = (($z << 3) | $x);
+				for($y = 0; $y < 8; ++$y){
+					$j = (($y << 8) | $zx);
+					$i1 = ord($array{$j});
+					$i2 = ord($array{$j | 0x80});
+					$result{$i} = chr(($i2 << 4) | ($i1 & 0x0f));
+					$result{$i | 0x80} = chr(($i1 >> 4) | ($i2 & 0xf0));
+					$i++;
+				}
+			}
+			$i += 128;
+		}
+		return $result;
+	}
+
+	/**
+	 * Converts pre-MCPE-1.0 biome colour array to biome ID array. RIP BiomeColors :(
+	 *
+	 * @param int[] $array of biome colour values
+	 *
+	 * @return string
+	 */
+	public static function convertBiomeColours(array $array) : string{
+		$result = str_repeat("\x00", 256);
+		foreach($array as $i => $colour){
+			$result{$i} = chr(($array[$i] >> 24) & 0xff);
+		}
+		return $result;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getX() : int{
@@ -203,11 +315,11 @@ class Chunk{
 	/**
 	 * Sets block ID and meta in one call at the specified chunk block coordinates
 	 *
-	 * @param int      $x 0-15
+	 * @param int      $x       0-15
 	 * @param int      $y
-	 * @param int      $z 0-15
+	 * @param int      $z       0-15
 	 * @param int|null $blockId 0-255 if null, does not change
-	 * @param int|null $meta 0-15 if null, does not change
+	 * @param int|null $meta    0-15 if null, does not change
 	 *
 	 * @return bool
 	 */
@@ -235,9 +347,9 @@ class Chunk{
 	/**
 	 * Sets the block ID at the specified chunk block coordinates
 	 *
-	 * @param int $x 0-15
+	 * @param int $x  0-15
 	 * @param int $y
-	 * @param int $z 0-15
+	 * @param int $z  0-15
 	 * @param int $id 0-255
 	 */
 	public function setBlockId(int $x, int $y, int $z, int $id){
@@ -262,9 +374,9 @@ class Chunk{
 	/**
 	 * Sets the block meta value at the specified chunk block coordinates
 	 *
-	 * @param int $x 0-15
+	 * @param int $x    0-15
 	 * @param int $y
-	 * @param int $z 0-15
+	 * @param int $z    0-15
 	 * @param int $data 0-15
 	 */
 	public function setBlockData(int $x, int $y, int $z, int $data){
@@ -289,9 +401,9 @@ class Chunk{
 	/**
 	 * Sets the raw block extra data value at the specified chunk block coordinates
 	 *
-	 * @param int $x 0-15
+	 * @param int $x    0-15
 	 * @param int $y
-	 * @param int $z 0-15
+	 * @param int $z    0-15
 	 * @param int $data bitmap, (meta << 8) | id
 	 */
 	public function setBlockExtraData(int $x, int $y, int $z, int $data){
@@ -320,9 +432,9 @@ class Chunk{
 	/**
 	 * Sets the sky light level at the specified chunk block coordinates
 	 *
-	 * @param int $x 0-15
+	 * @param int $x     0-15
 	 * @param int $y
-	 * @param int $z 0-15
+	 * @param int $z     0-15
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level){
@@ -347,9 +459,9 @@ class Chunk{
 	/**
 	 * Sets the block light level at the specified chunk block coordinates
 	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-15
-	 * @param int $z 0-15
+	 * @param int $x     0-15
+	 * @param int $y     0-15
+	 * @param int $z     0-15
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level){
@@ -361,8 +473,8 @@ class Chunk{
 	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
-	 * @param int  $x 0-15
-	 * @param int  $z 0-15
+	 * @param int  $x            0-15
+	 * @param int  $z            0-15
 	 * @param bool $useHeightMap whether to use pre-calculated heightmap values or not
 	 *
 	 * @return int
@@ -408,6 +520,7 @@ class Chunk{
 
 	/**
 	 * Returns the heightmap value at the specified X/Z chunk block coordinates
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 * @param int $value
@@ -471,8 +584,8 @@ class Chunk{
 	/**
 	 * Sets the biome ID at the specified X/Z chunk block coordinates
 	 *
-	 * @param int $x 0-15
-	 * @param int $z 0-15
+	 * @param int $x       0-15
+	 * @param int $z       0-15
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId){
@@ -482,6 +595,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block IDs from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -497,6 +611,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block meta values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -512,6 +627,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of sky light values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -527,6 +643,7 @@ class Chunk{
 
 	/**
 	 * Returns a column of block light values from bottom to top at the specified X/Z chunk block coordinates.
+	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
@@ -828,6 +945,7 @@ class Chunk{
 
 	/**
 	 * Sets a subchunk in the chunk index
+	 *
 	 * @param int           $y
 	 * @param SubChunk|null $subChunk
 	 * @param bool          $allowEmpty Whether to check if the chunk is empty, and if so replace it with an empty stub
@@ -853,6 +971,8 @@ class Chunk{
 	public function getSubChunks() : array{
 		return $this->subChunks;
 	}
+
+	//TODO: get rid of this
 
 	/**
 	 * Returns the Y coordinate of the highest non-empty subchunk in this chunk.
@@ -911,9 +1031,7 @@ class Chunk{
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$result .= $this->subChunks[$y]->networkSerialize();
 		}
-		$result .= pack("v*", ...$this->heightMap)
-		        .  $this->biomeIds
-		        .  chr(0); //border block array count
+		$result .= pack("v*", ...$this->heightMap) . $this->biomeIds . chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
 		$extraData = new BinaryStream();
@@ -960,123 +1078,8 @@ class Chunk{
 		}
 		$stream->putByte($count);
 		$stream->put($subChunks);
-		$stream->put(pack("C*", ...$this->heightMap) .
-			$this->biomeIds .
-			chr(($this->lightPopulated ? 1 << 2 : 0) | ($this->terrainPopulated ? 1 << 1 : 0) | ($this->terrainGenerated ? 1 : 0)));
+		$stream->put(pack("C*", ...$this->heightMap) . $this->biomeIds . chr(($this->lightPopulated ? 1 << 2 : 0) | ($this->terrainPopulated ? 1 << 1 : 0) | ($this->terrainGenerated ? 1 : 0)));
 		return $stream->getBuffer();
-	}
-
-	/**
-	 * Deserializes a fast-serialized chunk
-	 *
-	 * @param string             $data
-	 * @param LevelProvider|null $provider
-	 *
-	 * @return Chunk
-	 */
-	public static function fastDeserialize(string $data, LevelProvider $provider = null){
-		$stream = new BinaryStream();
-		$stream->setBuffer($data);
-		$data = null;
-		$x = $stream->getInt();
-		$z = $stream->getInt();
-		$subChunks = [];
-		$count = $stream->getByte();
-		for($y = 0; $y < $count; ++$y){
-			$subChunks[$stream->getByte()] = SubChunk::fastDeserialize($stream->get(10240));
-		}
-		$heightMap = array_values(unpack("C*", $stream->get(256)));
-		$biomeIds = $stream->get(256);
-
-		$chunk = new Chunk($provider, $x, $z, $subChunks, [], [], $biomeIds, $heightMap);
-		$flags = $stream->getByte();
-		$chunk->lightPopulated = (bool) ($flags & 4);
-		$chunk->terrainPopulated = (bool) ($flags & 2);
-		$chunk->terrainGenerated = (bool) ($flags & 1);
-		return $chunk;
-	}
-
-	//TODO: get rid of this
-	public static function getEmptyChunk(int $x, int $z, LevelProvider $provider = null) : Chunk{
-		return new Chunk($provider, $x, $z);
-	}
-
-	/**
-	 * Creates a block hash from chunk block coordinates. Used for extra data keys in chunk packets.
-	 * @internal
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int
-	 */
-	public static function chunkBlockHash(int $x, int $y, int $z) : int{
-		return ($x << 12) | ($z << 8) | $y;
-	}
-
-	/**
-	 * Re-orders a byte array (YZX -> XZY and vice versa)
-	 *
-	 * @param string $array length 4096
-	 *
-	 * @return string length 4096
-	 */
-	public static final function reorderByteArray(string $array) : string{
-		$result = str_repeat("\x00", 4096);
-		$i = 0;
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 256; $z += 16){
-				$zx = ($z + $x);
-				for($y = 0; $y < 4096; $y += 256){
-					$result{$i} = $array{$y + $zx};
-					++$i;
-				}
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * Re-orders a nibble array (YZX -> XZY and vice versa)
-	 *
-	 * @param string $array length 2048
-	 *
-	 * @return string length 2048
-	 */
-	public static final function reorderNibbleArray(string $array) : string{
-		$result = str_repeat("\x00", 2048);
-		$i = 0;
-		for($x = 0; $x < 8; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$zx = (($z << 3) | $x);
-				for($y = 0; $y < 8; ++$y){
-					$j = (($y << 8) | $zx);
-					$i1 = ord($array{$j});
-					$i2 = ord($array{$j | 0x80});
-					$result{$i}        = chr(($i2 << 4) | ($i1 & 0x0f));
-					$result{$i | 0x80} = chr(($i1 >> 4) | ($i2 & 0xf0));
-					$i++;
-				}
-			}
-			$i += 128;
-		}
-		return $result;
-	}
-
-	/**
-	 * Converts pre-MCPE-1.0 biome colour array to biome ID array. RIP BiomeColors :(
-	 *
-	 * @param int[] $array of biome colour values
-	 *
-	 * @return string
-	 */
-	public static function convertBiomeColours(array $array) : string{
-		$result = str_repeat("\x00", 256);
-		foreach($array as $i => $colour){
-			$result{$i} = chr(($array[$i] >> 24) & 0xff);
-		}
-		return $result;
 	}
 
 }

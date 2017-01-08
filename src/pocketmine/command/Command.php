@@ -32,52 +32,42 @@ use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 
 abstract class Command{
+
 	/** @var \stdClass */
 	private static $defaultDataTemplate = null;
-
-	/** @var string */
-	private $name;
+	/** @var TimingsHandler */
+	public $timings;
 	/** @var \stdClass */
 	protected $commandData = null;
-
+	/** @var string */
+	protected $description = "";
+	/** @var string */
+	protected $usageMessage;
+	/** @var string */
+	private $name;
 	/** @var string */
 	private $nextLabel;
-
 	/** @var string */
 	private $label;
-
 	/**
 	 * @var string[]
 	 */
 	private $aliases = [];
-
 	/**
 	 * @var string[]
 	 */
 	private $activeAliases = [];
-
 	/** @var CommandMap */
 	private $commandMap = null;
-
-	/** @var string */
-	protected $description = "";
-
-	/** @var string */
-	protected $usageMessage;
-
 	/** @var string */
 	private $permission = null;
-
 	/** @var string */
 	private $permissionMessage = null;
 
-	/** @var TimingsHandler */
-	public $timings;
-
 	/**
-	 * @param string   $name
-	 * @param string   $description
-	 * @param string   $usageMessage
+	 * @param string $name
+	 * @param string $description
+	 * @param string $usageMessage
 	 * @param string[] $aliases
 	 */
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = []){
@@ -87,6 +77,54 @@ abstract class Command{
 		$this->usageMessage = $usageMessage === null ? "/" . $name : $usageMessage;
 		$this->setAliases($aliases);
 		$this->timings = new TimingsHandler("** Command: " . $name);
+	}
+
+	public static final function generateDefaultData() : \stdClass{
+		if(self::$defaultDataTemplate === null){
+			self::$defaultDataTemplate = json_decode(file_get_contents(Server::getInstance()->getFilePath() . "src/pocketmine/resources/command_default.json"));
+		}
+		return clone self::$defaultDataTemplate;
+	}
+
+	/**
+	 * @param CommandSender $source
+	 * @param string        $message
+	 * @param bool          $sendToSource
+	 */
+	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
+		if($message instanceof TextContainer){
+			$m = clone $message;
+			$result = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($m->getText()) !== $m->getText() ? "%" : "") . $m->getText() . "]";
+
+			$users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
+
+			$m->setText($result);
+			$result = clone $m;
+			$m->setText($colored);
+			$colored = clone $m;
+		}else{
+			$users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
+			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
+			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [
+				$source->getName(),
+				$message,
+			]);
+		}
+
+		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
+			$source->sendMessage($message);
+		}
+
+		foreach($users as $user){
+			if($user instanceof CommandSender){
+				if($user instanceof ConsoleCommandSender){
+					$user->sendMessage($result);
+				}elseif($user !== $source){
+					$user->sendMessage($colored);
+				}
+			}
+		}
 	}
 
 	/**
@@ -121,7 +159,7 @@ abstract class Command{
 		return $customData;
 	}
 
-	public function getOverloads(): \stdClass{
+	public function getOverloads() : \stdClass{
 		return $this->commandData->overloads;
 	}
 
@@ -147,7 +185,6 @@ abstract class Command{
 	public function getPermission(){
 		return $this->commandData->pocketminePermission ?? null;
 	}
-	
 
 	/**
 	 * @param string|null $permission
@@ -252,15 +289,6 @@ abstract class Command{
 	}
 
 	/**
-	 * @param CommandMap $commandMap
-	 *
-	 * @return bool
-	 */
-	private function allowChangesFrom(CommandMap $commandMap){
-		return $this->commandMap === null or $this->commandMap === $commandMap;
-	}
-
-	/**
 	 * @return bool
 	 */
 	public function isRegistered(){
@@ -326,55 +354,19 @@ abstract class Command{
 		$this->usageMessage = $usage;
 	}
 
-	public static final function generateDefaultData() : \stdClass{
-		if(self::$defaultDataTemplate === null){
-			self::$defaultDataTemplate = json_decode(file_get_contents(Server::getInstance()->getFilePath() . "src/pocketmine/resources/command_default.json"));
-		}
-		return clone self::$defaultDataTemplate;
-	}
-
-	/**
-	 * @param CommandSender $source
-	 * @param string        $message
-	 * @param bool          $sendToSource
-	 */
-	public static function broadcastCommandMessage(CommandSender $source, $message, $sendToSource = true){
-		if($message instanceof TextContainer){
-			$m = clone $message;
-			$result = "[".$source->getName().": ".($source->getServer()->getLanguage()->get($m->getText()) !== $m->getText() ? "%" : "") . $m->getText() ."]";
-
-			$users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-			$colored = TextFormat::GRAY . TextFormat::ITALIC . $result;
-
-			$m->setText($result);
-			$result = clone $m;
-			$m->setText($colored);
-			$colored = clone $m;
-		}else{
-			$users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
-		}
-
-		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){
-			$source->sendMessage($message);
-		}
-
-		foreach($users as $user){
-			if($user instanceof CommandSender){
-				if($user instanceof ConsoleCommandSender){
-					$user->sendMessage($result);
-				}elseif($user !== $source){
-					$user->sendMessage($colored);
-				}
-			}
-		}
-	}
-
 	/**
 	 * @return string
 	 */
 	public function __toString(){
 		return $this->name;
+	}
+
+	/**
+	 * @param CommandMap $commandMap
+	 *
+	 * @return bool
+	 */
+	private function allowChangesFrom(CommandMap $commandMap){
+		return $this->commandMap === null or $this->commandMap === $commandMap;
 	}
 }

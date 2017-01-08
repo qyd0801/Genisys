@@ -35,19 +35,12 @@ class UUID{
 		$this->version = $version === null ? ($this->parts[1] & 0xf000) >> 12 : (int) $version;
 	}
 
-	public function getVersion(){
-		return $this->version;
-	}
-
-	public function equals(UUID $uuid){
-		return $uuid->parts[0] === $this->parts[0] and $uuid->parts[1] === $this->parts[1] and $uuid->parts[2] === $this->parts[2] and $uuid->parts[3] === $this->parts[3];
-	}
-
 	/**
 	 * Creates an UUID from an hexadecimal representation
 	 *
 	 * @param string $uuid
 	 * @param int    $version
+	 *
 	 * @return UUID
 	 */
 	public static function fromString($uuid, $version = null){
@@ -59,6 +52,7 @@ class UUID{
 	 *
 	 * @param string $uuid
 	 * @param int    $version
+	 *
 	 * @return UUID
 	 */
 	public static function fromBinary($uuid, $version = null){
@@ -73,6 +67,7 @@ class UUID{
 	 * Creates an UUIDv3 from binary data or list of binary data
 	 *
 	 * @param string ...$data
+	 *
 	 * @return UUID
 	 */
 	public static function fromData(...$data){
@@ -83,6 +78,14 @@ class UUID{
 
 	public static function fromRandom(){
 		return self::fromData(Binary::writeInt(time()), Binary::writeShort(getmypid()), Binary::writeShort(getmyuid()), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)));
+	}
+
+	public function getVersion(){
+		return $this->version;
+	}
+
+	public function equals(UUID $uuid){
+		return $uuid->parts[0] === $this->parts[0] and $uuid->parts[1] === $this->parts[1] and $uuid->parts[2] === $this->parts[2] and $uuid->parts[3] === $this->parts[3];
 	}
 
 	public function toBinary(){

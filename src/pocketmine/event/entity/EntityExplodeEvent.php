@@ -30,6 +30,7 @@ use pocketmine\level\Position;
  * Called when a entity explodes
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
+
 	public static $handlerList = null;
 
 	/** @var Position */

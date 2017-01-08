@@ -22,11 +22,12 @@
 namespace pocketmine\level\generator\populator;
 
 use pocketmine\block\Block;
+use pocketmine\block\Flower as FlowerBlock;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
-use pocketmine\block\Flower as FlowerBlock;
 
 class Flower extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;

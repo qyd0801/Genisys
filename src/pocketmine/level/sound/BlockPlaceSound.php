@@ -18,21 +18,21 @@
  * @link https://itxtech.org
  *
  */
- 
+
 namespace pocketmine\level\sound;
 
 use pocketmine\block\Block;
 use pocketmine\network\protocol\LevelEventPacket;
- 
+
 class BlockPlaceSound extends GenericSound{
-	
+
 	protected $data;
-	
+
 	public function __construct(Block $b){
 		parent::__construct($b, LevelEventPacket::EVENT_SOUND_BLOCK_PLACE);
 		$this->data = $b->getId();
 	}
-	
+
 	public function encode(){
 		$pk = new LevelEventPacket;
 		$pk->evid = $this->id;
@@ -40,7 +40,7 @@ class BlockPlaceSound extends GenericSound{
 		$pk->y = $this->y;
 		$pk->z = $this->z;
 		$pk->data = $this->data;
-		
+
 		return $pk;
 	}
 }

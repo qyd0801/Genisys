@@ -27,14 +27,13 @@ use pocketmine\Player;
 
 class DoublePlant extends Flowable{
 
-	protected $id = self::DOUBLE_PLANT;
-	
 	const SUNFLOWER = 0;
 	const LILAC = 1;
 	const DOUBLE_TALLGRASS = 2;
 	const LARGE_FERN = 3;
 	const ROSE_BUSH = 4;
 	const PEONY = 5;
+	protected $id = self::DOUBLE_PLANT;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
@@ -51,7 +50,7 @@ class DoublePlant extends Flowable{
 			2 => "Double Tallgrass",
 			3 => "Large Fern",
 			4 => "Rose Bush",
-			5 => "Peony"
+			5 => "Peony",
 		];
 		return $names[$this->meta & 0x07];
 	}

@@ -41,11 +41,11 @@ class IronDoor extends Door{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 5;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
 				[Item::IRON_DOOR, 0, 1],
@@ -56,7 +56,6 @@ class IronDoor extends Door{
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player) return true;
-		else return parent::onActivate($item, $player);
+		if($player instanceof Player) return true;else return parent::onActivate($item, $player);
 	}
 }

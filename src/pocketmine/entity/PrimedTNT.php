@@ -21,9 +21,7 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\event\entity\EntityDamageEvent;
-
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
 use pocketmine\level\format\Chunk;
@@ -33,19 +31,16 @@ use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive{
+
 	const NETWORK_ID = 65;
 
 	public $width = 0.98;
 	public $length = 0.98;
 	public $height = 0.98;
-
+	public $canCollide = false;
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
-
 	protected $fuse;
-
-	public $canCollide = false;
-
 	private $dropItem = true;
 
 	public function __construct(Chunk $chunk, CompoundTag $nbt, bool $dropItem = true){
@@ -53,26 +48,11 @@ class PrimedTNT extends Entity implements Explosive{
 		$this->dropItem = $dropItem;
 	}
 
-
 	public function attack($damage, EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($damage, $source);
 		}
 	}
-
-	protected function initEntity(){
-		parent::initEntity();
-
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
-		}else{
-			$this->fuse = 80;
-		}
-
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IGNITED, true);
-		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
-	}
-
 
 	public function canCollideWith(Entity $entity){
 		return false;
@@ -133,7 +113,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 		}
 
-
 		return $hasUpdate or $this->fuse >= 0 or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
 	}
 
@@ -163,5 +142,18 @@ class PrimedTNT extends Entity implements Explosive{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
+	}
+
+	protected function initEntity(){
+		parent::initEntity();
+
+		if(isset($this->namedtag->Fuse)){
+			$this->fuse = $this->namedtag["Fuse"];
+		}else{
+			$this->fuse = 80;
+		}
+
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IGNITED, true);
+		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
 	}
 }

@@ -23,8 +23,8 @@ namespace pocketmine\network;
 
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\network\protocol\DataPacket;
-use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\Info;
+use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\Player;
 use pocketmine\Server;
 use raklib\protocol\EncapsulatedPacket;
@@ -153,7 +153,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function blockAddress($address, $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
 	}
-	
+
 	public function unblockAddress($address){
 		$this->interface->unblockAddress($address);
 	}
@@ -173,25 +173,17 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	public function setName($name){
 
 		if($this->server->isDServerEnabled()){
-			if($this->server->dserverConfig["motdMaxPlayers"] > 0) $pc = $this->server->dserverConfig["motdMaxPlayers"];
-			elseif($this->server->dserverConfig["motdAllPlayers"]) $pc = $this->server->getDServerMaxPlayers();
+			if($this->server->dserverConfig["motdMaxPlayers"] > 0) $pc = $this->server->dserverConfig["motdMaxPlayers"];elseif($this->server->dserverConfig["motdAllPlayers"]) $pc = $this->server->getDServerMaxPlayers();
 			else $pc = $this->server->getMaxPlayers();
 
-			if($this->server->dserverConfig["motdPlayers"]) $poc = $this->server->getDServerOnlinePlayers();
-			else $poc = count($this->server->getOnlinePlayers());
+			if($this->server->dserverConfig["motdPlayers"]) $poc = $this->server->getDServerOnlinePlayers();else $poc = count($this->server->getOnlinePlayers());
 		}else{
 			$info = $this->server->getQueryInformation();
 			$pc = $info->getMaxPlayerCount();
 			$poc = $info->getPlayerCount();
 		}
 
-		$this->interface->sendOption("name",
-			"MCPE;" . rtrim(addcslashes($name, ";"), '\\') . ";" .
-			Info::CURRENT_PROTOCOL . ";" .
-			\pocketmine\MINECRAFT_VERSION_NETWORK . ";" .
-			$poc . ";" .
-			$pc
-		);
+		$this->interface->sendOption("name", "MCPE;" . rtrim(addcslashes($name, ";"), '\\') . ";" . Info::CURRENT_PROTOCOL . ";" . \pocketmine\MINECRAFT_VERSION_NETWORK . ";" . $poc . ";" . $pc);
 	}
 
 	public function setPortCheck($name){
@@ -222,9 +214,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$pk = $packet->__encapsulatedPacket;
 			}
 
-			if(!$immediate and !$needACK and $packet::NETWORK_ID !== ProtocolInfo::BATCH_PACKET
-				and Network::$BATCH_THRESHOLD >= 0
-				and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
+			if(!$immediate and !$needACK and $packet::NETWORK_ID !== ProtocolInfo::BATCH_PACKET and Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
 				$this->server->batchPackets([$player], [$packet], true);
 				return null;
 			}

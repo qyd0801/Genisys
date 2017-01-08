@@ -21,13 +21,13 @@
 
 namespace pocketmine\entity;
 
-
 use pocketmine\level\format\Chunk;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Snowball extends Projectile{
+
 	const NETWORK_ID = 81;
 
 	public $width = 0.25;

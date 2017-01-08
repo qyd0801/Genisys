@@ -26,6 +26,7 @@ use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 
 class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLight{
+
 	protected $id = self::ACTIVE_REDSTONE_LAMP;
 
 	public function __construct($meta = 0){
@@ -36,7 +37,7 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 		return "Active Redstone Lamp";
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.3;
 	}
 
@@ -48,9 +49,9 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 		return 15;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		return [
-			[Item::INACTIVE_REDSTONE_LAMP, 0 ,1],
+			[Item::INACTIVE_REDSTONE_LAMP, 0, 1],
 		];
 	}
 
@@ -58,47 +59,20 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 		return ($this->meta == 1);
 	}
 
-	protected function checkPower(array $ignore = []){
-		if($this->isLightedByAround()){
-			$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-			foreach($sides as $side){
-				if(!in_array($side, $ignore)){
-					/** @var ActiveRedstoneLamp $block */
-					$block = $this->getSide($side);
-					if($block->getId() == $this->id){
-						if(!$block->isLightedByAround()) return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
 	public function lightAround(){
-		$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
+		$sides = [
+			Vector3::SIDE_EAST,
+			Vector3::SIDE_WEST,
+			Vector3::SIDE_SOUTH,
+			Vector3::SIDE_NORTH,
+			Vector3::SIDE_UP,
+			Vector3::SIDE_DOWN,
+		];
 		foreach($sides as $side){
 			/** @var InactiveRedstoneLamp $block */
 			$block = $this->getSide($side);
 			if($block->getId() == self::INACTIVE_REDSTONE_LAMP){
 				$block->turnOn();
-			}
-		}
-	}
-
-	protected function turnAroundOff(array $ignore = []){
-		if(!$this->isLightedByAround()){
-			$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-
-			foreach($sides as $side){
-				if(!in_array($side, $ignore)){
-					/** @var ActiveRedstoneLamp $block */
-					$block = $this->getSide($side);
-					if($block->getId() == $this->id){
-						if($block->isLightedByAround()){
-							if(!$block->checkPower([$this->getOppositeSide($side)])) $block->turnOff();
-						}
-					}
-				}
 			}
 		}
 	}
@@ -118,5 +92,53 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 		$this->getLevel()->setBlock($this, new InactiveRedstoneLamp(), true, true);
 		//$this->turnAroundOff();
 		return true;
+	}
+
+	protected function checkPower(array $ignore = []){
+		if($this->isLightedByAround()){
+			$sides = [
+				Vector3::SIDE_EAST,
+				Vector3::SIDE_WEST,
+				Vector3::SIDE_SOUTH,
+				Vector3::SIDE_NORTH,
+				Vector3::SIDE_UP,
+				Vector3::SIDE_DOWN,
+			];
+			foreach($sides as $side){
+				if(!in_array($side, $ignore)){
+					/** @var ActiveRedstoneLamp $block */
+					$block = $this->getSide($side);
+					if($block->getId() == $this->id){
+						if(!$block->isLightedByAround()) return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	protected function turnAroundOff(array $ignore = []){
+		if(!$this->isLightedByAround()){
+			$sides = [
+				Vector3::SIDE_EAST,
+				Vector3::SIDE_WEST,
+				Vector3::SIDE_SOUTH,
+				Vector3::SIDE_NORTH,
+				Vector3::SIDE_UP,
+				Vector3::SIDE_DOWN,
+			];
+
+			foreach($sides as $side){
+				if(!in_array($side, $ignore)){
+					/** @var ActiveRedstoneLamp $block */
+					$block = $this->getSide($side);
+					if($block->getId() == $this->id){
+						if($block->isLightedByAround()){
+							if(!$block->checkPower([$this->getOppositeSide($side)])) $block->turnOff();
+						}
+					}
+				}
+			}
+		}
 	}
 }

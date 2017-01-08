@@ -25,12 +25,11 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\Player;
-use pocketmine\item\Item;
 use pocketmine\item\enchantment\enchantment;
+use pocketmine\item\Item;
+use pocketmine\Player;
 
 class EntityDamageEvent extends EntityEvent implements Cancellable{
-	public static $handlerList = null;
 
 	const MODIFIER_BASE = 0;
 	const MODIFIER_RESISTANCE = 1;
@@ -38,7 +37,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const MODIFIER_PROTECTION = 3;
 	const MODIFIER_STRENGTH = 4;
 	const MODIFIER_WEAKNESS = 5;
-
 	const CAUSE_CONTACT = 0;
 	const CAUSE_ENTITY_ATTACK = 1;
 	const CAUSE_PROJECTILE = 2;
@@ -55,10 +53,8 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	const CAUSE_MAGIC = 13;
 	const CAUSE_CUSTOM = 14;
 	const CAUSE_STARVATION = 15;
-
 	const CAUSE_LIGHTNING = 16;
-
-
+	public static $handlerList = null;
 	private $cause;
 	private $EPF = 0;
 	private $fireProtectL = 0;
@@ -70,7 +66,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private $thornsLevel = [];
 	private $thornsArmor;
 	private $thornsDamage = 0;
-
 
 	/**
 	 * @param Entity    $entity
@@ -86,7 +81,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 			$this->modifiers = $damage;
 		}else{
 			$this->modifiers = [
-				self::MODIFIER_BASE => $damage
+				self::MODIFIER_BASE => $damage,
 			];
 		}
 

@@ -23,7 +23,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-
 /**
  * Air block
  */
@@ -68,7 +67,7 @@ class Air extends Transparent{
 		return null;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0;
 	}
 

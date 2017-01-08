@@ -26,7 +26,6 @@ use pocketmine\event\Timings;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\utils\Utils;
 
-
 class MemoryManager{
 
 	/** @var Server */
@@ -68,60 +67,6 @@ class MemoryManager{
 		$this->init();
 	}
 
-	private function init(){
-		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 0)) * 1024 * 1024;
-
-		$defaultMemory = 1024;
-
-		if(preg_match("/([0-9]+)([KMGkmg])/", $this->server->getConfigString("memory-limit", ""), $matches) > 0){
-			$m = (int) $matches[1];
-			if($m <= 0){
-				$defaultMemory = 0;
-			}else{
-				switch(strtoupper($matches[2])){
-					case "K":
-						$defaultMemory = $m / 1024;
-						break;
-					case "M":
-						$defaultMemory = $m;
-						break;
-					case "G":
-						$defaultMemory = $m * 1024;
-						break;
-					default:
-						$defaultMemory = $m;
-						break;
-				}
-			}
-		}
-
-		$hardLimit = ((int) $this->server->getProperty("memory.main-hard-limit", $defaultMemory));
-
-		if($hardLimit <= 0){
-			ini_set("memory_limit", -1);
-		}else{
-			ini_set("memory_limit", $hardLimit . "M");
-		}
-
-		$this->globalMemoryLimit = ((int) $this->server->getProperty("memory.global-limit", 0)) * 1024 * 1024;
-		$this->checkRate = (int) $this->server->getProperty("memory.check-rate", 20);
-		$this->continuousTrigger = (bool) $this->server->getProperty("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 30);
-
-		$this->garbageCollectionPeriod = (int) $this->server->getProperty("memory.garbage-collection.period", 36000);
-		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
-		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
-
-		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 96);
-		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
-		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
-
-		$this->chunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
-		$this->cacheTrigger = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
-
-		gc_enable();
-	}
-
 	public function isLowMemory(){
 		return $this->lowMemory;
 	}
@@ -135,7 +80,7 @@ class MemoryManager{
 	}
 
 	public function trigger($memory, $limit, $global = false, $triggerCount = 0){
-		$this->server->getLogger()->debug("[Memory Manager] ".($global ? "Global " : "") ."Low memory triggered, limit ". round(($limit / 1024) / 1024, 2)."MB, using ". round(($memory / 1024) / 1024, 2)."MB");
+		$this->server->getLogger()->debug("[Memory Manager] " . ($global ? "Global " : "") . "Low memory triggered, limit " . round(($limit / 1024) / 1024, 2) . "MB, using " . round(($memory / 1024) / 1024, 2) . "MB");
 
 		if($this->cacheTrigger){
 			foreach($this->server->getLevels() as $level){
@@ -157,7 +102,7 @@ class MemoryManager{
 			$cycles = $this->triggerGarbageCollector();
 		}
 
-		$this->server->getLogger()->debug("[Memory Manager] Freed " . round(($ev->getMemoryFreed() / 1024) / 1024, 2)."MB, $cycles cycles");
+		$this->server->getLogger()->debug("[Memory Manager] Freed " . round(($ev->getMemoryFreed() / 1024) / 1024, 2) . "MB, $cycles cycles");
 	}
 
 	public function check(){
@@ -228,7 +173,6 @@ class MemoryManager{
 			throw new \InvalidArgumentException("Not an object!");
 		}
 
-
 		$identifier = spl_object_hash($object) . ":" . get_class($object);
 
 		if(isset($this->leakInfo[$identifier])){
@@ -238,7 +182,7 @@ class MemoryManager{
 		$this->leakInfo[$identifier] = [
 			"id" => $id = md5($identifier . ":" . $this->leakSeed++),
 			"class" => get_class($object),
-			"hash" => $identifier
+			"hash" => $identifier,
 		];
 		$this->leakInfo[$id] = $this->leakInfo[$identifier];
 
@@ -295,13 +239,13 @@ class MemoryManager{
 			"hash" => $this->leakInfo[$id]["hash"],
 			"valid" => $valid,
 			"references" => $references,
-			"object" => $includeObject ? $object : null
+			"object" => $includeObject ? $object : null,
 		];
 	}
 
 	public function dumpServerMemory($outputFolder, $maxNesting, $maxStringSize){
 		gc_disable();
-		ini_set("memory_limit",-1);
+		ini_set("memory_limit", -1);
 		if(!file_exists($outputFolder)){
 			mkdir($outputFolder, 0777, true);
 		}
@@ -335,7 +279,7 @@ class MemoryManager{
 
 				$info = [
 					"information" => "$hash@$className",
-					"properties" => []
+					"properties" => [],
 				];
 
 				if($reflection->getParentClass()){
@@ -357,7 +301,7 @@ class MemoryManager{
 					$this->continueDump($property->getValue($object), $info["properties"][$property->getName()], $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 				}
 
-				fwrite($obData, "$hash@$className: ". json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 
 				if(!isset($objects["staticProperties"][$className])){
 					$staticProperties[$className] = [];
@@ -388,6 +332,60 @@ class MemoryManager{
 		$this->server->forceShutdown();
 	}
 
+	private function init(){
+		$this->memoryLimit = ((int) $this->server->getProperty("memory.main-limit", 0)) * 1024 * 1024;
+
+		$defaultMemory = 1024;
+
+		if(preg_match("/([0-9]+)([KMGkmg])/", $this->server->getConfigString("memory-limit", ""), $matches) > 0){
+			$m = (int) $matches[1];
+			if($m <= 0){
+				$defaultMemory = 0;
+			}else{
+				switch(strtoupper($matches[2])){
+					case "K":
+						$defaultMemory = $m / 1024;
+						break;
+					case "M":
+						$defaultMemory = $m;
+						break;
+					case "G":
+						$defaultMemory = $m * 1024;
+						break;
+					default:
+						$defaultMemory = $m;
+						break;
+				}
+			}
+		}
+
+		$hardLimit = ((int) $this->server->getProperty("memory.main-hard-limit", $defaultMemory));
+
+		if($hardLimit <= 0){
+			ini_set("memory_limit", -1);
+		}else{
+			ini_set("memory_limit", $hardLimit . "M");
+		}
+
+		$this->globalMemoryLimit = ((int) $this->server->getProperty("memory.global-limit", 0)) * 1024 * 1024;
+		$this->checkRate = (int) $this->server->getProperty("memory.check-rate", 20);
+		$this->continuousTrigger = (bool) $this->server->getProperty("memory.continuous-trigger", true);
+		$this->continuousTriggerRate = (int) $this->server->getProperty("memory.continuous-trigger-rate", 30);
+
+		$this->garbageCollectionPeriod = (int) $this->server->getProperty("memory.garbage-collection.period", 36000);
+		$this->garbageCollectionTrigger = (bool) $this->server->getProperty("memory.garbage-collection.low-memory-trigger", true);
+		$this->garbageCollectionAsync = (bool) $this->server->getProperty("memory.garbage-collection.collect-async-worker", true);
+
+		$this->chunkLimit = (int) $this->server->getProperty("memory.max-chunks.trigger-limit", 96);
+		$this->chunkCollect = (bool) $this->server->getProperty("memory.max-chunks.trigger-chunk-collect", true);
+		$this->chunkTrigger = (bool) $this->server->getProperty("memory.max-chunks.low-memory-trigger", true);
+
+		$this->chunkCache = (bool) $this->server->getProperty("memory.world-caches.disable-chunk-cache", true);
+		$this->cacheTrigger = (bool) $this->server->getProperty("memory.world-caches.low-memory-trigger", true);
+
+		gc_enable();
+	}
+
 	private function continueDump($from, &$data, &$objects, &$refCounts, $recursion, $maxNesting, $maxStringSize){
 		if($maxNesting <= 0){
 			$data = "(error) NESTING LIMIT REACHED";
@@ -415,7 +413,7 @@ class MemoryManager{
 				$this->continueDump($value, $data[$key], $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
 			}
 		}elseif(is_string($from)){
-			$data = "(string) len(". strlen($from) .") " . substr(Utils::printable($from), 0, $maxStringSize);
+			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);
 		}elseif(is_resource($from)){
 			$data = "(resource) " . print_r($from, true);
 		}else{

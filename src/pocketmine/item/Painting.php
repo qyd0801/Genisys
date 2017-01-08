@@ -8,17 +8,18 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\entity\Painting as PaintingEntity;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
-use pocketmine\entity\Painting as PaintingEntity;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 
 class Painting extends Item{
+
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
 	}
@@ -72,11 +73,7 @@ class Painting extends Item{
 				$valid = true;
 				for($x = 0; $x < $motive[1] && $valid; $x++){
 					for($z = 0; $z < $motive[2] && $valid; $z++){
-						if($target->getSide($right[$face - 2], $x)->isTransparent() ||
-							$target->getSide(Vector3::SIDE_UP, $z)->isTransparent() ||
-							$block->getSide($right[$face - 2], $x)->isSolid() ||
-							$block->getSide(Vector3::SIDE_UP, $z)->isSolid()
-						){
+						if($target->getSide($right[$face - 2], $x)->isTransparent() || $target->getSide(Vector3::SIDE_UP, $z)->isTransparent() || $block->getSide($right[$face - 2], $x)->isSolid() || $block->getSide(Vector3::SIDE_UP, $z)->isSolid()){
 							$valid = false;
 						}
 					}
@@ -101,16 +98,16 @@ class Painting extends Item{
 				"Pos" => new ListTag("Pos", [
 					new DoubleTag("", $data["x"]),
 					new DoubleTag("", $data["y"]),
-					new DoubleTag("", $data["z"])
+					new DoubleTag("", $data["z"]),
 				]),
 				"Motion" => new ListTag("Motion", [
 					new DoubleTag("", 0),
 					new DoubleTag("", 0),
-					new DoubleTag("", 0)
+					new DoubleTag("", 0),
 				]),
 				"Rotation" => new ListTag("Rotation", [
 					new FloatTag("", $data["yaw"]),
-					new FloatTag("", 0)
+					new FloatTag("", 0),
 				]),
 			]);
 

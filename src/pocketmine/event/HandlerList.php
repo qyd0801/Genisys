@@ -27,19 +27,29 @@ use pocketmine\plugin\RegisteredListener;
 class HandlerList{
 
 	/**
+	 * @var HandlerList[]
+	 */
+	private static $allLists = [];
+	/**
 	 * @var RegisteredListener[]
 	 */
 	private $handlers = null;
-
 	/**
 	 * @var RegisteredListener[][]
 	 */
 	private $handlerSlots = [];
 
-	/**
-	 * @var HandlerList[]
-	 */
-	private static $allLists = [];
+	public function __construct(){
+		$this->handlerSlots = [
+			EventPriority::LOWEST => [],
+			EventPriority::LOW => [],
+			EventPriority::NORMAL => [],
+			EventPriority::HIGH => [],
+			EventPriority::HIGHEST => [],
+			EventPriority::MONITOR => [],
+		];
+		self::$allLists[] = $this;
+	}
 
 	public static function bakeAll(){
 		foreach(self::$allLists as $h){
@@ -68,16 +78,11 @@ class HandlerList{
 		}
 	}
 
-	public function __construct(){
-		$this->handlerSlots = [
-			EventPriority::LOWEST => [],
-			EventPriority::LOW => [],
-			EventPriority::NORMAL => [],
-			EventPriority::HIGH => [],
-			EventPriority::HIGHEST => [],
-			EventPriority::MONITOR => []
-		];
-		self::$allLists[] = $this;
+	/**
+	 * @return HandlerList[]
+	 */
+	public static function getHandlerLists(){
+		return self::$allLists;
 	}
 
 	/**
@@ -113,9 +118,7 @@ class HandlerList{
 			$changed = false;
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
-					if(($object instanceof Plugin and $listener->getPlugin() === $object)
-						or ($object instanceof Listener and $listener->getListener() === $object)
-					){
+					if(($object instanceof Plugin and $listener->getPlugin() === $object) or ($object instanceof Listener and $listener->getListener() === $object)){
 						unset($this->handlerSlots[$priority][$hash]);
 						$changed = true;
 					}
@@ -167,13 +170,6 @@ class HandlerList{
 
 			return $handlers;
 		}
-	}
-
-	/**
-	 * @return HandlerList[]
-	 */
-	public static function getHandlerLists(){
-		return self::$allLists;
 	}
 
 }

@@ -20,15 +20,21 @@
 */
 
 namespace pocketmine\math;
+
 use pocketmine\utils\Random;
 
 class Vector2{
+
 	public $x;
 	public $y;
 
 	public function __construct($x = 0, $y = 0){
 		$this->x = $x;
 		$this->y = $y;
+	}
+
+	public static function createRandomDirection(Random $random){
+		return VectorMath::getDirection2D($random->nextFloat() * 2 * pi());
 	}
 
 	public function getX(){
@@ -126,9 +132,5 @@ class Vector2{
 
 	public function __toString(){
 		return "Vector2(x=" . $this->x . ",y=" . $this->y . ")";
-	}
-
-	public static function createRandomDirection(Random $random){
-		return VectorMath::getDirection2D($random->nextFloat() * 2 * pi());
 	}
 }

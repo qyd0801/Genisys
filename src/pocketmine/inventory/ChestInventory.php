@@ -25,10 +25,10 @@ use pocketmine\block\TrappedChest;
 use pocketmine\level\Level;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\Player;
-
 use pocketmine\tile\Chest;
 
 class ChestInventory extends ContainerInventory{
+
 	public function __construct(Chest $tile){
 		parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
 	}

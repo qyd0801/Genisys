@@ -22,6 +22,7 @@
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
+use pocketmine\entity\Item as ItemEntity;
 use pocketmine\inventory\DropperInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
@@ -29,15 +30,12 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\particle\SmokeParticle;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\entity\Item as ItemEntity;
-
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntTag;
-
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 
 class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
@@ -89,21 +87,6 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 	 */
 	public function getSize(){
 		return 9;
-	}
-
-	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex($index){
-		foreach($this->namedtag->Items as $i => $slot){
-			if((int) $slot["Slot"] === (int) $index){
-				return (int) $i;
-			}
-		}
-
-		return -1;
 	}
 
 	/**
@@ -204,8 +187,7 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 			}
 		}
 		$max = count($itemIndex) - 1;
-		if($max < 0) $itemArr = null;
-		elseif($max == 0) $itemArr = $itemIndex[0];
+		if($max < 0) $itemArr = null;elseif($max == 0) $itemArr = $itemIndex[0];
 		else $itemArr = $itemIndex[mt_rand(0, $max)];
 
 		if(is_array($itemArr)){
@@ -237,20 +219,20 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 				"Pos" => new ListTag("Pos", [
 					new DoubleTag("", $this->x + $motion[0] * 2 + 0.5),
 					new DoubleTag("", $this->y + ($motion[1] > 0 ? $motion[1] : 0.5)),
-					new DoubleTag("", $this->z + $motion[2] * 2 + 0.5)
+					new DoubleTag("", $this->z + $motion[2] * 2 + 0.5),
 				]),
 				"Motion" => new ListTag("Motion", [
 					new DoubleTag("", $motion[0]),
 					new DoubleTag("", $motion[1]),
-					new DoubleTag("", $motion[2])
+					new DoubleTag("", $motion[2]),
 				]),
 				"Rotation" => new ListTag("Rotation", [
 					new FloatTag("", lcg_value() * 360),
-					new FloatTag("", 0)
+					new FloatTag("", 0),
 				]),
 				"Health" => new ShortTag("Health", 5),
 				"Item" => $needItem->nbtSerialize(-1, "Item"),
-				"PickupDelay" => new ShortTag("PickupDelay", 10)
+				"PickupDelay" => new ShortTag("PickupDelay", 10),
 			]);
 
 			$f = 0.3;
@@ -269,7 +251,7 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 			new StringTag("id", Tile::DROPPER),
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
+			new IntTag("z", (int) $this->z),
 		]);
 
 		if($this->hasName()){
@@ -277,5 +259,20 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 
 		return $c;
+	}
+
+	/**
+	 * @param $index
+	 *
+	 * @return int
+	 */
+	protected function getSlotIndex($index){
+		foreach($this->namedtag->Items as $i => $slot){
+			if((int) $slot["Slot"] === (int) $index){
+				return (int) $i;
+			}
+		}
+
+		return -1;
 	}
 }

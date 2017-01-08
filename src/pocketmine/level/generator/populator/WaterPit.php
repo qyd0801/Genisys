@@ -24,8 +24,10 @@ namespace pocketmine\level\generator\populator;
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
+
 //TODO: Remove
 class WaterPit extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;
@@ -49,7 +51,7 @@ class WaterPit extends Populator{
 
 			if($y !== -1 and $this->canWaterPitStay($x, $y, $z)){
 				$this->level->setBlockIdAt($x, $y, $z, Block::STILL_WATER);
-				$this->level->setBlockDataAt($x, $y, $z , 8);
+				$this->level->setBlockDataAt($x, $y, $z, 8);
 			}
 		}
 	}

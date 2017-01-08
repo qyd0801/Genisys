@@ -21,7 +21,6 @@
 
 namespace pocketmine\tile;
 
-
 use pocketmine\level\format\Chunk;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -55,7 +54,7 @@ class EnchantTable extends Spawnable implements Nameable{
 			new StringTag("id", Tile::ENCHANT_TABLE),
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
+			new IntTag("z", (int) $this->z),
 		]);
 
 		if($this->hasName()){

@@ -31,11 +31,7 @@ use pocketmine\utils\TextFormat;
 class TeleportCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.tp.description",
-			"%commands.tp.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.tp.description", "%commands.tp.usage");
 		$this->setPermission("pocketmine.command.teleport");
 	}
 
@@ -89,7 +85,10 @@ class TeleportCommand extends VanillaCommand{
 
 		if(count($args) < 3){
 			$origin->teleport($target);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [
+				$origin->getName(),
+				$target->getName(),
+			]));
 
 			return true;
 		}elseif($target->getLevel() !== null){
@@ -111,7 +110,12 @@ class TeleportCommand extends VanillaCommand{
 			}
 
 			$target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [
+				$target->getName(),
+				round($x, 2),
+				round($y, 2),
+				round($z, 2),
+			]));
 
 			return true;
 		}

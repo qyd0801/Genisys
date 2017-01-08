@@ -24,6 +24,7 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 class AddHangingEntityPacket extends DataPacket{
+
 	const NETWORK_ID = Info::ADD_HANGING_ENTITY_PACKET;
 
 	public $entityUniqueId;

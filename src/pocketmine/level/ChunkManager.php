@@ -19,13 +19,14 @@
  *
 */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace pocketmine\level;
 
 use pocketmine\level\format\Chunk;
 
 interface ChunkManager{
+
 	/**
 	 * Gets the raw block id.
 	 *
@@ -35,7 +36,7 @@ interface ChunkManager{
 	 *
 	 * @return int 0-255
 	 */
-	public function getBlockIdAt(int $x, int $y, int $z): int;
+	public function getBlockIdAt(int $x, int $y, int $z) : int;
 
 	/**
 	 * Sets the raw block id.

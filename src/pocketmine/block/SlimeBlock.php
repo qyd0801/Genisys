@@ -21,8 +21,6 @@
 
 namespace pocketmine\block;
 
-
-
 class SlimeBlock extends Solid{
 
 	protected $id = self::SLIME_BLOCK;
@@ -35,7 +33,7 @@ class SlimeBlock extends Solid{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0;
 	}
 

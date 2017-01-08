@@ -104,29 +104,6 @@ abstract class Stair extends Transparent{
 	}
 	*/
 
-	protected function recalculateBoundingBox() {
-
-		if(($this->getDamage() & 0x04) > 0){
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y + 0.5,
-				$this->z,
-				$this->x + 1,
-				$this->y + 1,
-				$this->z + 1
-			);
-		}else{
-			return new AxisAlignedBB(
-				$this->x,
-				$this->y,
-				$this->z,
-				$this->x + 1,
-				$this->y + 0.5,
-				$this->z + 1
-			);
-		}
-	}
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$faces = [
 			0 => 0,
@@ -143,7 +120,7 @@ abstract class Stair extends Transparent{
 		return true;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -151,13 +128,22 @@ abstract class Stair extends Transparent{
 		return 15;
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= Tool::TIER_WOODEN){
 			return [
 				[$this->getId(), 0, 1],
 			];
 		}else{
 			return [];
+		}
+	}
+
+	protected function recalculateBoundingBox(){
+
+		if(($this->getDamage() & 0x04) > 0){
+			return new AxisAlignedBB($this->x, $this->y + 0.5, $this->z, $this->x + 1, $this->y + 1, $this->z + 1);
+		}else{
+			return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 0.5, $this->z + 1);
 		}
 	}
 }

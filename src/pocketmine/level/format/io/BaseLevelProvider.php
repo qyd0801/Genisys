@@ -36,6 +36,7 @@ use pocketmine\utils\ChunkException;
 use pocketmine\utils\LevelException;
 
 abstract class BaseLevelProvider implements LevelProvider{
+
 	/** @var Level */
 	protected $level;
 	/** @var string */
@@ -126,7 +127,7 @@ abstract class BaseLevelProvider implements LevelProvider{
 	public function saveLevelData(){
 		$nbt = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setData(new CompoundTag("", [
-			"Data" => $this->levelData
+			"Data" => $this->levelData,
 		]));
 		$buffer = $nbt->writeCompressed();
 		file_put_contents($this->getPath() . "level.dat", $buffer);

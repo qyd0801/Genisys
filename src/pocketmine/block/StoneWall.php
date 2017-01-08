@@ -21,13 +21,12 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 class StoneWall extends Transparent{
-	
+
 	const NONE_MOSSY_WALL = 0;
 	const MOSSY_WALL = 1;
 
@@ -45,7 +44,7 @@ class StoneWall extends Transparent{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -57,7 +56,11 @@ class StoneWall extends Transparent{
 		return "Cobblestone Wall";
 	}
 
-	protected function recalculateBoundingBox() {
+	public function canConnect(Block $block){
+		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() and !$block->isTransparent() : true;
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
 		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
@@ -77,18 +80,7 @@ class StoneWall extends Transparent{
 			$s = 0.6875;
 		}
 
-		return new AxisAlignedBB(
-			$this->x + $w,
-			$this->y,
-			$this->z + $n,
-			$this->x + $e,
-			$this->y + 1.5,
-			$this->z + $s
-		);
-	}
-
-	public function canConnect(Block $block){
-		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() and !$block->isTransparent() : true;
+		return new AxisAlignedBB($this->x + $w, $this->y, $this->z + $n, $this->x + $e, $this->y + 1.5, $this->z + $s);
 	}
 
 }

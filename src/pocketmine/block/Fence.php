@@ -26,8 +26,8 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 class Fence extends Transparent{
-	
-	const FENCE_OAK = 0;  
+
+	const FENCE_OAK = 0;
 	const FENCE_SPRUCE = 1;
 	const FENCE_BIRCH = 2;
 	const FENCE_JUNGLE = 3;
@@ -40,7 +40,7 @@ class Fence extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 2;
 	}
 
@@ -65,12 +65,16 @@ class Fence extends Transparent{
 			4 => "Acacia Fence",
 			5 => "Dark Oak Fence",
 			"",
-			""
+			"",
 		];
 		return $names[$this->meta & 0x07];
 	}
 
-	protected function recalculateBoundingBox() {
+	public function canConnect(Block $block){
+		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
+	}
+
+	protected function recalculateBoundingBox(){
 
 		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
 		$south = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
@@ -82,18 +86,7 @@ class Fence extends Transparent{
 		$w = $west ? 0 : 0.375;
 		$e = $east ? 1 : 0.625;
 
-		return new AxisAlignedBB(
-			$this->x + $w,
-			$this->y,
-			$this->z + $n,
-			$this->x + $e,
-			$this->y + 1.5,
-			$this->z + $s
-		);
-	}
-
-	public function canConnect(Block $block){
-		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
+		return new AxisAlignedBB($this->x + $w, $this->y, $this->z + $n, $this->x + $e, $this->y + 1.5, $this->z + $s);
 	}
 
 }

@@ -86,7 +86,6 @@ interface ChunkLoader{
 	 */
 	public function onChunkLoaded(Chunk $chunk);
 
-
 	/**
 	 * This method will be called when a registered chunk is unloaded
 	 *

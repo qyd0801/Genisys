@@ -27,15 +27,10 @@ use pocketmine\event\TranslationContainer;
 use pocketmine\network\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 
-
 class DifficultyCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.difficulty.description",
-			"%commands.difficulty.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.difficulty.description", "%commands.difficulty.usage");
 		$this->setPermission("pocketmine.command.difficulty");
 	}
 

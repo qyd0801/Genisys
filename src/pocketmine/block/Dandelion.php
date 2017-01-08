@@ -37,7 +37,6 @@ class Dandelion extends Flowable{
 		return "Dandelion";
 	}
 
-
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$down = $this->getSide(0);
 		if($down->getId() === 2 or $down->getId() === 3 or $down->getId() === 60){

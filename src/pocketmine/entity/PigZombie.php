@@ -21,14 +21,15 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\network\protocol\MobEquipmentPacket;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\Player;
-use pocketmine\item\Item as ItemItem;
-use pocketmine\item\enchantment\Enchantment;
 
 class PigZombie extends Monster{
+
 	const NETWORK_ID = 36;
 
 	public $width = 0.6;
@@ -39,11 +40,11 @@ class PigZombie extends Monster{
 	public $gravity = 0.3;
 
 	public $dropExp = [5, 5];
-	
+
 	public function getName() : string{
 		return "PigZombie";
 	}
-	
+
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
@@ -60,7 +61,7 @@ class PigZombie extends Monster{
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
-		
+
 		$pk = new MobEquipmentPacket();
 		$pk->eid = $this->getId();
 		$pk->item = new ItemItem(283);

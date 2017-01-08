@@ -21,8 +21,8 @@
 
 namespace pocketmine\inventory;
 
-use pocketmine\Player;
 use pocketmine\item\Item;
+use pocketmine\Player;
 
 interface Transaction{
 
@@ -52,7 +52,8 @@ interface Transaction{
 
 	/**
 	 * @param Player $source
+	 *
 	 * @return bool
 	 */
-	public function execute(Player $source): bool;
+	public function execute(Player $source) : bool;
 }

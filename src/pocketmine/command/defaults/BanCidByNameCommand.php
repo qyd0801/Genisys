@@ -29,11 +29,7 @@ use pocketmine\Player;
 class BanCidByNameCommand extends VanillaCommand{
 
 	public function __construct($name){
-		parent::__construct(
-			$name,
-			"%pocketmine.command.bancidbyname.description",
-			"%commands.bancidbyname.usage"
-		);
+		parent::__construct($name, "%pocketmine.command.bancidbyname.description", "%commands.bancidbyname.usage");
 		$this->setPermission("pocketmine.command.bancidbyname");
 	}
 
@@ -50,9 +46,8 @@ class BanCidByNameCommand extends VanillaCommand{
 
 		$name = array_shift($args);
 		$reason = implode(" ", $args);
-		
-		if ($sender->getServer()->getPlayer($name) instanceof Player) $target = $sender->getServer()->getPlayer($name);
-		else return false;
+
+		if($sender->getServer()->getPlayer($name) instanceof Player) $target = $sender->getServer()->getPlayer($name);else return false;
 
 		$sender->getServer()->getCIDBans()->addBan($target->getClientId(), $reason, null, $sender->getName());
 

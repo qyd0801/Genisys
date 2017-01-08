@@ -24,7 +24,6 @@
  */
 namespace pocketmine\network\protocol;
 
-
 interface Info{
 
 	/**

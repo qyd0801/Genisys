@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class ExplodePacket extends DataPacket{
+
 	const NETWORK_ID = Info::EXPLODE_PACKET;
 
 	public $x;

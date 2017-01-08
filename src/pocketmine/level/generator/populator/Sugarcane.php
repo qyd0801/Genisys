@@ -26,6 +26,7 @@ use pocketmine\level\ChunkManager;
 use pocketmine\utils\Random;
 
 class Sugarcane extends Populator{
+
 	/** @var ChunkManager */
 	private $level;
 	private $randomAmount;
@@ -64,7 +65,12 @@ class Sugarcane extends Populator{
 		$b = $this->level->getBlockIdAt($x, $y, $z);
 		$below = $this->level->getBlockIdAt($x, $y - 1, $z);
 		$water = false;
-		foreach(array($this->level->getBlockIdAt($x + 1, $y - 1, $z), $this->level->getBlockIdAt($x - 1, $y - 1, $z), $this->level->getBlockIdAt($x, $y - 1, $z + 1), $this->level->getBlockIdAt($x, $y - 1, $z - 1)) as $adjacent){
+		foreach([
+			        $this->level->getBlockIdAt($x + 1, $y - 1, $z),
+			        $this->level->getBlockIdAt($x - 1, $y - 1, $z),
+			        $this->level->getBlockIdAt($x, $y - 1, $z + 1),
+			        $this->level->getBlockIdAt($x, $y - 1, $z - 1),
+		        ] as $adjacent){
 			if($adjacent === Block::WATER or $adjacent === Block::STILL_WATER){
 				$water = true;
 				break;

@@ -23,8 +23,8 @@ namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
-
 class SetSpawnPositionPacket extends DataPacket{
+
 	const NETWORK_ID = Info::SET_SPAWN_POSITION_PACKET;
 
 	public $unknown;

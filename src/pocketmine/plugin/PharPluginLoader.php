@@ -103,17 +103,6 @@ class PharPluginLoader implements PluginLoader{
 	}
 
 	/**
-	 * @param PluginBase        $plugin
-	 * @param PluginDescription $description
-	 * @param string            $dataFolder
-	 * @param string            $file
-	 */
-	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
-		$plugin->init($this, $this->server, $description, $dataFolder, $file);
-		$plugin->onLoad();
-	}
-
-	/**
 	 * @param Plugin $plugin
 	 */
 	public function enablePlugin(Plugin $plugin){
@@ -137,5 +126,16 @@ class PharPluginLoader implements PluginLoader{
 
 			$plugin->setEnabled(false);
 		}
+	}
+
+	/**
+	 * @param PluginBase        $plugin
+	 * @param PluginDescription $description
+	 * @param string            $dataFolder
+	 * @param string            $file
+	 */
+	private function initPlugin(PluginBase $plugin, PluginDescription $description, $dataFolder, $file){
+		$plugin->init($this, $this->server, $description, $dataFolder, $file);
+		$plugin->onLoad();
 	}
 }

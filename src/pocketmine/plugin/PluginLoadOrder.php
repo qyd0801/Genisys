@@ -21,8 +21,8 @@
 
 namespace pocketmine\plugin;
 
-
 abstract class PluginLoadOrder{
+
 	/*
 	 * The plugin will be loaded at startup
 	 */

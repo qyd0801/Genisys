@@ -53,31 +53,6 @@ class BaseLang{
 		return $this->langName;
 	}
 
-	protected function loadLang($path, array &$d){
-		if(file_exists($path) and strlen($content = file_get_contents($path)) > 0){
-			foreach(explode("\n", $content) as $line){
-				$line = trim($line);
-				if($line === "" or $line{0} === "#"){
-					continue;
-				}
-
-				$t = explode("=", $line);
-				if(count($t) < 2){
-					continue;
-				}
-
-				$key = trim(array_shift($t));
-				$value = trim(implode("=", $t));
-
-				if($value === ""){
-					continue;
-				}
-
-				$d[$key] = $value;
-			}
-		}
-	}
-
 	/**
 	 * @param string   $str
 	 * @param string[] $params
@@ -130,6 +105,31 @@ class BaseLang{
 		return $id;
 	}
 
+	protected function loadLang($path, array &$d){
+		if(file_exists($path) and strlen($content = file_get_contents($path)) > 0){
+			foreach(explode("\n", $content) as $line){
+				$line = trim($line);
+				if($line === "" or $line{0} === "#"){
+					continue;
+				}
+
+				$t = explode("=", $line);
+				if(count($t) < 2){
+					continue;
+				}
+
+				$key = trim(array_shift($t));
+				$value = trim(implode("=", $t));
+
+				if($value === ""){
+					continue;
+				}
+
+				$d[$key] = $value;
+			}
+		}
+	}
+
 	protected function parseTranslation($text, $onlyPrefix = null){
 		$newString = "";
 
@@ -140,10 +140,7 @@ class BaseLang{
 			$c = $text{$i};
 			if($replaceString !== null){
 				$ord = ord($c);
-				if(
-					($ord >= 0x30 and $ord <= 0x39) // 0-9
-					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
+				if(($ord >= 0x30 and $ord <= 0x39) // 0-9 or ($ord >= 0x41 and $ord <= 0x5a) // A-Z or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
 					$c === "." or $c === "-"
 				){
 					$replaceString .= $c;
