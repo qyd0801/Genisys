@@ -140,8 +140,10 @@ class BaseLang{
 			$c = $text{$i};
 			if($replaceString !== null){
 				$ord = ord($c);
-				if(($ord >= 0x30 and $ord <= 0x39) // 0-9 or ($ord >= 0x41 and $ord <= 0x5a) // A-Z or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-					$c === "." or $c === "-"
+				if(($ord >= 0x30 and $ord <= 0x39) // 0-9
+					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
+					or ($ord >= 0x61 and $ord <= 0x7a) // a-z
+					or $c === "." or $c === "-"
 				){
 					$replaceString .= $c;
 				}else{
